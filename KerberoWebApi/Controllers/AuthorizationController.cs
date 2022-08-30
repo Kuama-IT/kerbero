@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("[controller]")]
-[Produces("application/json")]
 public class VendorAuthorizationController : ControllerBase
 {
 
@@ -21,11 +20,9 @@ public class VendorAuthorizationController : ControllerBase
     /// <param name="name"></param>
     /// <returns></returns>
     [HttpGet(Name = "AuthorizeApiCalls")]
-    public async Task<RedirectResult> Get(string name)
+    public async Task<bool> Get(string name, string clientId, string clientSecret)
     {
         IVendorClient client;
-        string clientId = "";
-        string clientSecret = "";
         if(name == "nuki")
         {
             client = new Clients.NukiApiClient();
@@ -36,7 +33,7 @@ public class VendorAuthorizationController : ControllerBase
             client = new Clients.NukiApiClient();
 
         var res = await client.AuthorizeApi("N-rzp1z8UdSa6MPYEM_1wA");
-        return new RedirectResult(res);
+        return res;
     }
 
     /// <summary>
@@ -45,7 +42,7 @@ public class VendorAuthorizationController : ControllerBase
     /// <param name="code"></param>
     /// <returns></returns>
     [HttpGet("auth")]
-    public async Task<RedirectResult> CallbackAuth(string code)
+    public async Task<RedirectResult> CallbackAuth(string code, string scope, string state)
     {
         // code=iaQ1W3l8ixV5-Ch2BLDxce4q9HCouWEt09V_UVkanGU.4GF6FJQfzZMzOuKSQotB0SPI8Ra8JG86f_TZhEOdbSU
         // scope=account+notification+smartlock+smartlock.readOnly+smartlock.action+smartlock.auth+smartlock.config+smartlock.log+offline_access

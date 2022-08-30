@@ -1,6 +1,6 @@
 namespace Clients{
     public interface IVendorClient
     {
-        public abstract Task<string> AuthorizeApi(string secret); 
+        public abstract Task<bool> AuthorizeApi(string secret); 
     }
 }

@@ -1,10 +1,11 @@
 namespace Clients {
     using System.Net.Http.Headers;
+    using KerberoWebApi.Utils;
     using Microsoft.AspNetCore.WebUtilities;
     using System = global::System;
     public class NukiApiClient: Clients.IVendorClient
     {
-        private string _baseUrl = "https://api.nuki.io/";
+        private string _baseUrl = "api.nuki.io";
         private System.Net.Http.HttpClient _httpClient;
         // private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
@@ -25,22 +26,10 @@ namespace Clients {
             set { _baseUrl = value; }
         }
 
-        public string UrlBaseBuilder(string path, Dictionary<string, string?>? args = default)
-        {
-            var uriBuilder = new UriBuilder();
-            uriBuilder.Host = _baseUrl;
-            uriBuilder.Path = path;
-
-            if(args != null && args.Count != 0)
-            {
-                uriBuilder = new UriBuilder(QueryHelpers.AddQueryString(uriBuilder.ToString(), args));
-            }
-            return uriBuilder.ToString();
-        }
 
         // Base method for Nuki GET calls
         protected virtual async Task<string> GetAsyncBase(string path) {
-            var url = UrlBaseBuilder(path);
+            var url = new UrlBuilder().UrlBaseBuilder(_baseUrl, path);
             string responseBody = "";
             try	
             {
@@ -63,17 +52,30 @@ namespace Clients {
             return await GetAsyncBase("/smartlock");
         }
 
-        public virtual async Task<string> AuthorizeApi(string clientSecret)
+        public virtual async Task<bool> AuthorizeApi(string clientSecret)
         {
+            var query = new Dictionary<string, string>();
+            query["response_type"] = "code";
+            query["client_id"] = clientSecret;
+            query["redirect_uri"] = "https://test.com:5220/VendorAuthorization/auth";
+            query["scope"] = $"account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log";
             // use a url builder
-            var urlBuilder = new System.Text.StringBuilder();
-            urlBuilder.Append(UrlBaseBuilder("/oauth/authorize"))
-                .Append("?response_type=code&redirect_uri=https%3A%2F%2Ftest.com%3A5220%2FVendorAuthorization%2Fauth&client_id=")
-                .Append(clientSecret)
-                .Append("&scope=account%20notification%20smartlock%20smartlock.readOnly%20smartlock.action%20smartlock.auth%20smartlock.config%20smartlock.log");
-            var url = urlBuilder.ToString();
+            UrlBuilder urlBuilder = new UrlBuilder();
+            urlBuilder.Scheme = "https";
+            var url = urlBuilder.UrlBaseBuilder(_baseUrl, "/oauth/authorize", query);
             var unAuthClient = new HttpClient();
-            return url;
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+            }
+            catch(HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");	
+                Console.WriteLine("Message :{0} ",e.Message);
+                return false;
+            }
+            return true;
         }
 
         public virtual async Task<List<string>> RetrieveTokens(string clientId, string clientSecret, string code)

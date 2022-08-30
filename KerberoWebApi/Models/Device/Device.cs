@@ -3,7 +3,7 @@ namespace KerberoWebApi.Models
     public class Device
     {
         public DeviceVendorAccount VendorInfo {get; set;}
-        public string? Models {get; set;}
+        public string? Model {get; set;}
         public string? Image {get; set;}
         public string? Status {get; set;}
         public int UnlockNumbers {get; set;} = 0;
