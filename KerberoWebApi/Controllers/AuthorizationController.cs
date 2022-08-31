@@ -2,6 +2,7 @@
 using Clients;
 using Microsoft.AspNetCore.Mvc;
 
+// This controller provides endpoint to authenticate with the vendor API and pair with the Smartlock
 [ApiController]
 [Route("[controller]")]
 public class VendorAuthorizationController : ControllerBase
@@ -9,6 +10,11 @@ public class VendorAuthorizationController : ControllerBase
 
     private readonly ILogger<VendorAuthorizationController> _logger;
 
+    /// <summary>
+    /// Initialize controller logger
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <returns></returns>
     public VendorAuthorizationController(ILogger<VendorAuthorizationController> logger)
     {
         _logger = logger;
@@ -18,6 +24,8 @@ public class VendorAuthorizationController : ControllerBase
     /// Ask the authorization for the specific vendor client
     /// </summary>
     /// <param name="name"></param>
+    /// <param name="clientId"></param>
+    /// <param name="clientSecret"></param>
     /// <returns></returns>
     [HttpGet(Name = "AuthorizeApiCalls")]
     public async Task<bool> Get(string name, string clientId, string clientSecret)
@@ -40,16 +48,18 @@ public class VendorAuthorizationController : ControllerBase
     /// Callback method for nuki to receive the authentication code
     /// </summary>
     /// <param name="code"></param>
+    /// <param name="scope"></param>
+    /// <param name="state"></param>
     /// <returns></returns>
     [HttpGet("auth")]
     public async Task<RedirectResult> CallbackAuth(string code, string scope, string state)
     {
-        // code=iaQ1W3l8ixV5-Ch2BLDxce4q9HCouWEt09V_UVkanGU.4GF6FJQfzZMzOuKSQotB0SPI8Ra8JG86f_TZhEOdbSU
-        // scope=account+notification+smartlock+smartlock.readOnly+smartlock.action+smartlock.auth+smartlock.config+smartlock.log+offline_access
-        // state=s6XDF5Rtf3uqxFb4iACChkNkixsxsmaR
         string clientId = HttpContext.Session.GetString("clientId") ?? throw new BadHttpRequestException("No ClientId provided", 400);
         string clientSecret = HttpContext.Session.GetString("clientSecret") ?? throw new BadHttpRequestException("No ClientSecret provided", 400);
-        
+        // da istanziare il client di nuki o di un vendor generico
+        IVendorClient client = new NukiApiClient();
+        await client.RetrieveTokens(clientId, clientSecret, code);
+
         return new RedirectResult("http://localhost:5220/swagger/index.html");
     }
 }

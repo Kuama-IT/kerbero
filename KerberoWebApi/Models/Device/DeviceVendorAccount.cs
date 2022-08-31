@@ -1,5 +1,6 @@
 namespace KerberoWebApi.Models
 {
+    // DeviceVendorAccount derive from DeviceVendor class, add the information of an Host account
     public class DeviceVendorAccount: DeviceVendor
     {
         public string Token {get;}

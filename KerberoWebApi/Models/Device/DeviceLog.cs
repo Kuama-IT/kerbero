@@ -1,6 +1,7 @@
 namespace KerberoWebApi.Models
 {
-        public class DeviceLog
+    // DeviceLog represents a single entry of a log from the Smartlock
+    public class DeviceLog
     {
         public DateTime Date { get; set;}
         public string Type { get; set;}

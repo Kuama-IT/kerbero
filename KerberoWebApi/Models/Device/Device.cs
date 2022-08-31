@@ -1,5 +1,6 @@
 namespace KerberoWebApi.Models
 {
+    // A device is a logic entity which represents the physical smartlock
     public class Device
     {
         public DeviceVendorAccount VendorInfo {get; set;}

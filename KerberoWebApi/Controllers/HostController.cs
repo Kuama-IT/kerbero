@@ -3,9 +3,9 @@ using System.Text.Encodings.Web;
 
 namespace KerberoWebApi.Controllers
 {
+    // TODO: implement applcation authentication
     [ApiController]
     [Route("[controller]")]
-    [Produces("application/json")]
     public class HostController : Controller
     {
         [HttpGet]

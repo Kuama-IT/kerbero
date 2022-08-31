@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace KerberoWebApi.Utils
 {
+    // Custom Url Builder 
     public class UrlBuilder: UriBuilder
     {
+        // Return the URL as formatted string
         public string UrlBaseBuilder(string _baseUrl, string path, Dictionary<string, string?>? args = default)
         {
             Host = _baseUrl;

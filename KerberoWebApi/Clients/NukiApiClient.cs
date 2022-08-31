@@ -3,6 +3,8 @@ namespace Clients {
     using KerberoWebApi.Utils;
     using Microsoft.AspNetCore.WebUtilities;
     using System = global::System;
+
+    // Client for the Nuki Api
     public class NukiApiClient: Clients.IVendorClient
     {
         private string _baseUrl = "api.nuki.io";
@@ -12,8 +14,7 @@ namespace Clients {
         public NukiApiClient()
         {
             _httpClient = new HttpClient();
-            // Bearer 07fdd3f0d724f8c3b8afc2cd8bd5fa679f2c918949a711805f17984dc4957da0506ca839c61eb052
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "07fdd3f0d724f8c3b8afc2cd8bd5fa679f2c918949a711805f17984dc4957da0506ca839c61eb052");
+            // _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", ENV_BEARER);
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
@@ -54,7 +55,7 @@ namespace Clients {
 
         public virtual async Task<bool> AuthorizeApi(string clientSecret)
         {
-            var query = new Dictionary<string, string>();
+            var query = new Dictionary<string, string?>();
             query["response_type"] = "code";
             query["client_id"] = clientSecret;
             query["redirect_uri"] = "https://test.com:5220/VendorAuthorization/auth";

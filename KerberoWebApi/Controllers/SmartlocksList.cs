@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 namespace KerberoWebApi.Controllers;
 
+// This endpoint provides a list of smartlocks linked to the account
 [ApiController]
 [Route("[controller]")]
-[Produces("application/json")]
 public class SmartlocksList : ControllerBase
 {
 

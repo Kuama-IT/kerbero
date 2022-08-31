@@ -1,5 +1,6 @@
 namespace KerberoWebApi.Models
 {
+    // Derived from RentProvider, it represents an account for the rent provider service
     public class RentProviderAccount: RentProvider
     {
         public string Token {get; set;}

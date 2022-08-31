@@ -3,6 +3,7 @@ using System.Text;
 
 namespace KerberoWebApi.Models
 {
+    // A device key is a temporary key use to lock/unlock a device
     public class DeviceKey
     {
         public string Value { get; set;}
@@ -12,6 +13,7 @@ namespace KerberoWebApi.Models
         public DateTime SendingDate { get; set;}
         public Device Device { get; set;}
         public DeviceKey(DateTime initialDate, DateTime endDate, DateTime sendingDate, ref Device device) { Value = GenerateNewKeyValue(initialDate.ToString(), endDate.ToString(), device.VendorInfo.Name); InitialDate = initialDate; EndDate = endDate; SendingDate = sendingDate; Device = device;}
+        // temporary method to give an idea of the flow
         private string GenerateNewKeyValue(string info1, string info2, string info3)
         {
             Random rand = new Random();

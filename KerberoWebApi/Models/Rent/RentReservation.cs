@@ -1,5 +1,6 @@
 namespace KerberoWebApi.Models
 {
+    // A Reservation is downloaded from the Rent provider API and associated with a smartlock
     public class Reservation
     {
         public DateTime CheckInDate { get; set;}
