@@ -6,10 +6,10 @@ namespace KerberoWebApi.Utils
     // Custom Url Builder 
     public class UrlBuilder: UriBuilder
     {
+        public UrlBuilder(string _baseUrl): base(_baseUrl) {}
         // Return the URL as formatted string
-        public string UrlBaseBuilder(string _baseUrl, string path, Dictionary<string, string?>? args = default)
+        public string UrlBaseBuilder(string path, Dictionary<string, string?>? args = default)
         {
-            Host = _baseUrl;
             Path = path;
 
             if(args != null && args.Count != 0)

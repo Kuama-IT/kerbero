@@ -12,17 +12,19 @@ public class SmartlocksList : ControllerBase
 
     private readonly ILogger<SmartlocksList> _logger;
 
+    private readonly string token;
+
     public SmartlocksList(ILogger<SmartlocksList> logger)
     {
         _logger = logger;
-        var token = "dammiunserviziocheaccedealdb".getToken();
-        "ivendorservice<Nuki>".setToken(token);
+        // token = "dammiunserviziocheaccedealdb".getToken();
+        // "ivendorservice<Nuki>".setToken(token);
     }
 
     [HttpGet(Name = "GetSmartlocksList")]
     public async Task<dynamic> Get()
     {
-        "ivendorservice<nuki>".SmartlocksList();
+        // "ivendorservice<nuki>".SmartlocksList();
         var nuki = new NukiApiClientTryOne("asdasd");
         var res = await nuki.SmartlocksList();
         return res;

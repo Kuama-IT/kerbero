@@ -1,16 +1,15 @@
 // Basic interface for vendor api clients, used to communicate with vendor's Smart locks.
 namespace KerberoWebApi.Clients;
 
+/// <summary>
+/// Interface that should be implemented by all the new Client for a specific vendor.
+/// The common controller used that interface to perform the API client calls.
+/// </summary>
 public interface IVendorClient
 {
-  // public Task<bool> Authenticate(string secret);
-  // public Task<List<string>> RetrieveTokens(string clientId, string clientSecret, string code);
-
-  /// <summary>
-  /// Retrieves all the Smart locks of a specific vendor
-  /// </summary>
-  /// <returns></returns>
   public Task GetSmartLocks();
 
   public Task OpenSmartLock();
+
+  public Task CloseSmartLock();
 }

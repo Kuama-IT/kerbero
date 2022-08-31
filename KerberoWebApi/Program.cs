@@ -1,3 +1,4 @@
+using Flurl.Http;
 using KerberoWebApi.Clients.Nuki;
 using KerberoWebApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ var nukiOptions = new NukiVendorClientOptions(
   baseUrl: nukiConfigurationOptions.GetValue<string>("BaseUrl")
 );
 
-builder.Services.AddScoped(provider => new NukiVendorClient(nukiOptions));
+builder.Services.AddScoped(provider => new NukiClientAuthentication(nukiOptions));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

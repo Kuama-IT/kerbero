@@ -5,7 +5,7 @@ using KerberoWebApi.Utils;
 
 namespace KerberoWebApi.Clients.Nuki;
 
-public class NukiVendorClient : IVendorClient
+public class NukiClientAuthentication
 {
   /// <summary>
   /// Used to trigger the OAuth 2 flow against Nuki API
@@ -16,7 +16,7 @@ public class NukiVendorClient : IVendorClient
   private readonly NukiVendorClientOptions _options;
 
 
-  public NukiVendorClient(NukiVendorClientOptions options)
+  public NukiClientAuthentication(NukiVendorClientOptions options)
   {
     _options = options;
     _httpClient = new HttpClient();
@@ -27,45 +27,31 @@ public class NukiVendorClient : IVendorClient
     _clientId = value;
   }
 
-  public Task GetSmartLocks()
-  {
-    throw new NotImplementedException();
-  }
-
-  public Task OpenSmartLock()
-  {
-    throw new NotImplementedException();
-  }
-
-  #region OAuth 2
-
   /// <summary>
-  /// Triggers a new OAuth flow. Returns true if the flow is correctly started
+  /// Create the Uri for login Nuki Web page Redirection
   /// </summary>
   /// <returns></returns>
-  public async Task<bool> StartAuthFlow()
+  public Uri? StartAuthFlow()
   {
     try
     {
-      var result = await $"{_options.baseUrl}"
-        .AppendPathSegment("oauth")
-        .AppendPathSegment("authorize")
+      var redirect_uri_clientId = $"{_options.redirectUriForCode}".AppendPathSegment(_clientId);
+      return $"{_options.baseUrl}"
+        .AppendPathSegments("oauth", "authorize")
         .SetQueryParams(new
         {
           response_type = "code",
           client_id = _clientId,
-          redirect_uri = _options.redirectUriForCode,
+          redirect_uri = redirect_uri_clientId.ToString(),
           scope = _options.scopes,
         })
-        .GetAsync();
-
-      return result?.StatusCode == 200;
+        .ToUri();
     }
     catch (Exception e)
     {
       Console.WriteLine("\nException Caught!");
       Console.WriteLine("Message :{0} ", e.Message);
-      return false;
+      return null;
     }
   }
 
@@ -76,6 +62,7 @@ public class NukiVendorClient : IVendorClient
   /// <returns></returns>
   public virtual async Task<NukiGetTokenResponse> RetrieveTokens(string code)
   {
+    var redirect_uri_clientId = $"{_options.redirectUriForAuthToken}".AppendPathSegment(_clientId);
     return await $"{_options.baseUrl}"
       .AppendPathSegment("oauth")
       .AppendPathSegment("token")
@@ -85,10 +72,17 @@ public class NukiVendorClient : IVendorClient
         client_secret = _options.clientSecret,
         grant_type = "authorization_code",
         code = code,
-        redirect_uri = _options.redirectUriForAuthToken,
+        redirect_uri = redirect_uri_clientId,
       })
       .ReceiveJson<NukiGetTokenResponse>();
   }
 
-  #endregion
+  /// <summary>
+  /// For now it does nothing.
+  /// </summary>
+  /// <returns></returns>
+  public virtual void SuccessfulCallback()
+  {
+    throw new NotImplementedException("SuccessfulCallback");
+  }
 }

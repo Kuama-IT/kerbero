@@ -5,11 +5,11 @@ namespace KerberoWebApi.Clients.Nuki.Response;
 /// </summary>
 public class NukiGetTokenResponse
 {
-  public string AccessToken { get; set; }
+  public string? AccessToken { get; set; }
 
-  public string RefreshToken { get; set; }
+  public string? RefreshToken { get; set; }
 
-  public string TokenType { get; set; }
+  public string? TokenType { get; set; }
 
-  public string ExpiresIn { get; set; }
+  public string? ExpiresIn { get; set; }
 }
