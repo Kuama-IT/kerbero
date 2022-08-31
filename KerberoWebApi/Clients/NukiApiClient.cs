@@ -9,12 +9,16 @@ namespace Clients {
     {
         private string _baseUrl = "api.nuki.io";
         private System.Net.Http.HttpClient _httpClient;
-        // private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public NukiApiClient()
+        public NukiApiClient(string accessToken)
         {
             _httpClient = new HttpClient();
-            // _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", ENV_BEARER);
+            if(String.IsNullOrEmpty(accessToken))
+            {
+                throw new BadHttpRequestException("Access to Nuki API is not possible without authentication", 400);
+            }
+            else
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
