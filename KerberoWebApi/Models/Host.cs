@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using KerberoWebApi.Models.Device;
 
 namespace KerberoWebApi.Models
 {
