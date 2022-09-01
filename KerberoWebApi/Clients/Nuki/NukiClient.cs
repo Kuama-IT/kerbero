@@ -1,11 +1,15 @@
+using KerberoWebApi.Clients.Responses;
 namespace KerberoWebApi.Clients;
 
 public class NukiClient: IVendorClient
 {
 
-  public Task GetSmartLocks()
+  public async Task<SmartlockListResponses> GetSmartLocks()
   {
-    throw new NotImplementedException();
+    var list = new SmartlockListResponses();
+    // TODO arrange models to not be dependent on DeviceVendorAccount
+    list.Append(new Models.Device.Device(new Models.Device.DeviceVendorAccount()));
+    return list;
   }
 
   public Task OpenSmartLock()

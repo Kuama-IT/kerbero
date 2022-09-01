@@ -1,4 +1,6 @@
 // Basic interface for vendor api clients, used to communicate with vendor's Smart locks.
+using KerberoWebApi.Clients.Responses;
+
 namespace KerberoWebApi.Clients;
 
 /// <summary>
@@ -7,7 +9,7 @@ namespace KerberoWebApi.Clients;
 /// </summary>
 public interface IVendorClient
 {
-  public Task GetSmartLocks();
+  public Task<SmartlockListResponses> GetSmartLocks();
 
   public Task OpenSmartLock();
 

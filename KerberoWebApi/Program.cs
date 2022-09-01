@@ -1,52 +1,80 @@
-using Flurl.Http;
+using System.Data.Common;
 using KerberoWebApi.Clients.Nuki;
 using KerberoWebApi.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-
-// Add services to the container.
-
-// Main Domain where the app "will live"
-var mainDomain = builder.Configuration.GetValue<string>("MainDomain");
-
-// Load Nuki Options
-var nukiConfigurationOptions = builder.Configuration.GetSection("NukiOptions");
-// TODO throw if null
-
-var nukiOptions = new NukiVendorClientOptions(
-  clientSecret: nukiConfigurationOptions.GetValue<string>("ClientSecret"),
-  redirectUriForCode: nukiConfigurationOptions.GetValue<string>("RedirectUriForCode"),
-  redirectUriForAuthToken: nukiConfigurationOptions.GetValue<string>("RedirectUriForAuthToken"),
-  scopes: nukiConfigurationOptions.GetValue<string>("Scopes"),
-  baseUrl: nukiConfigurationOptions.GetValue<string>("BaseUrl")
-);
-
-builder.Services.AddScoped(provider => new NukiClientAuthentication(nukiOptions));
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
-// Needed for session
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
+internal class Program
 {
-  options.IdleTimeout = TimeSpan.FromSeconds(10);
-  options.Cookie.HttpOnly = true;
-  options.Cookie.IsEssential = true;
-});
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole();
 
-var app = builder.Build();
+        // Add services to the container.
 
-// We need to be on ssl in order to talk to Nuki Apis
-app.UseHttpsRedirection();
+        #region load parameter from settings
 
-app.UseSession();
+        // Main Domain where the app "will live" TODO usarlo
+        var mainDomain = builder.Configuration.GetValue<string>("MainDomain");
 
-// app.UseAuthorization();
-app.MapControllers();
+        #endregion
 
-app.Run();
+        // Load Nuki Options
+        var nukiConfigurationOptions = builder.Configuration.GetSection("NukiOptions")
+          ?? throw new SystemException("Unable to load Nuki Options from app settings");
+        // TODO throw if null
+
+        #region vendor clients options
+
+        var nukiOptions = new NukiVendorClientOptions(
+          clientSecret: nukiConfigurationOptions.GetValue<string>("ClientSecret"),
+          redirectUriForCode: nukiConfigurationOptions.GetValue<string>("RedirectUriForCode"),
+          redirectUriForAuthToken: nukiConfigurationOptions.GetValue<string>("RedirectUriForAuthToken"),
+          scopes: nukiConfigurationOptions.GetValue<string>("Scopes"),
+          baseUrl: nukiConfigurationOptions.GetValue<string>("BaseUrl")
+        );
+
+        #endregion
+
+        #region vendor authentication services
+        // add here the authentication services, but first see vendor clients options.
+
+        builder.Services.AddScoped(provider => new NukiClientAuthentication(nukiOptions));
+
+        #endregion
+
+        #region register db context
+
+        builder.Services.AddDbContext<DeviceVendorAccountContext>(opt =>
+          opt.UseSqlServer(GetDbConnectionString(ref builder)));
+
+        #endregion
+
+        builder.Services.AddControllers();
+        // builder.Services.AddEndpointsApiExplorer();
+
+        var app = builder.Build();
+
+        // We need to be on ssl in order to talk to Nuki Apis
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
+    
+    private static string GetDbConnectionString(ref WebApplicationBuilder builder)
+    {
+        var connectionString = new SqlConnectionStringBuilder();
+        connectionString["Server"] = builder.Configuration.GetValue<string>("Server");
+        connectionString["Database"] = builder.Configuration.GetValue<string>("DbName");
+        connectionString["User"] = builder.Configuration.GetValue<string>("User");
+        connectionString["Password"] = builder.Configuration.GetValue<string>("Password");
+        connectionString.TrustServerCertificate = true;
+        return connectionString.ToString();
+    }
+
+}

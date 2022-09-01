@@ -6,7 +6,7 @@ namespace KerberoWebApi.Controllers;
 
 // This endpoint provides a list of smartlocks linked to the account
 [ApiController]
-[Route("[controller]")]
+[Route("smartlock/list")]
 public class SmartlocksList : ControllerBase
 {
 
@@ -21,13 +21,13 @@ public class SmartlocksList : ControllerBase
         // "ivendorservice<Nuki>".setToken(token);
     }
 
-    [HttpGet(Name = "GetSmartlocksList")]
+    [HttpGet]
     public async Task<dynamic> Get()
     {
         // "ivendorservice<nuki>".SmartlocksList();
-        var nuki = new NukiApiClientTryOne("asdasd");
-        var res = await nuki.SmartlocksList();
-        return res;
+        var nuki = new NukiClient();
+        var res = await nuki.GetSmartLocks();
+        return JsonSerializer.Serialize(res.SmartlockList).ToString();
     }
 
 

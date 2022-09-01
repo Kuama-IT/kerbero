@@ -1,5 +1,8 @@
 using KerberoWebApi.Clients.Nuki;
+using KerberoWebApi.Models;
+using KerberoWebApi.Models.Device;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KerberoWebApi.Controllers;
 
@@ -11,8 +14,12 @@ public class NukiAuthController : ControllerBase
 
   private NukiClientAuthentication _nukiVendorClient;
 
-  public NukiAuthController(ILogger<NukiAuthController> logger, NukiClientAuthentication nukiVendorClient)
+  private readonly DeviceVendorAccountContext _context;
+
+
+  public NukiAuthController(ILogger<NukiAuthController> logger, NukiClientAuthentication nukiVendorClient,  DeviceVendorAccountContext context)
   {
+    _context = context;
     _logger = logger;
     _nukiVendorClient = nukiVendorClient;
   }
@@ -26,17 +33,30 @@ public class NukiAuthController : ControllerBase
   }
 
   [HttpGet("code/{clientId}")]
-  public async Task CodeCallback(string? code, string? clientId, string? error, string? error_description)
+  public async Task<ActionResult<DeviceVendorAccount>> CodeCallback(string? code, string? clientId, string? error, string? error_description)
   {
     if(!String.IsNullOrWhiteSpace(error))
       throw new BadHttpRequestException(error + error_description);
     _nukiVendorClient.SetClientId(clientId);
 
-    var response = await _nukiVendorClient.RetrieveTokens(code);
-    
-    _logger.LogDebug(response.AccessToken);
+    // test vendorAccount for DB
+    var vendorAccount = new DeviceVendorAccount() {
+      Token = code,
+      ApiKey = "dasdasd",
+      ClientId = clientId,
+      RefreshToken = "asdasda",
+      ClientSecret = "dasffdfa",
+      Name = "nuki",
+      Id = "NOTNULL"
+    };
+    _context.DeviceVendorAccountList.Add(vendorAccount);
+    await _context.SaveChangesAsync();
 
-    // "qualcosachepuòaccedereadb".saveToken();
+    // var response = await _nukiVendorClient.RetrieveTokens(code);
+
+    // "qualcosachepuòaccedereadb".saveToken(_context);
+
+    return CreatedAtAction(nameof(GetVendorAccountList), new { id = vendorAccount.Id }, vendorAccount);
   } 
   
   [HttpGet("token")]
@@ -44,5 +64,11 @@ public class NukiAuthController : ControllerBase
   {
     _nukiVendorClient.SuccessfulCallback();
     return null;
+  }
+
+  [HttpGet("list")]
+  public async Task<ActionResult<IEnumerable<DeviceVendorAccount>>> GetVendorAccountList()
+  {
+      return await _context.DeviceVendorAccountList.ToListAsync();
   }
 }
