@@ -1,4 +1,5 @@
 using KerberoWebApi.Clients.Nuki;
+using KerberoWebApi.Clients.Nuki.Response;
 using KerberoWebApi.Models;
 using KerberoWebApi.Models.Device;
 using Microsoft.AspNetCore.Mvc;
@@ -14,61 +15,85 @@ public class NukiAuthController : ControllerBase
 
   private NukiClientAuthentication _nukiVendorClient;
 
-  private readonly DeviceVendorAccountContext _context;
+  private readonly VendorAuthenticationContext _context;
 
-
-  public NukiAuthController(ILogger<NukiAuthController> logger, NukiClientAuthentication nukiVendorClient,  DeviceVendorAccountContext context)
+  public NukiAuthController(ILogger<NukiAuthController> logger, NukiClientAuthentication nukiVendorClient,  VendorAuthenticationContext context)
   {
     _context = context;
     _logger = logger;
     _nukiVendorClient = nukiVendorClient;
   }
+
+  /// <summary>
+  /// Start the Vendor authentication flow, creates a new entry on db to associate clientId and HostId
+  /// </summary>
+  /// <param name="clientId"></param>
+  /// <returns></returns>
   [HttpGet(Name = "start")]
-  public RedirectResult Get(string clientId)
+  public async Task<RedirectResult> Get(string clientId, string hostId)
   {
+    // TODO verify a valid request parameters
+    var vendorAccount = new DeviceVendorAccount() {
+      ClientId = clientId,
+      Name = "nuki",
+      HostId = hostId
+    };
+    _context.DeviceVendorAccountList.Add(vendorAccount);
+    await _context.SaveChangesAsync();
+
     _nukiVendorClient.SetClientId(clientId);
     var uri = _nukiVendorClient.StartAuthFlow();
     // the only way to redirect to the Nuki Web login page is returning from here a RedirectResult
     return uri == null ? throw new BadHttpRequestException("Not able to create a valid Uri for Nuki Web login") : Redirect(uri.ToString());
   }
 
+  /// <summary>
+  /// The callback from Nuki Web authentication, it returns a code and calls a get to finally retrieve the api token.
+  /// </summary>
+  /// <param name="code"></param>
+  /// <param name="clientId"></param>
+  /// <param name="error"></param>
+  /// <param name="error_description"></param>
+  /// <returns></returns>
   [HttpGet("code/{clientId}")]
-  public async Task<ActionResult<DeviceVendorAccount>> CodeCallback(string? code, string? clientId, string? error, string? error_description)
+  public async Task CodeCallback(string? code, string? clientId, string? error, string? error_description)
   {
-    if(!String.IsNullOrWhiteSpace(error))
-      throw new BadHttpRequestException(error + error_description);
-    _nukiVendorClient.SetClientId(clientId);
+    try
+    {
+      if(!String.IsNullOrWhiteSpace(error))
+        throw new BadHttpRequestException(error + error_description);
+      
+      _nukiVendorClient.SetClientId(clientId);
 
-    // test vendorAccount for DB
-    var vendorAccount = new DeviceVendorAccount() {
-      Token = code,
-      ApiKey = "dasdasd",
-      ClientId = clientId,
-      RefreshToken = "asdasda",
-      ClientSecret = "dasffdfa",
-      Name = "nuki",
-      Id = "NOTNULL"
-    };
-    _context.DeviceVendorAccountList.Add(vendorAccount);
-    await _context.SaveChangesAsync();
+      // TODO uncomment when obtain client Secret
+      var response = await _nukiVendorClient.RetrieveTokens(code);
 
-    // var response = await _nukiVendorClient.RetrieveTokens(code);
-
-    // "qualcosachepuòaccedereadb".saveToken(_context);
-
-    return CreatedAtAction(nameof(GetVendorAccountList), new { id = vendorAccount.Id }, vendorAccount);
+      // update the db entry with the tokens and data received
+      var vendorAccount = _context.DeviceVendorAccountList.FirstOrDefault(item => item.ClientId == clientId);
+      if(vendorAccount != null)
+      {
+        vendorAccount.ApiKey = response.AccessToken ?? "";
+        vendorAccount.RefreshToken = response.RefreshToken ?? "";
+        vendorAccount.Token = response.AccessToken ?? "";
+        await _context.SaveChangesAsync();
+      }
+      else
+        throw new Exception("Can not retrieve token API for the account");
+      return ;
+    }
+    catch(Exception e)
+    {
+      // clear invalid entries
+      IEnumerable<DeviceVendorAccount> dva = _context.DeviceVendorAccountList.Where(entity => entity.ApiKey == null);
+      _context.DeviceVendorAccountList.RemoveRange(dva);
+      throw new BadHttpRequestException(e.Message);
+    }
   } 
   
   [HttpGet("token")]
-  public Task<Object?> TokenCallback(string code)
+  public async Task TokenCallback(string code)
   {
     _nukiVendorClient.SuccessfulCallback();
-    return null;
-  }
-
-  [HttpGet("list")]
-  public async Task<ActionResult<IEnumerable<DeviceVendorAccount>>> GetVendorAccountList()
-  {
-      return await _context.DeviceVendorAccountList.ToListAsync();
+    return ;
   }
 }

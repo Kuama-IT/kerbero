@@ -12,8 +12,18 @@ internal class Program
         builder.Logging.ClearProviders();
         builder.Logging.AddConsole();
 
-        // Add services to the container.
 
+        #region register db context
+
+        var connectionString = GetDbConnectionString(ref builder);
+        builder.Services.AddDbContext<VendorAuthenticationContext>(opt =>
+          opt.UseSqlServer(connectionString));        
+        builder.Services.AddDbContext<HostAuthenticationContext>(opt =>
+          opt.UseSqlServer(connectionString));
+
+        #endregion
+
+        // Add services to the container.
         #region load parameter from settings
 
         // Main Domain where the app "will live" TODO usarlo
@@ -29,6 +39,7 @@ internal class Program
         #region vendor clients options
 
         var nukiOptions = new NukiVendorClientOptions(
+          // To uncomment after getting the secret
           clientSecret: nukiConfigurationOptions.GetValue<string>("ClientSecret"),
           redirectUriForCode: nukiConfigurationOptions.GetValue<string>("RedirectUriForCode"),
           redirectUriForAuthToken: nukiConfigurationOptions.GetValue<string>("RedirectUriForAuthToken"),
@@ -41,14 +52,7 @@ internal class Program
         #region vendor authentication services
         // add here the authentication services, but first see vendor clients options.
 
-        builder.Services.AddScoped(provider => new NukiClientAuthentication(nukiOptions));
-
-        #endregion
-
-        #region register db context
-
-        builder.Services.AddDbContext<DeviceVendorAccountContext>(opt =>
-          opt.UseSqlServer(GetDbConnectionString(ref builder)));
+        builder.Services.AddScoped<NukiClientAuthentication>(provider => new NukiClientAuthentication(nukiOptions));
 
         #endregion
 
@@ -68,11 +72,12 @@ internal class Program
     
     private static string GetDbConnectionString(ref WebApplicationBuilder builder)
     {
+        var dbSettings = builder.Configuration.GetSection("DbSettings");
         var connectionString = new SqlConnectionStringBuilder();
-        connectionString["Server"] = builder.Configuration.GetValue<string>("Server");
-        connectionString["Database"] = builder.Configuration.GetValue<string>("DbName");
-        connectionString["User"] = builder.Configuration.GetValue<string>("User");
-        connectionString["Password"] = builder.Configuration.GetValue<string>("Password");
+        connectionString["Server"] = dbSettings.GetValue<string>("Server");
+        connectionString["Database"] = dbSettings.GetValue<string>("DbName");
+        connectionString["User"] = dbSettings.GetValue<string>("User");
+        connectionString["Password"] = dbSettings.GetValue<string>("Password");
         connectionString.TrustServerCertificate = true;
         return connectionString.ToString();
     }

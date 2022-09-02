@@ -8,7 +8,7 @@ public class NukiClient: IVendorClient
   {
     var list = new SmartlockListResponses();
     // TODO arrange models to not be dependent on DeviceVendorAccount
-    list.Append(new Models.Device.Device(new Models.Device.DeviceVendorAccount()));
+    list.Append(new Models.Device.Device());
     return list;
   }
 

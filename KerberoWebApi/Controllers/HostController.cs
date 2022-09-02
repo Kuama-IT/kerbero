@@ -1,25 +1,48 @@
+using KerberoWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Encodings.Web;
 
 namespace KerberoWebApi.Controllers
 {
-    // TODO: implement applcation authentication
+    // TODO: implement application authentication
     [ApiController]
-    [Route("[controller]")]
+    [Route("host")]
     public class HostController : Controller
     {
-        [HttpGet]
-        public bool IsAuthenticated()
+        private readonly HostAuthenticationContext _context;
+        public HostController(HostAuthenticationContext context)
         {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Register a generic user to db.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        [HttpPost("register")]
+        public async Task<bool> SignUp(Models.Host host)
+        {       
+            _context.HostList.Add(host);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        
+        /// <summary>
+        /// It returns the list of vendor accounts the host own.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        [HttpGet("vendor")]
+        public async Task<bool> GetVendor(Models.Host host)
+        {       
             return true;
         }
 
-
-        [HttpPost]
-        [Route("auth")]
-        public string Login()
-        {
-            return "This is the Welcome action method...";
+        [HttpPost("vendor/add")]
+        public async Task<bool> AddVendor(Models.Host host)
+        {       
+            return true;
         }
     }
 }
