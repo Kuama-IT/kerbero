@@ -15,9 +15,9 @@ public class NukiAuthController : ControllerBase
 
   private NukiClientAuthentication _nukiVendorClient;
 
-  private readonly VendorAuthenticationContext _context;
+  private readonly ApplicationContext _context;
 
-  public NukiAuthController(ILogger<NukiAuthController> logger, NukiClientAuthentication nukiVendorClient,  VendorAuthenticationContext context)
+  public NukiAuthController(ILogger<NukiAuthController> logger, NukiClientAuthentication nukiVendorClient,  ApplicationContext context)
   {
     _context = context;
     _logger = logger;
@@ -30,13 +30,19 @@ public class NukiAuthController : ControllerBase
   /// <param name="clientId"></param>
   /// <returns></returns>
   [HttpGet(Name = "start")]
-  public async Task<RedirectResult> Get(string clientId, string hostId)
+  public async Task<RedirectResult> Get(string clientId, int hostId)
   {
     // TODO verify a valid request parameters
+    var host = _context.HostList.FirstOrDefault(host => host.Id == hostId);
+    var deviceVendor = _context.DeviceVendorType.FirstOrDefault(vendor => vendor.Name == "nuki");
+    if (host == null || deviceVendor == null)
+    {
+      throw new BadHttpRequestException("The hostId provided is not registered");
+    }
     var vendorAccount = new DeviceVendorAccount() {
       ClientId = clientId,
-      Name = "nuki",
-      HostId = hostId
+      Host = host,
+      DeviceVendor = deviceVendor     
     };
     _context.DeviceVendorAccountList.Add(vendorAccount);
     await _context.SaveChangesAsync();
@@ -91,9 +97,9 @@ public class NukiAuthController : ControllerBase
   } 
   
   [HttpGet("token")]
-  public async Task TokenCallback(string code)
+  public string TokenCallback(string code)
   {
     _nukiVendorClient.SuccessfulCallback();
-    return ;
+    return "Success!";
   }
 }

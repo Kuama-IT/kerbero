@@ -1,4 +1,5 @@
 using System.Data.Common;
+using KerberoWebApi.Clients;
 using KerberoWebApi.Clients.Nuki;
 using KerberoWebApi.Models;
 using Microsoft.Data.SqlClient;
@@ -16,10 +17,8 @@ internal class Program
         #region register db context
 
         var connectionString = GetDbConnectionString(ref builder);
-        builder.Services.AddDbContext<VendorAuthenticationContext>(opt =>
+        builder.Services.AddDbContext<ApplicationContext>(opt =>
           opt.UseSqlServer(connectionString));        
-        builder.Services.AddDbContext<HostAuthenticationContext>(opt =>
-          opt.UseSqlServer(connectionString));
 
         #endregion
 
@@ -31,12 +30,11 @@ internal class Program
 
         #endregion
 
+        #region vendor clients options
+
         // Load Nuki Options
         var nukiConfigurationOptions = builder.Configuration.GetSection("NukiOptions")
           ?? throw new SystemException("Unable to load Nuki Options from app settings");
-        // TODO throw if null
-
-        #region vendor clients options
 
         var nukiOptions = new NukiVendorClientOptions(
           // To uncomment after getting the secret
@@ -50,9 +48,13 @@ internal class Program
         #endregion
 
         #region vendor authentication services
-        // add here the authentication services, but first see vendor clients options.
-
+        // add here the authentication services, but first you must check vendor clients options.
+        // authentication services
         builder.Services.AddScoped<NukiClientAuthentication>(provider => new NukiClientAuthentication(nukiOptions));
+
+        // client implementations
+        // binding the interface IVendorClient to the client implementation should create the list of client for each controller
+        builder.Services.AddScoped<IVendorClient, NukiClient>(provider => new NukiClient(nukiOptions));
 
         #endregion
 

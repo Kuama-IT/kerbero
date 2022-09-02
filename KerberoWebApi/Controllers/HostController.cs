@@ -8,8 +8,8 @@ namespace KerberoWebApi.Controllers
     [Route("host")]
     public class HostController : Controller
     {
-        private readonly HostAuthenticationContext _context;
-        public HostController(HostAuthenticationContext context)
+        private readonly ApplicationContext _context;
+        public HostController(ApplicationContext context)
         {
             _context = context;
         }
@@ -34,15 +34,15 @@ namespace KerberoWebApi.Controllers
         /// <param name="host"></param>
         /// <returns></returns>
         [HttpGet("vendor")]
-        public async Task<bool> GetVendor(Models.Host host)
+        public Task GetVendor(Models.Host host)
         {       
-            return true;
+            throw new NotImplementedException();
         }
 
         [HttpPost("vendor/add")]
-        public async Task<bool> AddVendor(Models.Host host)
+        public Task AddVendor(Models.Host host)
         {       
-            return true;
+            throw new NotImplementedException();
         }
     }
 }

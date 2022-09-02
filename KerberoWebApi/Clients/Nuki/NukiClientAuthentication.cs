@@ -1,8 +1,6 @@
 using Flurl;
 using Flurl.Http;
 using KerberoWebApi.Clients.Nuki.Response;
-using KerberoWebApi.Models;
-using KerberoWebApi.Utils;
 
 namespace KerberoWebApi.Clients.Nuki;
 

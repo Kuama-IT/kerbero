@@ -13,5 +13,7 @@ namespace KerberoWebApi.Models
         public string? Icon { get; set; }
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
+
+        public List<DeviceVendorAccount>? DeviceVendorAccounts { get; set; }
     }
 }
