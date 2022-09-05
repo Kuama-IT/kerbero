@@ -1,4 +1,5 @@
 using System.Data.Common;
+using System.Text.Json.Serialization;
 using KerberoWebApi.Clients;
 using KerberoWebApi.Clients.Nuki;
 using KerberoWebApi.Models;
@@ -58,7 +59,8 @@ internal class Program
 
         #endregion
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers().AddJsonOptions(x =>
+	        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);;
         // builder.Services.AddEndpointsApiExplorer();
 
         var app = builder.Build();

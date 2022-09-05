@@ -6,6 +6,6 @@ public class Reservation
   public DateTime CheckOutDate { get; set;}
   public List<string> GuestsEmails { get; set;}
   public List<string>? StructureInfos { get; set;}
-  public Device.Device AssociatedDevice { get; } // da eliminare il riferimento se non necessario
-  public Reservation(DateTime checkin, DateTime checkout, string[] emails, ref Device.Device device) { CheckInDate = checkin; CheckOutDate = checkout; GuestsEmails = emails.ToList<string>(); AssociatedDevice = device; }
+  public Device.DeviceSmartLock AssociatedDevice { get; } // da eliminare il riferimento se non necessario
+  public Reservation(DateTime checkin, DateTime checkout, string[] emails, ref Device.DeviceSmartLock device) { CheckInDate = checkin; CheckOutDate = checkout; GuestsEmails = emails.ToList<string>(); AssociatedDevice = device; }
 }

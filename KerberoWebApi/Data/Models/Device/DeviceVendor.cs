@@ -8,4 +8,7 @@ public class DeviceVendor
     public int Id { get; set;}
     public string Name { get; set;} = null!;
     public string? Logo { get; set;}
+    
+    // foreign keys
+    public List<DeviceVendorAccount>? DeviceVendorAccount { get; set; }
 }

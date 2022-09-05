@@ -1,5 +1,8 @@
 // Basic interface for vendor api clients, used to communicate with vendor's Smart locks.
-using KerberoWebApi.Clients.IResponse;
+
+using KerberoWebApi.Clients.Requests;
+using KerberoWebApi.Clients.Responses;
+using KerberoWebApi.Models.Device;
 
 namespace KerberoWebApi.Clients;
 
@@ -15,7 +18,11 @@ public interface IVendorClient
 
   public Task<List<ISmartLockResponse>> GetSmartLocks();
 
-  public Task OpenSmartLock();
+  public Task<bool> OpenSmartLock(int smartLockVendorSmartlockId);
 
-  public Task CloseSmartLock();
+  public Task<bool> CloseSmartLock(int smartLockVendorSmartlockId);
+    
+  public DeviceSmartLock MapSmartLockDeviceRequest(SmartLockRequest request, DeviceVendorAccount accountId);
+  public DeviceSmartLock MapSmartLockDeviceResponse(ISmartLockResponse res, DeviceVendorAccount account);
+  public Task<ISmartLockResponse> GetSmartLock(int deviceVendorSmartlockId);
 }

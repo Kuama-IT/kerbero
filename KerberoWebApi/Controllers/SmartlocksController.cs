@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using KerberoWebApi.Clients;
+using KerberoWebApi.Clients.Responses;
 using KerberoWebApi.Models;
-using KerberoWebApi.Clients.IResponse;
-using KerberoWebApi.Models.Device;
 
 namespace KerberoWebApi.Controllers;
 
@@ -11,14 +10,14 @@ namespace KerberoWebApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("smartlocks")]
-public class Smartlocks : ControllerBase
+public class SmartLocks : ControllerBase
 {
 
-    private readonly ILogger<Smartlocks> _logger;
+    private readonly ILogger<SmartLocks> _logger;
     private readonly ApplicationContext _context;
     private readonly IEnumerable<IVendorClient> _clients;
 
-    public Smartlocks(IEnumerable<IVendorClient> clients, ILogger<Smartlocks> logger, ApplicationContext context)
+    public SmartLocks(IEnumerable<IVendorClient> clients, ILogger<SmartLocks> logger, ApplicationContext context)
     {
         _clients = clients;
         _logger = logger;
@@ -28,14 +27,15 @@ public class Smartlocks : ControllerBase
     /// <summary>
     /// It returns a list of smartlock for each vendor
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="vendorName"></param>
+    /// <param name="hostId"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<List<ISmartLockResponse>> GetSmartlocksList(int hostId, int[]? smartLockId, string? vendorName)
+    public async Task<List<ISmartLockResponse>> GetSmartLocksList(int hostId, string? vendorName)
     {
         // verify the account host id and download the vendor accounts
         var deviceSubscriptions = _context.DeviceVendorAccountList
-        .Where(vendorAccount => vendorAccount.HostId == hostId && (!String.IsNullOrWhiteSpace(vendorName) || vendorName == vendorAccount.DeviceVendor.Name))
+        .Where(vendorAccount => vendorAccount.HostId == hostId && (String.IsNullOrWhiteSpace(vendorName) || vendorName == vendorAccount.DeviceVendor.Name))
         ?.Select(vendorAccounts => new Tuple<string,string>(vendorAccounts.DeviceVendor.Name, vendorAccounts.Token ?? "")) 
             ?? throw new BadHttpRequestException("This hostId does not exists, or no device vendor accounts are associated to it");
         // assumption: an host owns only a vendor account type

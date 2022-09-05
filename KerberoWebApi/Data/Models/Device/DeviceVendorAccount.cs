@@ -12,6 +12,8 @@ public class DeviceVendorAccount
   public string ClientId { get; set; } = null!;
   // TODO verify it is necessary, or the same of token 
   public string? ApiKey { get; set; }
+  
+  public List<DeviceSmartLock>? DeviceSmartLocks { get; set; }
 
   // Db Foreign keys
   public int HostId { get; set; }

@@ -1,21 +1,22 @@
-using KerberoWebApi.Clients.IResponse;
+using KerberoWebApi.Clients.Responses;
 
-namespace KerberoWebApi.Clients.Nuki.Response;
+namespace KerberoWebApi.Clients.Nuki.Responses;
 
 public class NukiSmartLockResponse: ISmartLockResponse
 {
+    public int smartlockId { get; set; }
     public int accountId { get; set; }
     public int type { get; set; }
     public int lmType { get; set; }
     public int authId { get; set; }
     public string name { get; set; } = null!;
+    public ISmartLockResponse.State state { get; set; }
     public bool favorite { get; set; }
     public Config config { get; set; } = null!;
     public AdvancedConfig advancedConfig { get; set; } = null!;
     public OpenerAdvancedConfig openerAdvancedConfig { get; set; } = null!;
     public SmartdoorAdvancedConfig smartdoorAdvancedConfig { get; set; } = null!;
     public WebConfig webConfig { get; set; } = null!;
-    public State state { get; set; } = null!;
     public int firmwareVersion { get; set; }
     public int hardwareVersion { get; set; }
     public string operationId { get; set; } = null!;
@@ -120,24 +121,6 @@ public class NukiSmartLockResponse: ISmartLockResponse
         public bool autoLock { get; set; }
     }
 
-    public class State
-    {
-        public int mode { get; set; }
-        public int state { get; set; }
-        public int trigger { get; set; }
-        public int lastAction { get; set; }
-        public bool batteryCritical { get; set; }
-        public bool batteryCharging { get; set; }
-        public int batteryCharge { get; set; }
-        public bool keypadBatteryCritical { get; set; }
-        public bool doorsensorBatteryCritical { get; set; }
-        public int doorState { get; set; }
-        public int ringToOpenTimer { get; set; }
-        public DateTime ringToOpenEnd { get; set; }
-        public bool nightMode { get; set; }
-        public string operationId { get; set; } = null!;
-    }
-
     public class Subscription
     {
         public string type { get; set; } = null!;
@@ -152,4 +135,29 @@ public class NukiSmartLockResponse: ISmartLockResponse
         public List<int> dismissedLiftUpHandleWarning { get; set; } = null!;
     }
 
+    public enum SmartLockState
+    {
+        Uncalibrated = 0,
+        Locked = 1,
+        Unlocking = 2,
+        Unlocked = 3, 
+        Locking = 4,
+        Unlatched = 5,
+        LockNGo = 6, 
+        Unlatching = 7,
+        MotorBlocked = 254,
+        Undefined = 255
+    }
+    
+    public enum LastAction
+    {
+        System, 
+        Manual,
+        Button,
+        Automatic,
+        Web,
+        App,
+        ContinuousMode,
+        Accessory
+    }
 }

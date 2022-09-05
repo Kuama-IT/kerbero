@@ -1,6 +1,7 @@
 using KerberoWebApi.Models.Device;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace KerberoWebApi.Models
 {
@@ -12,11 +13,21 @@ namespace KerberoWebApi.Models
             : base(options)
         { }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .Entity<DeviceVendor>()
+                .HasData(new DeviceVendor { Id = 1, Name = "nuki", Logo = " " });
+        }
+        
         // from On... it is possible to add property to the tables
 
         // Here it is possible to add the table related to the authentication
         public DbSet<Host> HostList { get; set; } = null!;
         public DbSet<DeviceVendorAccount> DeviceVendorAccountList { get; set; } = null!;
         public DbSet<DeviceVendor> DeviceVendorType { get; set; } = null!;
+        public DbSet<DeviceSmartLock> DeviceList { get; set; } = null!;
+        public DbSet<DeviceLog> DeviceLogList { get; set; } = null!;
+        public DbSet<DeviceKey> DeviceKeyList { get; set; } = null!;
     }
 }
