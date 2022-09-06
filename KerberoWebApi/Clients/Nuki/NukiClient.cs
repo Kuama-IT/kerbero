@@ -31,7 +31,7 @@ public class NukiClient: IVendorClient
     List<NukiSmartLockResponse> responseList = new List<NukiSmartLockResponse>();
     if(!String.IsNullOrWhiteSpace(bearerToken))
     {
-        string? response = await $"{_options.baseUrl}"
+        string? response = await $"{_options.BaseUrl}"
                 .AppendPathSegments("smartlock")
                 .WithOAuthBearerToken(bearerToken)
                 .GetStringAsync();
@@ -46,7 +46,7 @@ public class NukiClient: IVendorClient
     NukiSmartLockResponse response= new NukiSmartLockResponse();
     if(!String.IsNullOrWhiteSpace(bearerToken))
     {
-      string? apiResponse = await $"{_options.baseUrl}"
+      string? apiResponse = await $"{_options.BaseUrl}"
         .AppendPathSegments("smartlock", smartLockId.ToString())
         .WithOAuthBearerToken(bearerToken)
         .GetStringAsync();
@@ -83,7 +83,7 @@ public class NukiClient: IVendorClient
     bool response = false;
     if(!String.IsNullOrWhiteSpace(bearerToken))
     {
-      var apiResponse = await $"{_options.baseUrl}"
+      var apiResponse = await $"{_options.BaseUrl}"
         .AppendPathSegments("smartlock", smartLockId.ToString(), "action", "unlock")
         .WithOAuthBearerToken(bearerToken)
         .PostAsync();
@@ -98,7 +98,7 @@ public class NukiClient: IVendorClient
     bool response = false;
     if(!String.IsNullOrWhiteSpace(bearerToken))
     {
-      var apiResponse = await $"{_options.baseUrl}"
+      var apiResponse = await $"{_options.BaseUrl}"
         .AppendPathSegments("smartlock", smartLockId.ToString(), "action", "lock")
         .WithOAuthBearerToken(bearerToken)
         .PostAsync();

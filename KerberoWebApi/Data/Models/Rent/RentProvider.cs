@@ -1,8 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace KerberoWebApi.Models.Rent;
 // RentProvider contains the information of a Rent provider service
-public abstract class RentProvider
+public class RentProvider
 {
-  public string Name { get; }
+  [Key]
+  public int Id { get; set;}
+  public string Name { get; set;} = null!;
   public string? Logo { get; set;}
-  public RentProvider(string name) { Name = name;}
+    
+  // foreign keys
+  public List<RentProviderAccount>? DeviceVendorAccounts { get; set; }
 }

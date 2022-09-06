@@ -10,8 +10,6 @@ public class DeviceVendorAccount
   public string? Token { get; set; }
   public string? RefreshToken { get; set; }
   public string ClientId { get; set; } = null!;
-  // TODO verify it is necessary, or the same of token 
-  public string? ApiKey { get; set; }
   
   public List<DeviceSmartLock>? DeviceSmartLocks { get; set; }
 

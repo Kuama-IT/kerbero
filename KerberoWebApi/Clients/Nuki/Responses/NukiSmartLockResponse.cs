@@ -10,7 +10,7 @@ public class NukiSmartLockResponse: ISmartLockResponse
     public int lmType { get; set; }
     public int authId { get; set; }
     public string name { get; set; } = null!;
-    public ISmartLockResponse.State state { get; set; }
+    public ISmartLockResponse.State? state { get; set; }
     public bool favorite { get; set; }
     public Config config { get; set; } = null!;
     public AdvancedConfig advancedConfig { get; set; } = null!;

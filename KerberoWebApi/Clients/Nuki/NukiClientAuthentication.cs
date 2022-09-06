@@ -33,15 +33,17 @@ public class NukiClientAuthentication
     {
         try
         {
-            var redirect_uri_clientId = $"{_options.redirectUriForCode}".AppendPathSegment(_clientId);
-            return $"{_options.baseUrl}"
+            var redirectUriClientId = $"{_options.MainDomain}"
+                .AppendPathSegment(_options.RedirectUriForCode)
+                .AppendPathSegment(_clientId);
+            return $"{_options.BaseUrl}"
               .AppendPathSegments("oauth", "authorize")
               .SetQueryParams(new
               {
                   response_type = "code",
                   client_id = _clientId,
-                  redirect_uri = redirect_uri_clientId.ToString(),
-                  scope = _options.scopes,
+                  redirect_uri = redirectUriClientId.ToString(),
+                  scope = _options.Scopes,
               })
               .ToUri();
         }
@@ -63,7 +65,9 @@ public class NukiClientAuthentication
       if(code != null)
       {
          // uncomment when retrieve the clientsecret
-        var redirect_uri_clientId = $"{_options.redirectUriForAuthToken}".AppendPathSegment(_clientId);
+         var redirectUriClientId = $"{_options.MainDomain}"
+             .AppendPathSegment(_options.RedirectUriForCode)
+             .AppendPathSegment(_clientId);
         // return await $"{_options.baseUrl}"
         //   .AppendPathSegment("oauth")
         //   .AppendPathSegment("token")
@@ -79,7 +83,7 @@ public class NukiClientAuthentication
         // test data
         return new NukiGetTokenResponse()
         {
-            AccessToken = _options.clientSecret,
+            AccessToken = _options.ClientSecret,
             ExpiresIn = "",
             RefreshToken = "",
             TokenType = "Bearer"

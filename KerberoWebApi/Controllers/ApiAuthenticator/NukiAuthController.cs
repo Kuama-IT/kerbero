@@ -28,6 +28,7 @@ public class NukiAuthController : ControllerBase
   /// Start the Vendor authentication flow, creates a new entry on db to associate clientId and HostId
   /// </summary>
   /// <param name="clientId"></param>
+  /// <param name="hostId"></param>
   /// <returns></returns>
   [HttpGet(Name = "start")]
   public async Task<RedirectResult> Get(string clientId, int hostId)
@@ -78,7 +79,6 @@ public class NukiAuthController : ControllerBase
       var vendorAccount = _context.DeviceVendorAccountList.FirstOrDefault(item => item.ClientId == clientId);
       if(vendorAccount != null)
       {
-        vendorAccount.ApiKey = response.AccessToken ?? "";
         vendorAccount.RefreshToken = response.RefreshToken ?? "";
         vendorAccount.Token = response.AccessToken ?? "";
         await _context.SaveChangesAsync();
@@ -90,7 +90,7 @@ public class NukiAuthController : ControllerBase
     catch(Exception e)
     {
       // clear invalid entries
-      IEnumerable<DeviceVendorAccount> dva = _context.DeviceVendorAccountList.Where(entity => entity.ApiKey == null);
+      IEnumerable<DeviceVendorAccount> dva = _context.DeviceVendorAccountList.Where(entity => entity.Token == null);
       _context.DeviceVendorAccountList.RemoveRange(dva);
       throw new BadHttpRequestException(e.Message);
     }

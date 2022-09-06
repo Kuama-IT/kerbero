@@ -10,18 +10,17 @@ public class DeviceKey
   [Key]
   public string Value { get; set; } = null!;
   public DateTime InitialDate { get; set; }
-  public DateTime EndDate { get; set; }
+  public DateTime? EndDate { get; set; }
   public string? GuestsEmails { get; set; } // email divided by ;
   public DateTime SendingDate { get; set; }
   public KeyStatus state { get; set; } = 0;
+  // foreign key
+  public int DeviceSmartLockId { get; set; } 
+  public DeviceSmartLock DeviceSmartLock { get; set; } = null!;
   public enum KeyStatus
   {
     Active,
     Disabled,
     Expired
   }
-  
-  // foreign key
-  public int DeviceSmartLockId { get; set; } 
-  public DeviceSmartLock DeviceSmartLock { get; set; } = null!;
 }

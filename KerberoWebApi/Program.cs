@@ -23,14 +23,6 @@ internal class Program
 
         #endregion
 
-        // Add services to the container.
-        #region load parameter from settings
-
-        // Main Domain where the app "will live" TODO usarlo
-        var mainDomain = builder.Configuration.GetValue<string>("MainDomain");
-
-        #endregion
-
         #region vendor clients options
 
         // Load Nuki Options
@@ -39,6 +31,7 @@ internal class Program
 
         var nukiOptions = new NukiVendorClientOptions(
           // To uncomment after getting the secret
+          mainDomain: nukiConfigurationOptions.GetValue<string>("MainDomain"),
           clientSecret: nukiConfigurationOptions.GetValue<string>("ClientSecret"),
           redirectUriForCode: nukiConfigurationOptions.GetValue<string>("RedirectUriForCode"),
           redirectUriForAuthToken: nukiConfigurationOptions.GetValue<string>("RedirectUriForAuthToken"),
@@ -51,17 +44,17 @@ internal class Program
         #region vendor authentication services
         // add here the authentication services, but first you must check vendor clients options.
         // authentication services
-        builder.Services.AddScoped<NukiClientAuthentication>(provider => new NukiClientAuthentication(nukiOptions));
+        builder.Services.AddScoped( _ => new NukiClientAuthentication(nukiOptions));
 
         // client implementations
         // binding the interface IVendorClient to the client implementation should create the list of client for each controller
-        builder.Services.AddScoped<IVendorClient, NukiClient>(provider => new NukiClient(nukiOptions));
+        builder.Services.AddScoped<IVendorClient, NukiClient>( _ => new NukiClient(nukiOptions));
 
         #endregion
 
         builder.Services.AddControllers().AddJsonOptions(x =>
-	        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);;
-        // builder.Services.AddEndpointsApiExplorer();
+	        // option that ignore nested class cycle when returning an HttpResponse from controller
+	        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles); 
 
         var app = builder.Build();
 
@@ -74,15 +67,22 @@ internal class Program
         app.Run();
     }
     
+    /// <summary>
+    /// Build the connection string for the application DB
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
     private static string GetDbConnectionString(ref WebApplicationBuilder builder)
     {
         var dbSettings = builder.Configuration.GetSection("DbSettings");
-        var connectionString = new SqlConnectionStringBuilder();
-        connectionString["Server"] = dbSettings.GetValue<string>("Server");
-        connectionString["Database"] = dbSettings.GetValue<string>("DbName");
-        connectionString["User"] = dbSettings.GetValue<string>("User");
-        connectionString["Password"] = dbSettings.GetValue<string>("Password");
-        connectionString.TrustServerCertificate = true;
+        var connectionString = new SqlConnectionStringBuilder
+        {
+	        ["Server"] = dbSettings.GetValue<string>("Server"),
+	        ["Database"] = dbSettings.GetValue<string>("DbName"),
+	        ["User"] = dbSettings.GetValue<string>("User"),
+	        ["Password"] = dbSettings.GetValue<string>("Password"),
+	        TrustServerCertificate = true
+        };
         return connectionString.ToString();
     }
 

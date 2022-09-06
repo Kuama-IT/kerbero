@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KerberoWebApi.Models.Device;
 
-// A device is a logic entity which represents the physical smartlock
+
+/// A device is a logic entity which represents the physical smartlock
 public class DeviceSmartLock
 {
   [Key]
@@ -20,9 +21,7 @@ public class DeviceSmartLock
   
   public List<DeviceLog>? DeviceLogs { get; set; }
 
-  public List<Reservation> UpcomingReservations { get; set; } = null!;
-  public Reservation CurrentReservation { get; set; } = null!;
-  public List<Reservation> ExpiredReservations { get; set; } = null!;
+  public List<Reservation>? Reservations { get; set; } = null!;
 
   // foreign keys
   public int DeviceVendorAccountId { get; set; }
