@@ -21,11 +21,4 @@
         <ProjectReference Include="..\Application\Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Common" />
-      <Folder Include="Identity" />
-      <Folder Include="Persistence" />
-      <Folder Include="Services" />
-    </ItemGroup>
-
 </Project>
