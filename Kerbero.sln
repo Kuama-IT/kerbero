@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46450A48-0B54-40BE-9E69-8F13B37EF3B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.WebApi", "src\Kerbero.WebApi\Kerbero.WebApi.csproj", "{A77A7031-2EC8-4069-B9EE-09057ED87880}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C612E6FE-76C3-4A5E-9F2F-DA6BC150E6D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.WebApiTests", "tests\Kerbero.WebApiTests\Kerbero.WebApiTests.csproj", "{5F4D23E2-D3DA-4672-98D5-66DD130E55AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A77A7031-2EC8-4069-B9EE-09057ED87880}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A77A7031-2EC8-4069-B9EE-09057ED87880}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A77A7031-2EC8-4069-B9EE-09057ED87880}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A77A7031-2EC8-4069-B9EE-09057ED87880}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F4D23E2-D3DA-4672-98D5-66DD130E55AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F4D23E2-D3DA-4672-98D5-66DD130E55AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F4D23E2-D3DA-4672-98D5-66DD130E55AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F4D23E2-D3DA-4672-98D5-66DD130E55AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A77A7031-2EC8-4069-B9EE-09057ED87880} = {46450A48-0B54-40BE-9E69-8F13B37EF3B7}
+		{5F4D23E2-D3DA-4672-98D5-66DD130E55AF} = {C612E6FE-76C3-4A5E-9F2F-DA6BC150E6D8}
+	EndGlobalSection
+EndGlobal

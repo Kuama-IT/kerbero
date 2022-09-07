@@ -4,17 +4,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:24666",
-      "sslPort": 44338
+      "applicationUrl": "http://localhost:26106",
+      "sslPort": 44361
     }
   },
   "profiles": {
-    "WebApi": {
+    "Kerbero.WebApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7155;http://localhost:5068",
+      "applicationUrl": "https://localhost:7080;http://localhost:5175",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
