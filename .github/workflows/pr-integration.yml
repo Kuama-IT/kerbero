@@ -1,8 +1,6 @@
-name: .NET
+name: pr-integration
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -20,9 +18,7 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
+      - name: Restore and Build
+        run: dotnet build
       - name: Test
         run: dotnet test --no-build --verbosity normal
