@@ -1,6 +1,6 @@
-namespace Kerbero.Common.Entities;
+namespace Kerbero.Common.Models;
 
-public class NukiAccountEntity
+public class NukiAccountExternalResponseDto
 {
 	public string Token { get; set; } = null!;
 	public string RefreshToken { get; set; } = null!;

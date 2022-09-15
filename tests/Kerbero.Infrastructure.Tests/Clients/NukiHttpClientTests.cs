@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Flurl.Http.Testing;
-using Kerbero.Common.Entities;
 using Kerbero.Common.Exceptions;
+using Kerbero.Common.Models;
 using Kerbero.Infrastructure.Clients;
 using Kerbero.Infrastructure.Options;
 
@@ -9,13 +9,13 @@ namespace Kerbero.Infrastructure.Tests.Clients;
 
 public class NukiHttpClientTests: IDisposable
 {
-	private readonly NukiHttpClient _nukiClient;
+	private readonly NukiExternalAuthenticationRepository _nukiClient;
 	private readonly HttpTest _httpTest;
 
 	public NukiHttpClientTests()
 	{
 		// Arrange
-		_nukiClient = new NukiHttpClient(Microsoft.Extensions.Options.Options.Create(new NukiClientOptions()
+		_nukiClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = "/nuki/code",
@@ -59,11 +59,11 @@ public class NukiHttpClientTests: IDisposable
 		}); // from nuki documentation
 		
 		// Act
-		var nukiAccount = await _nukiClient.GetAuthenticatedProvider("clientId", "code");
+		var nukiAccount = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto(){ ClientId = "clientId", Code = "code"});
 		
 		// Assert
 		_httpTest.ShouldHaveMadeACall();
-		nukiAccount.Should().BeEquivalentTo(new NukiAccountEntity()
+		nukiAccount.Should().BeEquivalentTo(new NukiAccountExternalResponseDto()
 		{
 			Token = "ACCESS_TOKEN",
 			RefreshToken = "REFRESH_TOKEN",
@@ -76,13 +76,13 @@ public class NukiHttpClientTests: IDisposable
 
 public class NukiHttpClientTestsExceptions : IDisposable
 {
-	private readonly NukiHttpClient _nukiClient;
+	private readonly NukiExternalAuthenticationRepository _nukiClient;
 	private readonly HttpTest _httpTest;
 
 	public NukiHttpClientTestsExceptions()
 	{
 		// Arrange
-		_nukiClient = new NukiHttpClient(Microsoft.Extensions.Options.Options.Create(new NukiClientOptions()
+		_nukiClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
 		{
 			Scopes =
 				"account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
@@ -112,7 +112,7 @@ public class NukiHttpClientTestsExceptions : IDisposable
 	{
 		// Assert
 		Exception exToken = await Assert.ThrowsAsync<InvalidClientIdException>(async () => 
-			await _nukiClient.GetAuthenticatedProvider(" ", " ") );
+			await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "", Code = ""}) );
 		Assert.Matches("EmptyOrNull, Exception of type 'Kerbero.Common.Exceptions.InvalidClientIdException' was thrown.", exToken.Message);
 	}
 
@@ -129,7 +129,7 @@ public class NukiHttpClientTestsExceptions : IDisposable
 	    // Act
 	    // Assert
 	    Exception exToken = await Assert.ThrowsAsync<InconsistentApiResponseException>(async () =>
-		    await _nukiClient.GetAuthenticatedProvider("clientId", "code"));
+		    await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto(){ ClientId = "clientId", Code = "code" } ));
 	    Assert.Matches("{   \"expires_in\": 2592000,   \"refresh_token\": \"REFRESH_TOKEN\" }, AttributeNotFound", exToken.Message);
     }
 }

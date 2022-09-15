@@ -1,6 +1,6 @@
 namespace Kerbero.Infrastructure.Options;
 
-public class NukiClientOptions
+public class NukiExternalOptions
 {
 	/// <summary>
 	/// String identifier for the appsettings.json
