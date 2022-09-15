@@ -1,19 +1,20 @@
-using System.Dynamic;
 using Flurl;
 using Flurl.Http;
-using Kerbero.Common.Entities;
 using Kerbero.Common.Exceptions;
+using Kerbero.Common.Interfaces;
+using Kerbero.Common.Models;
+using Kerbero.Common.Repositories;
 using Kerbero.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Kerbero.Infrastructure.Clients;
 
-public class NukiHttpClient
+public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRepository
 {
-	private readonly NukiClientOptions _options;
+	private readonly NukiExternalOptions _options;
 
-	public NukiHttpClient(IOptions<NukiClientOptions> options)
+	public NukiExternalAuthenticationRepository(IOptions<NukiExternalOptions> options)
 	{
 		_options = options.Value;
 	}
@@ -40,37 +41,36 @@ public class NukiHttpClient
 			})
 			.ToUri();
 	}
-	
+
 	/// <summary>
 	///  Retrieves an authentication token from the Nuki Apis
 	/// </summary>
-	/// <param name="clientId"></param>
-	/// <param name="authCode"></param>
+	/// <param name="externalRequestDto"></param>
 	/// <returns></returns>
 	/// <exception cref="InvalidClientIdException"></exception>
-	public async Task<NukiAccountEntity> GetAuthenticatedProvider(string clientId, string authCode)
+	public async Task<NukiAccountExternalResponseDto> GetNukiAccount(NukiAccountExternalRequestDto externalRequestDto)
 	{
-		if (string.IsNullOrWhiteSpace(clientId)) throw new InvalidClientIdException(clientId, InvalidClientIdException.Reason.EmptyOrNull);
+		if (string.IsNullOrWhiteSpace(externalRequestDto.ClientId)) throw new InvalidClientIdException(externalRequestDto.ClientId, InvalidClientIdException.Reason.EmptyOrNull);
 		var redirectUriClientId = $"{_options.MainDomain}"
 			.AppendPathSegment(_options.RedirectUriForCode)
-			.AppendPathSegment(clientId);
+			.AppendPathSegment(externalRequestDto.ClientId);
 		var response = await $"{_options.BaseUrl}"
 		  .AppendPathSegment("oauth")
 		  .AppendPathSegment("token")
 		  .PostJsonAsync(new
 		  {
-		    client_id = clientId,
+		    client_id = externalRequestDto.ClientId,
 		    client_secret = _options.ClientSecret,
 		    grant_type = "authorization_code",
-		    code = authCode,
+		    code = externalRequestDto.Code,
 		    redirect_uri = redirectUriClientId,
 		  }).ReceiveString(); // default Json converter not working
 		var deserializeObject = JsonConvert.DeserializeObject<dynamic>(response);
 		if (deserializeObject is not null && deserializeObject.access_token is not null)
-			return new NukiAccountEntity()
+			return new NukiAccountExternalResponseDto()
 			{
 				Token = deserializeObject.access_token,
-				ClientId = clientId,
+				ClientId = externalRequestDto.ClientId,
 				RefreshToken = deserializeObject.refresh_token,
 				TokenType = deserializeObject.token_type,
 				TokenExpiresIn = deserializeObject.expires_in
