@@ -1,6 +1,7 @@
 using FluentAssertions;
+using FluentResults;
 using Kerbero.Common.Entities;
-using Kerbero.Common.Exceptions;
+using Kerbero.Common.Errors;
 using Kerbero.Common.Interactors;
 using Kerbero.Common.Models;
 using Kerbero.Common.Repositories;
@@ -23,7 +24,7 @@ public class CreateNukiAccountInteractorTests
 
 	// Handle should create an entity from an input DTO and upload it into the DB.
 	[Fact]
-	public async Task Handle_UploadSuccessfullyInDb_Test()
+	public async Task Handle_ReturnASuccessfulResponse_Test()
 	{
 		// Arrange
 		var nukiAccountDto = new NukiAccountExternalResponseDto
@@ -44,10 +45,10 @@ public class CreateNukiAccountInteractorTests
 		};
 		_nukiClient.Setup(c => c.GetNukiAccount(
 			It.IsAny<NukiAccountExternalRequestDto>()))
-			.Returns(Task.FromResult(nukiAccountDto));
+			.Returns(() => Task.FromResult(Result.Ok(nukiAccountDto)));
 		_repository.Setup(c => 
 			c.Create(It.IsAny<NukiAccount>())).Returns(
-			() => { nukiAccountEntity.Id = 1; return Task.FromResult(nukiAccountEntity); });
+			async () => { nukiAccountEntity.Id = 1; return await Task.FromResult(Result.Ok(nukiAccountEntity)); });
 		
 		// Act
 		var nukiAccountPresentationDto = await _interactor.Handle(new NukiAccountExternalRequestDto
@@ -65,60 +66,44 @@ public class CreateNukiAccountInteractorTests
 				account.TokenExpiringTimeInSeconds == nukiAccountEntity.TokenExpiringTimeInSeconds &&
 				account.TokenType == nukiAccountEntity.TokenType &&
 				account.ClientId == nukiAccountEntity.ClientId)));
-		nukiAccountPresentationDto.Should().BeEquivalentTo(new NukiAccountPresentationDto()
+		nukiAccountPresentationDto.Should().BeOfType<Result<NukiAccountPresentationDto>>();
+		nukiAccountPresentationDto.Value.Should().BeEquivalentTo(new NukiAccountPresentationDto()
 		{
 			Id = 1,
 			ClientId = "VALID_CLIENT_ID"
 		});
 	}
 
-	[Fact]
-	public async Task Handle_ThrowsInvalidAccountInfoException_Test()
+	[Theory]
+	[MemberData(nameof(ExternalErrorToTest))]
+	public async Task Handle_ExternalReturnAnError_Test(KerberoError error)
 	{
 		// Arrange
-		var nukiAccount = new NukiAccountExternalResponseDto
-		{
-			Token = " ",
-			RefreshToken = "VALID_REFRESH_TOKEN",
-			ClientId = "VALID_CLIENT_ID",
-			TokenType = "bearer",
-			TokenExpiresIn = 2592000
-		};
+		
 		_nukiClient.Setup(c => c.GetNukiAccount(
 				It.IsAny<NukiAccountExternalRequestDto>()))
-			.Returns(Task.FromResult(nukiAccount));
-		// Act
-		// Assert
-		InvalidTokenException ex = await Assert.ThrowsAsync<InvalidTokenException>(async () => await _interactor.Handle(new NukiAccountExternalRequestDto
-			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE"}));
-		ex.Message.Should().Match(c => c.Contains("The provider account contains an invalid token."));
-	}
+			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 
-	[Fact]
-	public async Task Handle_ThrowsExpiredToken_Test()
-	{
-		// Arrange
-		var nukiAccount = new NukiAccountExternalResponseDto
+		// Act 
+		var ex = await _interactor.Handle(new NukiAccountExternalRequestDto
+			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE" });
+		// Assert
+		ex.IsFailed.Should().BeTrue();
+		ex.Errors.FirstOrDefault()!.Should().BeEquivalentTo(error);
+	}	
+	public static IEnumerable<object[]> ExternalErrorToTest =>
+		new List<object[]>
 		{
-			Token = "VALID_TOKEN",
-			RefreshToken = "VALID_REFRESH_TOKEN",
-			ClientId = "VALID_CLIENT_ID",
-			TokenType = "bearer",
-			TokenExpiresIn = 0
+			new object[] { new ExternalServiceUnreachableError()},
+			new object[] { new UnableToParseResponseError()},
+			new object[] { new UnauthorizedAccessError()},
+			new object[] { new KerberoError()},
+			new object[] { new InvalidParametersError("VALID_CLIENT_ID") }
 		};
-		_nukiClient.Setup(c => c.GetNukiAccount(
-				It.IsAny<NukiAccountExternalRequestDto>()))
-			.Returns(Task.FromResult(nukiAccount));
-		// Act
-		// Assert
-		Exception ex = await Assert.ThrowsAsync<TokenExpiredException>(async () => await _interactor.Handle(new NukiAccountExternalRequestDto
-			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE"}));
-		ex.Message.Should()
-			.Match(c => c.Contains("The provided Token is expired."));
-	}
 
-	[Fact]
-	public async Task Handle_ThrowsNotTrackedException_Test()
+	[Theory]
+	[MemberData(nameof(PersistentErrorToTest))]
+	public async Task Handle_PersistentReturnAnError_Test(KerberoError error)
 	{
 		// Arrange
 		var nukiAccountDto = new NukiAccountExternalResponseDto
@@ -131,23 +116,22 @@ public class CreateNukiAccountInteractorTests
 		};
 		_nukiClient.Setup(c => c.GetNukiAccount(
 				It.IsAny<NukiAccountExternalRequestDto>()))
-			.Returns(Task.FromResult(nukiAccountDto));
-		_repository.Setup(c => c
-				.Create(It.IsAny<NukiAccount>( )))
-				.Returns(() => Task.FromResult<NukiAccount>(
-					new NukiAccount
-					{
-						Token = "VALID_TOKEN",
-						RefreshToken = "VALID_REFRESH_TOKEN",
-						TokenExpiringTimeInSeconds = 2592000,
-						ClientId = "VALID_CLIENT_ID",
-						TokenType = "bearer"
-					}));
+			.Returns(async () => await Task.FromResult(Result.Ok(nukiAccountDto)));
+		_repository.Setup(c => c.Create(It.IsAny<NukiAccount>()))
+			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 
 		// Act 
+		var ex = await _interactor.Handle(new NukiAccountExternalRequestDto
+			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE" });
 		// Assert
-		Exception ex = await Assert.ThrowsAsync<AccountNotTrackedException>(async () => await _interactor.Handle(new NukiAccountExternalRequestDto
-			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE"}));
-		((AccountNotTrackedException)ex).Message.Should().Contain("The account does not provide an identification");
-	}
+		ex.IsFailed.Should().BeTrue();
+		ex.Errors.FirstOrDefault()!.Should().BeEquivalentTo(error);
+	}	
+	public static IEnumerable<object[]> PersistentErrorToTest =>
+		new List<object[]>
+		{
+			new object[] { new ResourceConnectionError()},
+			new object[] { new DuplicateEntryError()},
+		};
+
 }

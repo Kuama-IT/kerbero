@@ -1,7 +1,7 @@
 namespace Kerbero.Common.Entities;
 public class NukiAccount
 {
-	public int? Id { get; set; }
+	public int Id { get; set; }
 	public string Token { get; set; } = null!;
 	public string RefreshToken { get; set; } = null!;
 	public int TokenExpiringTimeInSeconds { get; set; }

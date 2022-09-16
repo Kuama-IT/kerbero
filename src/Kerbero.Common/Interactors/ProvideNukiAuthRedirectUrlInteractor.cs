@@ -1,3 +1,4 @@
+using FluentResults;
 using Kerbero.Common.Interfaces;
 using Kerbero.Common.Repositories;
 
@@ -12,7 +13,7 @@ public class ProvideNukiAuthRedirectUrlInteractor: Interactor<string, Uri>
 		_nukiExternalAuthenticationRepository = nukiExternalAuthenticationRepository;
 	}
 
-	public Uri Handle(string clientId)
+	public Result<Uri> Handle(string clientId)
 	{
 		return _nukiExternalAuthenticationRepository.BuildUriForCode(clientId);
 	}
