@@ -1,8 +1,9 @@
+using FluentResults;
 using Kerbero.Common.Entities;
 
 namespace Kerbero.Common.Repositories;
 
 public interface INukiPersistentAccountRepository
 {
-	Task<NukiAccount> Create(NukiAccount nukiAccount);
+	Task<Result<NukiAccount>> Create(NukiAccount nukiAccount);
 }

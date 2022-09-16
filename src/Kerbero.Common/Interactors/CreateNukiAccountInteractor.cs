@@ -1,5 +1,4 @@
-using Kerbero.Common.Entities;
-using Kerbero.Common.Exceptions;
+using FluentResults;
 using Kerbero.Common.Interfaces;
 using Kerbero.Common.Models;
 using Kerbero.Common.Models.AccountMapper;
@@ -7,7 +6,7 @@ using Kerbero.Common.Repositories;
 
 namespace Kerbero.Common.Interactors;
 
-public class CreateNukiAccountInteractor: Interactor<NukiAccountExternalRequestDto, Task<NukiAccountPresentationDto>>
+public class CreateNukiAccountInteractor: InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto>
 {
 	private readonly INukiPersistentAccountRepository _nukiPersistentAccountRepository;
 	private readonly INukiExternalAuthenticationRepository _nukiExternalAuthenticationRepository;
@@ -19,35 +18,19 @@ public class CreateNukiAccountInteractor: Interactor<NukiAccountExternalRequestD
 		_nukiPersistentAccountRepository = nukiPersistentAccountRepository;
 	}
 
-	public async Task<NukiAccountPresentationDto> Handle(NukiAccountExternalRequestDto externalRequestDto)
+	public async Task<Result<NukiAccountPresentationDto>> Handle(NukiAccountExternalRequestDto externalRequestDto)
 	{
-		var nukiAccountDto = await _nukiExternalAuthenticationRepository.GetNukiAccount(externalRequestDto);
-		
-		var nukiAccount = NukiAccountMapper.MapToEntity(nukiAccountDto);
-		
-		EnsureNukiAccountIsValid(nukiAccount);
-		
-		nukiAccount = await _nukiPersistentAccountRepository.Create(nukiAccount);
+		var extRes = await _nukiExternalAuthenticationRepository.GetNukiAccount(externalRequestDto);
 
-		// return presentation object
-		return NukiAccountMapper.MapToPresentation(nukiAccount);
-	}
-
-	/// <summary>
-	/// Verify if a Nuki account is a valid account
-	/// </summary>
-	/// <param name="nukiAccount"></param>
-	/// <returns></returns>
-	private static void EnsureNukiAccountIsValid(NukiAccount nukiAccount)
-	{
-		if (nukiAccount.ExpiryDate.Date <= DateTime.Now.Date || nukiAccount.TokenExpiringTimeInSeconds == 0)
+		if (!extRes.IsSuccess)
 		{
-			throw new TokenExpiredException();
+			return Result.Fail(extRes.Errors);
 		}
-		if (string.IsNullOrWhiteSpace(nukiAccount.Token) ||
-		    string.IsNullOrWhiteSpace(nukiAccount.RefreshToken))
-		{
-			throw new InvalidTokenException();
-		};
+		var nukiAccount = NukiAccountMapper.MapToEntity(extRes.Value);
+		var persistentResult = await _nukiPersistentAccountRepository.Create(nukiAccount);
+
+		return persistentResult.IsSuccess ? // isSuccess
+			Result.Ok(NukiAccountMapper.MapToPresentation(persistentResult.Value)) : Result.Fail(persistentResult.Errors);
+
 	}
 }

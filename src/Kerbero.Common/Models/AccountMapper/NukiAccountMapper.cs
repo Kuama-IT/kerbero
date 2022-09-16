@@ -1,5 +1,4 @@
 using Kerbero.Common.Entities;
-using Kerbero.Common.Exceptions;
 
 namespace Kerbero.Common.Models.AccountMapper;
 
@@ -22,7 +21,7 @@ public static class NukiAccountMapper
 	{
 		return new NukiAccountPresentationDto()
 		{
-			Id = nukiAccount.Id ?? throw new AccountNotTrackedException(),
+			Id = nukiAccount.Id,
 			ClientId = nukiAccount.ClientId,
 		};
 	}

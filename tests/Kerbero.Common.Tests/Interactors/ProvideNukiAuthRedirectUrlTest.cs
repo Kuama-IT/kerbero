@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentResults;
 using Kerbero.Common.Interactors;
 using Kerbero.Common.Interfaces;
 using Kerbero.Common.Repositories;
@@ -23,7 +24,7 @@ public class ProvideNukiAuthRedirectUrlTest
 		// Arrange
 		var uri = new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
 		                  "&client_id=v7kn_NX7vQ7VjQdXFGK43g" +
-		                  "&redirect_uri=https://test.com/nuki/code/v7kn_NX7vQ7VjQdXFGK43g" +
+		                  "&redirect_uri=https%3A%2F%2Ftest.com%2Fnuki%2Fcode%2Fv7kn_NX7vQ7VjQdXFGK43g" +
 		                  "&scope=account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log");
 		_nukiExternalRepository.Setup(c => c.BuildUriForCode(It.IsAny<string>()))
 			.Returns(uri);
@@ -35,6 +36,7 @@ public class ProvideNukiAuthRedirectUrlTest
 		_redirectInteractor.Should().BeAssignableTo<Interactor<string, Uri>>();
 		_nukiExternalRepository.Verify(c => c.BuildUriForCode(It.Is<string>(s => 
 			s.Equals("VALID_CLIENT_ID"))));
-		redirectUri.Should().BeEquivalentTo(uri);
+		redirectUri.Should().BeOfType<Result<Uri>>();
+		redirectUri.Value.Should().BeEquivalentTo(uri);
 	}
 }

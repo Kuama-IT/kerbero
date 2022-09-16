@@ -1,9 +1,10 @@
+using FluentResults;
 using Kerbero.Common.Models;
 
 namespace Kerbero.Common.Repositories;
 
 public interface INukiExternalAuthenticationRepository
 {
-	public Task<NukiAccountExternalResponseDto> GetNukiAccount(NukiAccountExternalRequestDto externalRequestDto);
-	public Uri BuildUriForCode(string clientId);
+	public Task<Result<NukiAccountExternalResponseDto>> GetNukiAccount(NukiAccountExternalRequestDto externalRequestDto);
+	public Result<Uri> BuildUriForCode(string clientId);
 }
