@@ -1,7 +1,6 @@
 using Flurl;
 using Flurl.Http;
 using Kerbero.Common.Exceptions;
-using Kerbero.Common.Interfaces;
 using Kerbero.Common.Models;
 using Kerbero.Common.Repositories;
 using Kerbero.Infrastructure.Options;

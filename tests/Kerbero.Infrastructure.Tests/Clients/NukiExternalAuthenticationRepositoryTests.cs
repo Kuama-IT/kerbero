@@ -7,12 +7,12 @@ using Kerbero.Infrastructure.Options;
 
 namespace Kerbero.Infrastructure.Tests.Clients;
 
-public class NukiHttpClientTests: IDisposable
+public class NukiExternalAuthenticationRepositoryTests: IDisposable
 {
 	private readonly NukiExternalAuthenticationRepository _nukiClient;
 	private readonly HttpTest _httpTest;
 
-	public NukiHttpClientTests()
+	public NukiExternalAuthenticationRepositoryTests()
 	{
 		// Arrange
 		_nukiClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
