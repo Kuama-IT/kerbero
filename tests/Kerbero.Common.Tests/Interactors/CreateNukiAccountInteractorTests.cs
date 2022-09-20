@@ -48,7 +48,7 @@ public class CreateNukiAccountInteractorTests
 		_repository.Setup(c => 
 			c.Create(It.IsAny<NukiAccount>())).Returns(
 			() => { nukiAccountEntity.Id = 1; return Task.FromResult(nukiAccountEntity); });
-
+		
 		// Act
 		var nukiAccountPresentationDto = await _interactor.Handle(new NukiAccountExternalRequestDto
 			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE"});
@@ -132,9 +132,9 @@ public class CreateNukiAccountInteractorTests
 		_nukiClient.Setup(c => c.GetNukiAccount(
 				It.IsAny<NukiAccountExternalRequestDto>()))
 			.Returns(Task.FromResult(nukiAccountDto));
-		_repository.Setup(c =>  c
+		_repository.Setup(c => c
 				.Create(It.IsAny<NukiAccount>( )))
-				.Returns(() => Task.FromResult(
+				.Returns(() => Task.FromResult<NukiAccount>(
 					new NukiAccount
 					{
 						Token = "VALID_TOKEN",
