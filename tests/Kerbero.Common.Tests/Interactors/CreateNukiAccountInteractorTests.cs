@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Common.Entities;
 using Kerbero.Common.Errors;
+using Kerbero.Common.Errors.CreateNukiAccountErrors;
 using Kerbero.Common.Interactors;
 using Kerbero.Common.Models;
 using Kerbero.Common.Repositories;

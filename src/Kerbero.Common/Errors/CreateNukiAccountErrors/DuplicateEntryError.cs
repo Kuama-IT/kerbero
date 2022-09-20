@@ -1,4 +1,4 @@
-namespace Kerbero.Common.Errors;
+namespace Kerbero.Common.Errors.CreateNukiAccountErrors;
 
 public class DuplicateEntryError: KerberoError
 {

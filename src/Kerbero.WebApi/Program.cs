@@ -1,6 +1,13 @@
+using Kerbero.Common;
+using Kerbero.Infrastructure;
+using Kerbero.WebApi;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDomainServices();
+builder.Services.AddInfrastructureServices();
+builder.Services.AddWebApiServices();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

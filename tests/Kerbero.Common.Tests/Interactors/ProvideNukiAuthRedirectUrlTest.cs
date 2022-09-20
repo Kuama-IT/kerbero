@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Common.Interactors;
 using Kerbero.Common.Interfaces;
+using Kerbero.Common.Models;
 using Kerbero.Common.Repositories;
 using Moq;
 
@@ -26,17 +27,17 @@ public class ProvideNukiAuthRedirectUrlTest
 		                  "&client_id=v7kn_NX7vQ7VjQdXFGK43g" +
 		                  "&redirect_uri=https%3A%2F%2Ftest.com%2Fnuki%2Fcode%2Fv7kn_NX7vQ7VjQdXFGK43g" +
 		                  "&scope=account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log");
-		_nukiExternalRepository.Setup(c => c.BuildUriForCode(It.IsAny<string>()))
-			.Returns(uri);
+		_nukiExternalRepository.Setup(c => c.BuildUriForCode(It.IsAny<NukiRedirectExternalRequestDto>()))
+			.Returns(new NukiRedirectPresentationDto(uri));
 
 		// Act
-		var redirectUri = _redirectInteractor.Handle("VALID_CLIENT_ID");
+		var redirectUri = _redirectInteractor.Handle(new NukiRedirectExternalRequestDto("VALID_CLIENT_ID"));
 
 		// Assert
-		_redirectInteractor.Should().BeAssignableTo<Interactor<string, Uri>>();
-		_nukiExternalRepository.Verify(c => c.BuildUriForCode(It.Is<string>(s => 
-			s.Equals("VALID_CLIENT_ID"))));
-		redirectUri.Should().BeOfType<Result<Uri>>();
-		redirectUri.Value.Should().BeEquivalentTo(uri);
+		_redirectInteractor.Should().BeAssignableTo<Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto>>();
+		_nukiExternalRepository.Verify(c => c.BuildUriForCode(It.Is<NukiRedirectExternalRequestDto>(s => 
+			s.ClientId.Equals("VALID_CLIENT_ID"))));
+		redirectUri.Should().BeOfType<Result<NukiRedirectPresentationDto>>();
+		redirectUri.Value.RedirectUri.Should().BeEquivalentTo(uri);
 	}
 }
