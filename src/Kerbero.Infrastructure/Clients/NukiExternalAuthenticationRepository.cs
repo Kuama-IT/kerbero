@@ -22,26 +22,26 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 	/// <summary>
 	/// Builds a Uri where the user who wants to authenticate should be redirected
 	/// </summary>
-	/// <param name="clientId"></param>
+	/// <param name="request"></param>
 	/// <returns />
-	public Result<Uri> BuildUriForCode(string clientId)
+	public Result<NukiRedirectPresentationDto> BuildUriForCode(NukiRedirectExternalRequestDto request)
 	{
-		if (string.IsNullOrEmpty(clientId)) return Result.Fail(new InvalidParametersError("client_id"));
+		if (string.IsNullOrEmpty(request.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
 		try
 		{
 			var redirectUriClientId = $"{_options.MainDomain}"
 				.AppendPathSegment(_options.RedirectUriForCode)
-				.AppendPathSegment(clientId);
-			return $"{_options.BaseUrl}"
+				.AppendPathSegment(request.ClientId);
+			return Result.Ok(new NukiRedirectPresentationDto($"{_options.BaseUrl}"
 				.AppendPathSegments("oauth", "authorize")
 				.SetQueryParams(new
 				{
 					response_type = "code",
-					client_id = clientId,
+					client_id = request.ClientId,
 					redirect_uri = redirectUriClientId.ToString(),
 					scope = _options.Scopes,
 				})
-				.ToUri();
+				.ToUri()));
 		}
 		catch (ArgumentNullException)
 		{
