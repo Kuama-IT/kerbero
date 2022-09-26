@@ -1,6 +1,9 @@
 using System.Net;
 using System.Web.Http;
+using FluentResults;
 using Kerbero.Common.Errors;
+using Kerbero.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.WebApi.Exceptions;
 using static System.Enum;
 
 namespace Kerbero.WebApi.Models.ErrorMapper;
@@ -10,10 +13,10 @@ public static class HttpResponseExceptionMap
 	public static HttpResponseException Map(KerberoError error)
 	{
 
-		var resParse = TryParse(error.GetType().Name, out ErrorToStatusCode statusCode);
-		var httpResponseMessage = new HttpResponseMessage()
+		var statusCode = HttpResponseKerberoErrorToStatusCode(error);
+		var httpResponseMessage = new HttpResponseMessage
 		{
-			StatusCode = resParse ? (HttpStatusCode)statusCode : HttpStatusCode.InternalServerError,
+			StatusCode = statusCode,
 			Content = JsonContent.Create(new KerberoWebApiErrorResponse()
 			{
 				Error = error.GetType().Name,
@@ -23,12 +26,24 @@ public static class HttpResponseExceptionMap
 		return new HttpResponseException(httpResponseMessage);
 	}
 
-	public enum ErrorToStatusCode
+	private static HttpStatusCode HttpResponseKerberoErrorToStatusCode(KerberoError error)
 	{
-		ExternalServiceUnreachableError = HttpStatusCode.ServiceUnavailable,
-		UnableToParseResponseError = HttpStatusCode.BadGateway,
-		UnauthorizedAccessError = HttpStatusCode.Unauthorized,
-		KerberoError = HttpStatusCode.InternalServerError,
-		InvalidParametersError = HttpStatusCode.BadRequest
+		switch (error)
+		{
+			case ExternalServiceUnreachableError:
+			case UnknownExternalError:
+			case PersistentResourceNotAvailableError:
+				return HttpStatusCode.ServiceUnavailable;
+			case UnableToParseResponseError:
+				return HttpStatusCode.BadGateway;
+			case UnauthorizedAccessError:
+				return HttpStatusCode.Unauthorized;
+			case InvalidParametersError:
+			case DuplicateEntryError:
+				return HttpStatusCode.BadRequest;
+			default:
+				throw new DevException("Forgot to map the error with status code");
+		}
 	}
+	
 }

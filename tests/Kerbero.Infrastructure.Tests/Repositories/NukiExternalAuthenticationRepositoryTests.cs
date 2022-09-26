@@ -4,10 +4,10 @@ using FluentResults;
 using Flurl.Http.Testing;
 using Kerbero.Common.Errors;
 using Kerbero.Common.Models;
-using Kerbero.Infrastructure.Clients;
 using Kerbero.Infrastructure.Options;
+using Kerbero.Infrastructure.Repositories;
 
-namespace Kerbero.Infrastructure.Tests.Clients;
+namespace Kerbero.Infrastructure.Tests.Repositories;
 
 public class NukiExternalAuthenticationRepositoryTests: IDisposable
 {

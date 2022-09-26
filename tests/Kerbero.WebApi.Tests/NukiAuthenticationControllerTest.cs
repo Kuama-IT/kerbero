@@ -4,6 +4,7 @@ using System.Web.Http;
 using FluentAssertions;
 using FluentResults;
 using Kerbero.Common.Errors;
+using Kerbero.Common.Errors.CreateNukiAccountErrors;
 using Kerbero.Common.Interactors;
 using Kerbero.Common.Interfaces;
 using Kerbero.Common.Models;
@@ -70,28 +71,6 @@ public class NukiAuthenticationControllerTest
 		});
 	}
 	
-	
-	[Fact]
-	public async Task RedirectForCode_GenericKerberoError_Test()
-	{
-		// Arrange
-		_interactorCode.Setup(c => c.Handle(It.IsAny<string>()))
-			.Returns(Result.Fail(new KerberoError()));
-		
-		// Act
-		var redirect = () => _controller.RedirectForCode("VALID_CLIENT_ID");
-
-		// Assert
-		var ex = Assert.Throws<HttpResponseException>(() => _controller.RedirectForCode("VALID_CLIENT_ID"));
-		ex.Response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-		var content = await ex.Response.Content.ReadFromJsonAsync<KerberoWebApiErrorResponse>();
-		content.Should().NotBeNull().And.BeEquivalentTo( new KerberoWebApiErrorResponse()
-		{
-			Error = "KerberoError",
-			ErrorMessage = "A generic application error occurs."
-		});
-	}
-	
 	[Fact]
 	public async Task RetrieveToken_Success_Test()
 	{
@@ -121,8 +100,10 @@ public class NukiAuthenticationControllerTest
 			new object[] { new ExternalServiceUnreachableError()},
 			new object[] { new UnableToParseResponseError()},
 			new object[] { new UnauthorizedAccessError()},
-			new object[] { new KerberoError()},
-			new object[] { new InvalidParametersError("VALID_CLIENT_ID") }
+			new object[] { new InvalidParametersError("VALID_CLIENT_ID") },
+			new object[] { new DuplicateEntryError("Nuki account") },
+			new object[] { new UnknownExternalError() },
+			new object[] { new PersistentResourceNotAvailableError() }
 		};
 	
 	[MemberData(nameof(ErrorToTest))]
@@ -146,9 +127,12 @@ public class NukiAuthenticationControllerTest
 		switch (error)
 		{
 			case InvalidParametersError:
+			case DuplicateEntryError:
 				ex.Response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 				break;
 			case ExternalServiceUnreachableError:
+			case PersistentResourceNotAvailableError:
+			case UnknownExternalError:
 				ex.Response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 				break;
 			case UnableToParseResponseError:
@@ -174,7 +158,6 @@ public class NukiAuthenticationControllerTest
 		var ex = HttpResponseExceptionMap.Map(error);
 		
 		// Assert
-		ex.Response.StatusCode.Should().Be((HttpStatusCode)Enum.Parse(typeof(HttpResponseExceptionMap.ErrorToStatusCode), error.GetType().Name));
 		var content = await ex.Response.Content.ReadFromJsonAsync<KerberoWebApiErrorResponse>();
 		content.Should().NotBeNull().And.BeEquivalentTo( new KerberoWebApiErrorResponse()
 		{
