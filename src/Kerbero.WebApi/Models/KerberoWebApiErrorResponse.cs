@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace Kerbero.WebApi.Models;
 
 public class KerberoWebApiErrorResponse

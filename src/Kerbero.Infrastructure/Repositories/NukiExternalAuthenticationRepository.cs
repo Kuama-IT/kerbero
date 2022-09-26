@@ -8,7 +8,7 @@ using Kerbero.Common.Repositories;
 using Kerbero.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
-namespace Kerbero.Infrastructure.Clients;
+namespace Kerbero.Infrastructure.Repositories;
 
 public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRepository
 {

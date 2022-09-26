@@ -131,8 +131,8 @@ public class CreateNukiAccountInteractorTests
 	public static IEnumerable<object[]> PersistentErrorToTest =>
 		new List<object[]>
 		{
-			new object[] { new ResourceConnectionError()},
-			new object[] { new DuplicateEntryError()},
+			new object[] { new DuplicateEntryError("Nuki account")},
+			new object[] { new PersistentResourceNotAvailableError()}
 		};
 
 }
