@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
 
@@ -22,11 +23,11 @@ public class NukiPersistentAccountRepositoryTest
 
 	public NukiPersistentAccountRepositoryTest()
 	{
-
+		var logger = new Mock<ILogger<NukiPersistentAccountRepository>>();
 		_dbSetNukiAccount = new Mock<DbSet<NukiAccount>>();
 		_dbContext = new Mock<IApplicationDbContext>();
 		_dbContext.Setup(c => c.NukiAccounts).Returns(_dbSetNukiAccount.Object);
-		_repository = new NukiPersistentAccountRepository(_dbContext.Object);
+		_repository = new NukiPersistentAccountRepository(_dbContext.Object, logger.Object);
 	}
 
 	[Fact]
@@ -56,7 +57,7 @@ public class NukiPersistentAccountRepositoryTest
 		// Workaround to mock an EntityEntry, MS not provides a way to test a context with EF 6+
 		var internalEntityEntry = new InternalEntityEntry(
 			new Mock<IStateManager>().Object,
-			new RuntimeEntityType("NukiAccount", typeof(NukiAccount), false, null, null, null, ChangeTrackingStrategy.Snapshot, null, false),
+			new RuntimeEntityType("NukiAccount", typeof(NukiAccount), false, null!, null, null, ChangeTrackingStrategy.Snapshot, null, false),
 			data);
 
 		var entityEntry = new Mock<EntityEntry<NukiAccount>>(internalEntityEntry);

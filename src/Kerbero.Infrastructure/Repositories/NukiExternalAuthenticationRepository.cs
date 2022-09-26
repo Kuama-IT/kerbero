@@ -6,6 +6,7 @@ using Kerbero.Common.Errors;
 using Kerbero.Common.Models;
 using Kerbero.Common.Repositories;
 using Kerbero.Infrastructure.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Kerbero.Infrastructure.Repositories;
@@ -13,10 +14,12 @@ namespace Kerbero.Infrastructure.Repositories;
 public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRepository
 {
 	private readonly NukiExternalOptions _options;
+	private readonly ILogger<NukiExternalAuthenticationRepository> _logger;
 
-	public NukiExternalAuthenticationRepository(IOptions<NukiExternalOptions> options)
+	public NukiExternalAuthenticationRepository(IOptions<NukiExternalOptions> options, ILogger<NukiExternalAuthenticationRepository> logger)
 	{
 		_options = options.Value;
+		_logger = logger;
 	}
 
 	/// <summary>
@@ -43,12 +46,14 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 				})
 				.ToUri()));
 		}
-		catch (ArgumentNullException)
+		catch (ArgumentNullException e)
 		{
+			_logger.LogError(e, "Error while building redirect URI");
 			return Result.Fail(new InvalidParametersError("options"));
 		}
-		catch
+		catch(Exception e)
 		{
+			_logger.LogError(e, "Error while building redirect URI");
 			return Result.Fail(new KerberoError());
 		}
 	}
@@ -89,6 +94,7 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 		#region ErrorManagement
 		catch (FlurlHttpException ex)
 		{
+			_logger.LogError(ex, "Error while retrieving tokens from Nuki Web");
 			if (ex.StatusCode == (int)HttpStatusCode.Unauthorized)
 			{
 				var error = await ex.GetResponseJsonAsync<NukiAccountExternalResponseDto>();

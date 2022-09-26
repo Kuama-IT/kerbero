@@ -6,6 +6,8 @@ using Kerbero.Common.Errors;
 using Kerbero.Common.Models;
 using Kerbero.Infrastructure.Options;
 using Kerbero.Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Kerbero.Infrastructure.Tests.Repositories;
 
@@ -13,17 +15,19 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 {
 	private readonly NukiExternalAuthenticationRepository _nukiClient;
 	private readonly HttpTest _httpTest;
+	private readonly Mock<ILogger<NukiExternalAuthenticationRepository>> _logger;
 
 	public NukiExternalAuthenticationRepositoryTests()
 	{
 		// Arrange
+		_logger = new Mock<ILogger<NukiExternalAuthenticationRepository>>();
 		_nukiClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = "/nuki/code",
 			MainDomain = "https://test.com",
 			BaseUrl = "http://api.nuki.io"
-		}));
+		}), _logger.Object);
 		_httpTest = new HttpTest();
 	}
 	
@@ -65,10 +69,10 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 		var errorClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
-			RedirectUriForCode = null,
+			RedirectUriForCode = null!,
 			MainDomain = "https://test.com",
 			BaseUrl = "http://api.nuki.io"
-		}));
+		}), _logger.Object);
 		
 		// Act
 		var exCode = errorClient.BuildUriForCode(new NukiRedirectExternalRequestDto("INVALID_CLIENT_ID"));
