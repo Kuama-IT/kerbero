@@ -62,9 +62,16 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 	public void BuildUriForCode_ArgumentNullException_Test()
 	{
 		// Arrange
-		_httpTest.SimulateException(new ArgumentNullException());
+		var errorClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
+		{
+			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
+			RedirectUriForCode = null,
+			MainDomain = "https://test.com",
+			BaseUrl = "http://api.nuki.io"
+		}));
+		
 		// Act
-		var exCode = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequestDto(""));
+		var exCode = errorClient.BuildUriForCode(new NukiRedirectExternalRequestDto("INVALID_CLIENT_ID"));
 		// Assert
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();

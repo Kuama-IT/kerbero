@@ -6,9 +6,7 @@ namespace Kerbero.Infrastructure.Context;
 
 public class ApplicationDbContext: DbContext, IApplicationDbContext 
 {
-	// TODO: implement a db context
-	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		=> optionsBuilder.UseNpgsql("TODO");
+	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
 
-	public DbSet<NukiAccount> NukiAccounts { get; set; }
+	public DbSet<NukiAccount> NukiAccounts { get; set; } = null!;
 }

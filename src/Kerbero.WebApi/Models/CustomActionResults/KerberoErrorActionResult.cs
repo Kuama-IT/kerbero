@@ -1,32 +1,26 @@
 using System.Net;
-using System.Web.Http;
 using FluentResults;
 using Kerbero.Common.Errors;
 using Kerbero.Common.Errors.CreateNukiAccountErrors;
 using Kerbero.WebApi.Exceptions;
-using static System.Enum;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Kerbero.WebApi.Models.ErrorMapper;
+namespace Kerbero.WebApi.Models.CustomActionResults;
 
-public static class HttpResponseExceptionMap
+public static class ModelStateDictionaryExtensions
 {
-	public static HttpResponseException Map(KerberoError error)
+	public static ActionResult AddErrorAndReturnAction(this ModelStateDictionary modelStateDict, IError error)
 	{
+		var key = error.GetType().Name;
+		var errorMessage = error.Message;
+		
+		modelStateDict.AddModelError(key, errorMessage);
 
-		var statusCode = HttpResponseKerberoErrorToStatusCode(error);
-		var httpResponseMessage = new HttpResponseMessage
-		{
-			StatusCode = statusCode,
-			Content = JsonContent.Create(new KerberoWebApiErrorResponse()
-			{
-				Error = error.GetType().Name,
-				ErrorMessage = error.Message
-			})
-		};
-		return new HttpResponseException(httpResponseMessage);
+		return new ObjectResult(error) { StatusCode = (int?)HttpResponseKerberoErrorToStatusCode(error)};
 	}
-
-	private static HttpStatusCode HttpResponseKerberoErrorToStatusCode(KerberoError error)
+	
+	private static HttpStatusCode HttpResponseKerberoErrorToStatusCode(IError error)
 	{
 		switch (error)
 		{
@@ -45,5 +39,4 @@ public static class HttpResponseExceptionMap
 				throw new DevException("Forgot to map the error with status code");
 		}
 	}
-	
 }
