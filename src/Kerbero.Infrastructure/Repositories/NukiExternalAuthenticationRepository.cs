@@ -61,11 +61,12 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 	public async Task<Result<NukiAccountExternalResponseDto>> GetNukiAccount(NukiAccountExternalRequestDto nukiAccountExternalRequestDto)
 	{
 		if (string.IsNullOrWhiteSpace(nukiAccountExternalRequestDto.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
-		var redirectUriClientId = $"{_options.MainDomain}"
-			.AppendPathSegment(_options.RedirectUriForCode)
-			.AppendPathSegment(nukiAccountExternalRequestDto.ClientId);
 		try
 		{
+			var redirectUriClientId = $"{_options.MainDomain}"
+				.AppendPathSegment(_options.RedirectUriForCode)
+				.AppendPathSegment(nukiAccountExternalRequestDto.ClientId);
+
 			var response = await $"{_options.BaseUrl}"
 				.AppendPathSegment("oauth")
 				.AppendPathSegment("token")
@@ -86,7 +87,6 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 			return response;
 		}
 		#region ErrorManagement
-		// generic catch is not useful, because FlurlHttpException catch everything
 		catch (FlurlHttpException ex)
 		{
 			if (ex.StatusCode == (int)HttpStatusCode.Unauthorized)
@@ -103,6 +103,14 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 			}
 
 			return Result.Fail(new UnknownExternalError());
+		}
+		catch (ArgumentNullException)
+		{
+			return Result.Fail(new InvalidParametersError("options"));
+		}
+		catch
+		{
+			return Result.Fail(new KerberoError());
 		}
 
 		#endregion

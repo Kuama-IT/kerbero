@@ -1,19 +1,18 @@
-using Kerbero.Common.Errors;
-using Kerbero.Common.Interactors;
 using Kerbero.Common.Interfaces;
 using Kerbero.Common.Models;
-using Kerbero.WebApi.Models.ErrorMapper;
+using Kerbero.WebApi.Models.CustomActionResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kerbero.WebApi.Controllers;
 
+[ApiController]
 [Route("nuki/auth")]
-public class NukiAuthenticationController : Controller
+public class NukiAuthenticationController: ControllerBase
 {
-	private readonly Interactor<string, Uri> _provideRedirectUrlInteractor;
+	private readonly Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto> _provideRedirectUrlInteractor;
 	private readonly InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto> _createAccountInteractor;
 
-	public NukiAuthenticationController(Interactor<string, Uri> provideRedirectUrlInteractor,
+	public NukiAuthenticationController(Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto> provideRedirectUrlInteractor,
 		InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto> createAccountInteractor)
 	{
 		_provideRedirectUrlInteractor = provideRedirectUrlInteractor;
@@ -24,15 +23,15 @@ public class NukiAuthenticationController : Controller
 	/// Index method controller
 	/// </summary>
 	/// <param name="clientId"></param>
-	[HttpPost]
-	public RedirectResult RedirectForCode(string clientId)
+	[HttpGet("start")]
+	public ActionResult RedirectByClientId(string clientId)
 	{
-		var interactorResult = _provideRedirectUrlInteractor.Handle(clientId);
+		var interactorResponse = _provideRedirectUrlInteractor.Handle(new NukiRedirectExternalRequestDto(clientId));
+		if (interactorResponse.IsSuccess)
+			return Redirect(interactorResponse.Value.RedirectUri.ToString());
 		
-		if (interactorResult.IsSuccess)
-			return Redirect(interactorResult.Value.ToString());
-
-		throw HttpResponseExceptionMap.Map((KerberoError)interactorResult.Errors.First());
+		var error = interactorResponse.Errors.First();
+		return ModelState.AddErrorAndReturnAction(error);
 	}
 	
 	/// <summary>
@@ -42,17 +41,20 @@ public class NukiAuthenticationController : Controller
 	/// clientId must be specified in redirect url inserted in Nuki Web Api by the user
 	/// <param name="code"></param>
 	/// <returns></returns>
-	[HttpGet("{clientId}")]
-	public async Task<NukiAccountPresentationDto> RetrieveToken(string clientId, string code)
+	[HttpGet("token/{clientId}")]
+	public async Task<ActionResult<NukiAccountPresentationDto>> RetrieveTokenByCode(string clientId, string code)
 	{
 		var interactorResponse = await _createAccountInteractor.Handle(new NukiAccountExternalRequestDto()
 		{
 			Code = code,
 			ClientId = clientId
 		});
-		
-		if (interactorResponse.IsSuccess) return interactorResponse.Value;
+		if (interactorResponse.IsSuccess)
+		{
+			return Ok(interactorResponse.Value);
+		}
 
-		throw HttpResponseExceptionMap.Map((KerberoError)interactorResponse.Errors.First());
+		var error = interactorResponse.Errors.First();
+		return ModelState.AddErrorAndReturnAction(error);
 	}
 }
