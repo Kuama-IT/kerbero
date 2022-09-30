@@ -1,10 +1,9 @@
-using System.Data.Common;
 using FluentAssertions;
-using Kerbero.Common.Entities;
-using Kerbero.Common.Errors.CreateNukiAccountErrors;
-using Kerbero.Common.Repositories;
-using Kerbero.Infrastructure.Interfaces;
-using Kerbero.Infrastructure.Repositories;
+using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Repositories;
+using Kerbero.Infrastructure.Common.Interfaces;
+using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;

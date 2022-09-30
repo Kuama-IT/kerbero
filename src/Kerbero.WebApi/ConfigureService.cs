@@ -1,6 +1,6 @@
-using Kerbero.Common.Interactors;
-using Kerbero.Common.Interfaces;
-using Kerbero.Common.Models;
+using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Interactors;
+using Kerbero.Domain.NukiAuthentication.Models;
 
 namespace Kerbero.WebApi;
 

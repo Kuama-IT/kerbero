@@ -1,7 +1,7 @@
 using System.Net;
 using FluentResults;
-using Kerbero.Common.Errors;
-using Kerbero.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.Common.Errors.CommonErrors;
+using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
 using Kerbero.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

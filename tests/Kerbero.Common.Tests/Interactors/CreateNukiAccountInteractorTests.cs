@@ -1,11 +1,12 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Common.Entities;
-using Kerbero.Common.Errors;
-using Kerbero.Common.Errors.CreateNukiAccountErrors;
-using Kerbero.Common.Interactors;
-using Kerbero.Common.Models;
-using Kerbero.Common.Repositories;
+using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.Common.Errors.CommonErrors;
+using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Interactors;
+using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
 namespace Kerbero.Common.Tests.Interactors;
