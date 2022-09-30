@@ -16,7 +16,7 @@ public static
 	{
 		services.Configure<NukiExternalOptions>(
 			configuration.GetSection(key: nameof(NukiExternalOptions))); 
-		services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("KerberoDatabase")!));
+		services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Database")!));
 		services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 		services.AddScoped<INukiPersistentAccountRepository, NukiPersistentAccountRepository>();
 		services.AddScoped<INukiExternalAuthenticationRepository, NukiExternalAuthenticationRepository>();

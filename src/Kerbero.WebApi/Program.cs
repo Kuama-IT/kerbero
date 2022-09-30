@@ -29,6 +29,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
+// We need to be on ssl in order to talk to Nuki Apis
+app.UseHttpsRedirection();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

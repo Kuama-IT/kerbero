@@ -81,7 +81,7 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 					client_secret = _options.ClientSecret,
 					grant_type = "authorization_code",
 					code = nukiAccountExternalRequestDto.Code,
-					redirect_uri = redirectUriClientId,
+					redirect_uri = redirectUriClientId.ToString(),
 				}).ReceiveJson<NukiAccountExternalResponseDto>();
 			
 			if (response is null)
