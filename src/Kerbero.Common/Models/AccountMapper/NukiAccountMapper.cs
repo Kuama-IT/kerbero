@@ -14,7 +14,7 @@ public static class NukiAccountMapper
 			TokenType = nukiAccountExternalResponseDto.TokenType,
 			ClientId = nukiAccountExternalResponseDto.ClientId,
 			// UTC date?
-			ExpiryDate = DateTime.Now.AddSeconds(nukiAccountExternalResponseDto.TokenExpiresIn)
+			ExpiryDate =  DateTime.Now.ToUniversalTime().AddSeconds(nukiAccountExternalResponseDto.TokenExpiresIn)
 		};
 	}
 	public static NukiAccountPresentationDto MapToPresentation(NukiAccount nukiAccount)
