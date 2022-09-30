@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Kerbero.Common\Kerbero.Common.csproj" />
+    <ProjectReference Include="..\Kerbero.Domain\Kerbero.Domain.csproj" />
     <ProjectReference Include="..\Kerbero.Infrastructure\Kerbero.Infrastructure.csproj" />
   </ItemGroup>
 

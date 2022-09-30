@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.WebApi", "src\Kerbe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C612E6FE-76C3-4A5E-9F2F-DA6BC150E6D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Common", "src\Kerbero.Common\Kerbero.Common.csproj", "{6108DA6C-AF7A-40BB-B70F-5870D8A6718C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Domain", "src\Kerbero.Domain\Kerbero.Domain.csproj", "{6108DA6C-AF7A-40BB-B70F-5870D8A6718C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Common.Tests", "tests\Kerbero.Common.Tests\Kerbero.Common.Tests.csproj", "{A6332F07-F2AD-413E-8CDD-4F7208DA1EE8}"
 EndProject

@@ -1,10 +1,11 @@
 using System.Net;
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Common.Errors;
-using Kerbero.Common.Errors.CreateNukiAccountErrors;
-using Kerbero.Common.Interfaces;
-using Kerbero.Common.Models;
+using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.Common.Errors.CommonErrors;
+using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

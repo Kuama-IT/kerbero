@@ -1,9 +1,9 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Common.Interactors;
-using Kerbero.Common.Interfaces;
-using Kerbero.Common.Models;
-using Kerbero.Common.Repositories;
+using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Interactors;
+using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
 namespace Kerbero.Common.Tests.Interactors;

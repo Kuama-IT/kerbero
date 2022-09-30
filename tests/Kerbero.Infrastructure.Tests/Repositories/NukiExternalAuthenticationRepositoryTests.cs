@@ -2,10 +2,11 @@ using System.Net;
 using FluentAssertions;
 using FluentResults;
 using Flurl.Http.Testing;
-using Kerbero.Common.Errors;
-using Kerbero.Common.Models;
-using Kerbero.Infrastructure.Options;
-using Kerbero.Infrastructure.Repositories;
+using Kerbero.Domain.Common.Errors.CommonErrors;
+using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Infrastructure.NukiAuthentication.Options;
+using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.Extensions.Logging;
 using Moq;
 

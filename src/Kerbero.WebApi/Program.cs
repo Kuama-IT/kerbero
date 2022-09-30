@@ -1,4 +1,4 @@
-using Kerbero.Common;
+using Kerbero.Domain;
 using Kerbero.Infrastructure;
 using Kerbero.WebApi;
 
@@ -11,7 +11,6 @@ builder.Host.ConfigureLogging(logging =>
 });
 
 // Add services to the container.
-builder.Services.AddDomainServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebApiServices();
 

@@ -1,5 +1,5 @@
-using Kerbero.Common.Interfaces;
-using Kerbero.Common.Models;
+using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Models.CustomActionResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,7 +44,7 @@ public class NukiAuthenticationController: ControllerBase
 	[HttpGet("token/{clientId}")]
 	public async Task<ActionResult<NukiAccountPresentationDto>> RetrieveTokenByCode(string clientId, string code)
 	{
-		var interactorResponse = await _createAccountInteractor.Handle(new NukiAccountExternalRequestDto()
+		var interactorResponse = await _createAccountInteractor.Handle(new NukiAccountExternalRequestDto
 		{
 			Code = code,
 			ClientId = clientId
