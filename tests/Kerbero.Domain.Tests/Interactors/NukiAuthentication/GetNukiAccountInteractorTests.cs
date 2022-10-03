@@ -2,12 +2,13 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Interactors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.Interactors;
+namespace Kerbero.Domain.Tests.Interactors.NukiAuthentication;
 
 public class GetNukiAccountInteractorTests
 {

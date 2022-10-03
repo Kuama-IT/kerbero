@@ -1,4 +1,3 @@
-using Kerbero.Domain;
 using Kerbero.Infrastructure;
 using Kerbero.WebApi;
 
