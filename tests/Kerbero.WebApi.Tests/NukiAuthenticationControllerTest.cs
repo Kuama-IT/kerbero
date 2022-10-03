@@ -3,6 +3,8 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
+using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;

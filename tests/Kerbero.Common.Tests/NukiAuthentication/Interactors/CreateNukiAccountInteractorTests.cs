@@ -1,7 +1,8 @@
 using FluentAssertions;
 using FluentResults;
+using Kerbero.Domain.Common.Entities;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
 using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Interactors;
@@ -9,7 +10,7 @@ using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.Interactors.NukiAuthentication;
+namespace Kerbero.Common.Tests.NukiAuthentication.Interactors;
 
 public class CreateNukiAccountInteractorTests
 {
@@ -49,7 +50,7 @@ public class CreateNukiAccountInteractorTests
 			It.IsAny<NukiAccountExternalRequestDto>()))
 			.Returns(() => Task.FromResult(Result.Ok(nukiAccountDto)));
 		_repository.Setup(c => 
-			c.Create(It.IsAny<NukiAccount>())).Returns(
+			c.Create(It.IsAny<Domain.Common.Entities.NukiAccount>())).Returns(
 			async () => { nukiAccountEntity.Id = 1; return await Task.FromResult(Result.Ok(nukiAccountEntity)); });
 		
 		// Act
@@ -60,9 +61,9 @@ public class CreateNukiAccountInteractorTests
 		_nukiClient.Verify(c => c.GetNukiAccount(
 			It.Is<NukiAccountExternalRequestDto>(s => 
 				s.ClientId.Contains("VALID_CLIENT_ID") &&
-				s.Code!.Contains("VALID_CODE"))));
+				s.Code.Contains("VALID_CODE"))));
 		_repository.Verify(c => c
-			.Create(It.Is<NukiAccount>(account => 
+			.Create(It.Is<Domain.Common.Entities.NukiAccount>(account => 
 				account.Token == nukiAccountEntity.Token &&
 				account.RefreshToken == nukiAccountEntity.RefreshToken &&
 				account.TokenExpiringTimeInSeconds == nukiAccountEntity.TokenExpiringTimeInSeconds &&
@@ -119,7 +120,7 @@ public class CreateNukiAccountInteractorTests
 		_nukiClient.Setup(c => c.GetNukiAccount(
 				It.IsAny<NukiAccountExternalRequestDto>()))
 			.Returns(async () => await Task.FromResult(Result.Ok(nukiAccountDto)));
-		_repository.Setup(c => c.Create(It.IsAny<NukiAccount>()))
+		_repository.Setup(c => c.Create(It.IsAny<Domain.Common.Entities.NukiAccount>()))
 			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 
 		// Act 

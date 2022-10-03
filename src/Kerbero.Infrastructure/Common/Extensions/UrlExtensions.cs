@@ -3,6 +3,8 @@ using FluentResults;
 using Flurl;
 using Flurl.Http;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
+using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Microsoft.Extensions.Logging;
 

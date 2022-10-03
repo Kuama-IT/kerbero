@@ -1,4 +1,6 @@
-namespace Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.Common.Errors;
+
+namespace Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
 
 public class InvalidParametersError: KerberoError
 {

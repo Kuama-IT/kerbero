@@ -1,6 +1,7 @@
 using FluentResults;
 using Flurl;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Extensions;
@@ -43,7 +44,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 					response_type = "code",
 					client_id = request.ClientId,
 					redirect_uri = redirectUriClientId.ToString(),
-					scope = _options.Scopes,
+					scope = _options.Scopes
 				})
 				.ToUri()));
 		}
@@ -105,7 +106,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 			client_id = nukiAccountExternalRequestDto.ClientId,
 			client_secret = _options.ClientSecret,
 			grant_type = "refresh_token",
-			refresh_token = nukiAccountExternalRequestDto.RefreshToken,
+			refresh_token = nukiAccountExternalRequestDto.RefreshToken
 		});
 	}
 
