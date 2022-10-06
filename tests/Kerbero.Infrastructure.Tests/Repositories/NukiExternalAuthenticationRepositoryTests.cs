@@ -14,15 +14,15 @@ namespace Kerbero.Infrastructure.Tests.Repositories;
 
 public class NukiExternalAuthenticationRepositoryTests: IDisposable
 {
-	private readonly NukiExternalAuthenticationRepository _nukiClient;
+	private readonly NukiAccountExternalRepository _nukiAccountClient;
 	private readonly HttpTest _httpTest;
-	private readonly Mock<ILogger<NukiExternalAuthenticationRepository>> _logger;
+	private readonly Mock<ILogger<NukiAccountExternalRepository>> _logger;
 
 	public NukiExternalAuthenticationRepositoryTests()
 	{
 		// Arrange
-		_logger = new Mock<ILogger<NukiExternalAuthenticationRepository>>();
-		_nukiClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
+		_logger = new Mock<ILogger<NukiAccountExternalRepository>>();
+		_nukiAccountClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = "/nuki/code",
@@ -43,7 +43,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 	public void BuildUriForCode_UriForRedirect_Success_Test()
 	{
 		// Act
-		var redirect = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequestDto("v7kn_NX7vQ7VjQdXFGK43g"));
+		var redirect = _nukiAccountClient.BuildUriForCode(new NukiRedirectExternalRequestDto("v7kn_NX7vQ7VjQdXFGK43g"));
 
 		// Assert
 		var equalUri = new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
@@ -58,7 +58,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 	public void BuildUriForCode_ButClientIdIsEmpty_Test()
 	{
 		// Act
-		var exCode = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequestDto(""));
+		var exCode = _nukiAccountClient.BuildUriForCode(new NukiRedirectExternalRequestDto(""));
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
 	}	
@@ -67,7 +67,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 	public void BuildUriForCode_ArgumentNullException_Test()
 	{
 		// Arrange
-		var errorClient = new NukiExternalAuthenticationRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
+		var errorClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = null!,
@@ -88,7 +88,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 		// Arrange
 		_httpTest.SimulateException(new Exception());
 		// Act
-		var exCode = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequestDto(""));
+		var exCode = _nukiAccountClient.BuildUriForCode(new NukiRedirectExternalRequestDto(""));
 		// Assert
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
@@ -107,7 +107,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 		}); // from nuki documentation
 		
 		// Act
-		var nukiAccount = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto(){ ClientId = "clientId", Code = "code"});
+		var nukiAccount = await _nukiAccountClient.GetNukiAccount(new NukiAccountExternalRequestDto(){ ClientId = "clientId", Code = "code"});
 		
 		// Assert
 		_httpTest.ShouldHaveMadeACall();
@@ -126,7 +126,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
     public async void GetNukiAccount_ButClientIdIsEmpty_Test()
 	{
 		// Act
-		var exToken = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "", Code = ""}) ;
+		var exToken = await _nukiAccountClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "", Code = ""}) ;
 		// Assert
 		exToken.IsFailed.Should().BeTrue();
 		exToken.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
@@ -144,7 +144,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 
 	    // Act
 	    // Assert
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
 	    ex.IsFailed.Should().BeTrue();
 	    ex.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
 	    ex.Errors.FirstOrDefault()!.Message.Should().Contain("invalid_client: Invalid client credentials.");
@@ -157,7 +157,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 	    _httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout, body: System.Text.Json.JsonSerializer.Serialize(new { })); 
 
 	    // Act
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
 
 	    // Assert
 	    ex.IsFailed.Should().BeTrue();
@@ -176,7 +176,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 
 	    // Act
 	    // Assert
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
 	    ex.IsFailed.Should().BeTrue();
 	    ex.Errors.FirstOrDefault().Should().BeOfType<UnknownExternalError>();
     }
@@ -188,7 +188,7 @@ public class NukiExternalAuthenticationRepositoryTests: IDisposable
 	    _httpTest.RespondWith(status: 200, body: null); 
 
 	    // Act
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountClient.GetNukiAccount(new NukiAccountExternalRequestDto() {ClientId = "clientId", Code = "code"});
 	    // Assert
 	    ex.Errors.FirstOrDefault()!.Should().BeOfType<UnableToParseResponseError>();
 	    ex.Errors.FirstOrDefault()!.Message.Contains("Response is null");

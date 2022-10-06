@@ -1,3 +1,6 @@
+using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Interactors;
+using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.Common.Interfaces;
@@ -17,8 +20,9 @@ public static class ConfigureService
 			configuration.GetSection(key: nameof(NukiExternalOptions))); 
 		services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Database")!));
 		services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-		services.AddScoped<INukiPersistentAccountRepository, NukiPersistentAccountRepository>();
-		services.AddScoped<INukiExternalAuthenticationRepository, NukiExternalAuthenticationRepository>();
+		services.AddScoped<INukiAccountPersistentRepository, NukiAccountPersistentRepository>();
+		services.AddScoped<INukiAccountExternalRepository, NukiAccountExternalRepository>();
+		services.AddScoped<InteractorAsync<NukiAccountAuthenticatedRequestDto, NukiAccountAuthenticatedResponseDto>, GetNukiAccountInteractor>();
 		return services;
 	}
 }

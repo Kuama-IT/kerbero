@@ -11,11 +11,11 @@ namespace Kerbero.Common.Tests.Interactors;
 public class ProvideNukiAuthRedirectUrlTest
 {
 	private readonly ProvideNukiAuthRedirectUrlInteractor _redirectInteractor;
-	private readonly Mock<INukiExternalAuthenticationRepository> _nukiExternalRepository;
+	private readonly Mock<INukiAccountExternalRepository> _nukiExternalRepository;
 
 	public ProvideNukiAuthRedirectUrlTest()
 	{
-		_nukiExternalRepository = new Mock<INukiExternalAuthenticationRepository>();
+		_nukiExternalRepository = new Mock<INukiAccountExternalRepository>();
 		_redirectInteractor = new ProvideNukiAuthRedirectUrlInteractor(_nukiExternalRepository.Object);
 	}
 

@@ -7,15 +7,15 @@ namespace Kerbero.Domain.NukiAuthentication.Interactors;
 
 public class ProvideNukiAuthRedirectUrlInteractor: Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto>
 {
-	private readonly INukiExternalAuthenticationRepository _nukiExternalAuthenticationRepository;
+	private readonly INukiAccountExternalRepository _nukiAccountExternalRepository;
 
-	public ProvideNukiAuthRedirectUrlInteractor(INukiExternalAuthenticationRepository nukiExternalAuthenticationRepository)
+	public ProvideNukiAuthRedirectUrlInteractor(INukiAccountExternalRepository nukiAccountExternalRepository)
 	{
-		_nukiExternalAuthenticationRepository = nukiExternalAuthenticationRepository;
+		_nukiAccountExternalRepository = nukiAccountExternalRepository;
 	}
 
 	public Result<NukiRedirectPresentationDto> Handle(NukiRedirectExternalRequestDto request)
 	{
-		return _nukiExternalAuthenticationRepository.BuildUriForCode(request);
+		return _nukiAccountExternalRepository.BuildUriForCode(request);
 	}
 }
