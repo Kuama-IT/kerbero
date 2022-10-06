@@ -13,14 +13,14 @@ namespace Kerbero.Common.Tests.Interactors;
 
 public class CreateNukiAccountInteractorTests
 {
-	private readonly Mock<INukiPersistentAccountRepository> _repository;
+	private readonly Mock<INukiAccountPersistentRepository> _repository;
 	private readonly CreateNukiAccountInteractor _interactor;
-	private readonly Mock<INukiExternalAuthenticationRepository> _nukiClient;
+	private readonly Mock<INukiAccountExternalRepository> _nukiClient;
 
 	public CreateNukiAccountInteractorTests()
 	{
-		_nukiClient = new Mock<INukiExternalAuthenticationRepository>();
-		_repository = new Mock<INukiPersistentAccountRepository>();
+		_nukiClient = new Mock<INukiAccountExternalRepository>();
+		_repository = new Mock<INukiAccountPersistentRepository>();
 		_interactor = new CreateNukiAccountInteractor(_repository.Object, _nukiClient.Object);
 	}
 
@@ -60,7 +60,7 @@ public class CreateNukiAccountInteractorTests
 		_nukiClient.Verify(c => c.GetNukiAccount(
 			It.Is<NukiAccountExternalRequestDto>(s => 
 				s.ClientId.Contains("VALID_CLIENT_ID") &&
-				s.Code.Contains("VALID_CODE"))));
+				s.Code!.Contains("VALID_CODE"))));
 		_repository.Verify(c => c
 			.Create(It.Is<NukiAccount>(account => 
 				account.Token == nukiAccountEntity.Token &&
@@ -69,7 +69,7 @@ public class CreateNukiAccountInteractorTests
 				account.TokenType == nukiAccountEntity.TokenType &&
 				account.ClientId == nukiAccountEntity.ClientId)));
 		nukiAccountPresentationDto.Should().BeOfType<Result<NukiAccountPresentationDto>>();
-		nukiAccountPresentationDto.Value.Should().BeEquivalentTo(new NukiAccountPresentationDto()
+		nukiAccountPresentationDto.Value.Should().BeEquivalentTo(new NukiAccountPresentationDto
 		{
 			Id = 1,
 			ClientId = "VALID_CLIENT_ID"

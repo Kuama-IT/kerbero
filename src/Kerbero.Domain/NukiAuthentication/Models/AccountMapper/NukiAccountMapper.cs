@@ -25,5 +25,15 @@ public static class NukiAccountMapper
 			ClientId = nukiAccount.ClientId
 		};
 	}
+
+	public static NukiAccountAuthenticatedResponseDto MapToAuthenticatedResponse(NukiAccount nukiAccount)
+	{
+		return new NukiAccountAuthenticatedResponseDto
+		{
+			NukiAccountId = nukiAccount.Id,
+			ClientId = nukiAccount.ClientId,
+			Token = nukiAccount.Token
+		};
+	}
 	
 }

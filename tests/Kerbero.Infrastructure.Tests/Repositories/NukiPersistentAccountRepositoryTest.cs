@@ -16,24 +16,24 @@ namespace Kerbero.Infrastructure.Tests.Repositories;
 
 public class NukiPersistentAccountRepositoryTest
 {
-	private readonly NukiPersistentAccountRepository _repository;
+	private readonly NukiAccountPersistentRepository _repository;
 	private readonly Mock<IApplicationDbContext> _dbContext;
 	private readonly Mock<DbSet<NukiAccount>> _dbSetNukiAccount;
 
 	public NukiPersistentAccountRepositoryTest()
 	{
-		var logger = new Mock<ILogger<NukiPersistentAccountRepository>>();
+		var logger = new Mock<ILogger<NukiAccountPersistentRepository>>();
 		_dbSetNukiAccount = new Mock<DbSet<NukiAccount>>();
 		_dbContext = new Mock<IApplicationDbContext>();
 		_dbContext.Setup(c => c.NukiAccounts).Returns(_dbSetNukiAccount.Object);
-		_repository = new NukiPersistentAccountRepository(_dbContext.Object, logger.Object);
+		_repository = new NukiAccountPersistentRepository(_dbContext.Object, logger.Object);
 	}
 
 	[Fact]
 	public async Task CreateNukiAccount_Success_Test()
 	{
 		// Arrange
-		_repository.Should().BeAssignableTo<INukiPersistentAccountRepository>();
+		_repository.Should().BeAssignableTo<INukiAccountPersistentRepository>();
 		var nukiAccount = new NukiAccount
 		{
 			Token = "VALID_TOKEN",

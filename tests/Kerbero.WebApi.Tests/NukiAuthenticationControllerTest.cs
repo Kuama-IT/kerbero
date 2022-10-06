@@ -65,7 +65,7 @@ public class NukiAuthenticationControllerTest
 	public async Task RetrieveToken_Success_Test()
 	{
 		// Arrange
-		var shouldResponseDto = new NukiAccountPresentationDto()
+		var shouldResponseDto = new NukiAccountPresentationDto
 		{
 			Id = 1,
 			ClientId = "VALID_CLIENT_ID"

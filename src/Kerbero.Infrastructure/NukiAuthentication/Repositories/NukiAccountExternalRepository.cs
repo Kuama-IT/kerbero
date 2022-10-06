@@ -10,15 +10,16 @@ using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.NukiAuthentication.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace Kerbero.Infrastructure.NukiAuthentication.Repositories;
 
-public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRepository
+public class NukiAccountExternalRepository: INukiAccountExternalRepository
 {
 	private readonly NukiExternalOptions _options;
-	private readonly ILogger<NukiExternalAuthenticationRepository> _logger;
+	private readonly ILogger<NukiAccountExternalRepository> _logger;
 
-	public NukiExternalAuthenticationRepository(IOptions<NukiExternalOptions> options, ILogger<NukiExternalAuthenticationRepository> logger)
+	public NukiAccountExternalRepository(IOptions<NukiExternalOptions> options, ILogger<NukiAccountExternalRepository> logger)
 	{
 		_options = options.Value;
 		_logger = logger;
@@ -68,36 +69,62 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 	public async Task<Result<NukiAccountExternalResponseDto>> GetNukiAccount(NukiAccountExternalRequestDto nukiAccountExternalRequestDto)
 	{
 		if (string.IsNullOrWhiteSpace(nukiAccountExternalRequestDto.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
+		Url redirectUriClientId;
 		try
 		{
-			var redirectUriClientId = $"{_options.MainDomain}"
+			redirectUriClientId = $"{_options.MainDomain}"
 				.AppendPathSegment(_options.RedirectUriForCode)
 				.AppendPathSegment(nukiAccountExternalRequestDto.ClientId);
+		}
+		catch (ArgumentNullException e)
+		{
+			return Result.Fail(new InvalidParametersError("options"));
+		}
+		
+		var result = await AuthRequest(nukiAccountExternalRequestDto.ClientId, new
+		{
+			client_id = nukiAccountExternalRequestDto.ClientId,
+			client_secret = _options.ClientSecret,
+			grant_type = "authorization_code",
+			code = nukiAccountExternalRequestDto.Code,
+			redirect_uri = redirectUriClientId.ToString()
+		});
+		return result;
+	}
 
+	/// <summary>
+	///  Update the authentication token with refresh token
+	/// </summary>
+	/// <param name="nukiAccountExternalRequestDto"></param>
+	/// <returns></returns>
+	public async Task<Result<NukiAccountExternalResponseDto>> RefreshToken(NukiAccountExternalRequestDto nukiAccountExternalRequestDto)
+	{
+		if (string.IsNullOrWhiteSpace(nukiAccountExternalRequestDto.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
+
+		return await AuthRequest(nukiAccountExternalRequestDto.ClientId, new
+		{
+			client_id = nukiAccountExternalRequestDto.ClientId,
+			client_secret = _options.ClientSecret,
+			grant_type = "refresh_token",
+			refresh_token = nukiAccountExternalRequestDto.RefreshToken,
+		});
+	}
+
+	private async Task<Result<NukiAccountExternalResponseDto>> AuthRequest(string clientId, object postBody)
+	{
+		try
+		{
 			var response = await $"{_options.BaseUrl}"
 				.AppendPathSegment("oauth")
 				.AppendPathSegment("token")
-				.PostJsonAsync(new
-				{
-					client_id = nukiAccountExternalRequestDto.ClientId,
-					client_secret = _options.ClientSecret,
-					grant_type = "authorization_code",
-					code = nukiAccountExternalRequestDto.Code,
-					redirect_uri = redirectUriClientId.ToString()
-				}).ReceiveJson<NukiAccountExternalResponseDto>();
-			// var response = new NukiAccountExternalResponseDto()
-			// {
-			// 	Token = _options.TempToken,
-			// 	RefreshToken =  _options.TempToken,
-			// 	TokenType = "bearer",
-			// 	TokenExpiresIn = 2592000
-			// };
-			
+				.PostJsonAsync(postBody).ReceiveJson<NukiAccountExternalResponseDto>();
+
 			if (response is null)
 			{
 				return Result.Fail(new UnableToParseResponseError("Response is null"));
 			}
-			response.ClientId = nukiAccountExternalRequestDto.ClientId;
+
+			response.ClientId = clientId;
 			return response;
 		}
 		#region ErrorManagement
@@ -106,7 +133,7 @@ public class NukiExternalAuthenticationRepository: INukiExternalAuthenticationRe
 			_logger.LogError(ex, "Error while retrieving tokens from Nuki Web");
 			if (ex.StatusCode == (int)HttpStatusCode.Unauthorized)
 			{
-				var error = await ex.GetResponseJsonAsync<NukiAccountExternalResponseDto>();
+				var error = await ex.GetResponseJsonAsync<NukiErrorExternalResponseDto>();
 				if (error?.Error != null && error.Error.Contains("invalid"))
 					return Result.Fail(new InvalidParametersError(error.Error + ": " + error.ErrorMessage));
 				return Result.Fail(new UnauthorizedAccessError());

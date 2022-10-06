@@ -8,26 +8,26 @@ namespace Kerbero.Domain.NukiAuthentication.Interactors;
 
 public class CreateNukiAccountInteractor: InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto>
 {
-	private readonly INukiPersistentAccountRepository _nukiPersistentAccountRepository;
-	private readonly INukiExternalAuthenticationRepository _nukiExternalAuthenticationRepository;
+	private readonly INukiAccountPersistentRepository _nukiAccountPersistentRepository;
+	private readonly INukiAccountExternalRepository _nukiAccountExternalRepository;
 
-	public CreateNukiAccountInteractor(INukiPersistentAccountRepository nukiPersistentAccountRepository, 
-		INukiExternalAuthenticationRepository nukiExternalAuthenticationRepository)
+	public CreateNukiAccountInteractor(INukiAccountPersistentRepository nukiAccountPersistentRepository, 
+		INukiAccountExternalRepository nukiAccountExternalRepository)
 	{
-		_nukiExternalAuthenticationRepository = nukiExternalAuthenticationRepository;
-		_nukiPersistentAccountRepository = nukiPersistentAccountRepository;
+		_nukiAccountExternalRepository = nukiAccountExternalRepository;
+		_nukiAccountPersistentRepository = nukiAccountPersistentRepository;
 	}
 
 	public async Task<Result<NukiAccountPresentationDto>> Handle(NukiAccountExternalRequestDto externalRequestDto)
 	{
-		var extRes = await _nukiExternalAuthenticationRepository.GetNukiAccount(externalRequestDto);
+		var extRes = await _nukiAccountExternalRepository.GetNukiAccount(externalRequestDto);
 
 		if (!extRes.IsSuccess)
 		{
 			return Result.Fail(extRes.Errors);
 		}
 		var nukiAccount = NukiAccountMapper.MapToEntity(extRes.Value);
-		var persistentResult = await _nukiPersistentAccountRepository.Create(nukiAccount);
+		var persistentResult = await _nukiAccountPersistentRepository.Create(nukiAccount);
 
 		return persistentResult.IsSuccess ? // isSuccess
 			Result.Ok(NukiAccountMapper.MapToPresentation(persistentResult.Value)) : Result.Fail(persistentResult.Errors);
