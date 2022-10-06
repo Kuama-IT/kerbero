@@ -1,6 +1,6 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Domain.NukiAuthentication.Interactors;
 using Kerbero.Domain.NukiAuthentication.Models;

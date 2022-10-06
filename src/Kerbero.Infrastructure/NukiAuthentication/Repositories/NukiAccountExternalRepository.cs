@@ -1,12 +1,9 @@
-using System.Net;
 using FluentResults;
 using Flurl;
-using Flurl.Http;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.Common.Errors.CommonErrors;
-using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
+using Kerbero.Infrastructure.Common.Extensions;
 using Kerbero.Infrastructure.NukiAuthentication.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,7 +16,8 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 	private readonly NukiExternalOptions _options;
 	private readonly ILogger<NukiAccountExternalRepository> _logger;
 
-	public NukiAccountExternalRepository(IOptions<NukiExternalOptions> options, ILogger<NukiAccountExternalRepository> logger)
+	public NukiAccountExternalRepository(IOptions<NukiExternalOptions> options,
+		ILogger<NukiAccountExternalRepository> logger)
 	{
 		_options = options.Value;
 		_logger = logger;
@@ -78,6 +76,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 		}
 		catch (ArgumentNullException e)
 		{
+			_logger.LogError(e, "Error while calling nuki Apis with request: {Message}", e.Message);
 			return Result.Fail(new InvalidParametersError("options"));
 		}
 		
@@ -112,49 +111,17 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 
 	private async Task<Result<NukiAccountExternalResponseDto>> AuthRequest(string clientId, object postBody)
 	{
-		try
-		{
-			var response = await $"{_options.BaseUrl}"
-				.AppendPathSegment("oauth")
-				.AppendPathSegment("token")
-				.PostJsonAsync(postBody).ReceiveJson<NukiAccountExternalResponseDto>();
+		var response = await $"{_options.BaseUrl}"
+			.AppendPathSegment("oauth")
+			.AppendPathSegment("token")
+			.NukiPostJsonAsync<NukiAccountExternalResponseDto>(postBody, _logger);
 
-			if (response is null)
-			{
-				return Result.Fail(new UnableToParseResponseError("Response is null"));
-			}
-
-			response.ClientId = clientId;
-			return response;
-		}
-		#region ErrorManagement
-		catch (FlurlHttpException ex)
+		if (response.IsFailed)
 		{
-			_logger.LogError(ex, "Error while retrieving tokens from Nuki Web");
-			if (ex.StatusCode == (int)HttpStatusCode.Unauthorized)
-			{
-				var error = await ex.GetResponseJsonAsync<NukiErrorExternalResponseDto>();
-				if (error?.Error != null && error.Error.Contains("invalid"))
-					return Result.Fail(new InvalidParametersError(error.Error + ": " + error.ErrorMessage));
-				return Result.Fail(new UnauthorizedAccessError());
-			}
-
-			if (ex.StatusCode == (int)HttpStatusCode.RequestTimeout || ex.StatusCode % 100 == 5)
-			{
-				return Result.Fail(new ExternalServiceUnreachableError());
-			}
-
-			return Result.Fail(new UnknownExternalError());
-		}
-		catch (ArgumentNullException)
-		{
-			return Result.Fail(new InvalidParametersError("options"));
-		}
-		catch
-		{
-			return Result.Fail(new KerberoError());
+			return response.ToResult();
 		}
 
-		#endregion
+		response.Value.ClientId = clientId;
+		return response;
 	}
 }

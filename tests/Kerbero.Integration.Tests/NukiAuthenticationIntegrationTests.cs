@@ -78,7 +78,7 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 		_httpTest.ShouldHaveMadeACall();
 		var presentationDto = await response.Content.ReadFromJsonAsync<NukiAccountPresentationDto>();
 		presentationDto.Should().NotBeNull();
-		presentationDto.ClientId.Should().Be(clientId);
+		presentationDto?.ClientId.Should().Be(clientId);
 	}
 	
 	[Fact]
@@ -101,7 +101,7 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 		response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
-		resJson["message"].Should().NotBeNull();
+		resJson?["message"].Should().NotBeNull();
 	}
 	
 	[Fact]
@@ -120,7 +120,7 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 		response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
-		resJson["message"].Should().NotBeNull();
+		resJson?["message"].Should().NotBeNull();
 		
 	}	
 	
@@ -144,7 +144,7 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 		response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
-		resJson["message"].Should().NotBeNull();
+		resJson?["message"].Should().NotBeNull();
 	}	
 	
 	private class KerberoWebApplicationFactory<TStartup>
@@ -222,7 +222,7 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 		redirect.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 		var resJson = await redirect.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
-		resJson["message"].Should().NotBeNull();
+		resJson?["message"].Should().NotBeNull();
 	}
 	
 	[Fact]
@@ -239,7 +239,7 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 		response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
-		resJson["message"].Should().NotBeNull();
+		resJson?["message"].Should().NotBeNull();
 	}
 
 	private class KerberoWebApplicationFactory<TStartup>
@@ -252,7 +252,7 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 			{
 				services.Configure<NukiExternalOptions>(opts =>
 				{
-					opts.RedirectUriForCode = null;
+					opts.RedirectUriForCode = null!;
 				});
 			});
 			

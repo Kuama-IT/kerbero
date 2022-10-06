@@ -2,8 +2,6 @@ using System.Net;
 using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.Common.Errors.CommonErrors;
-using Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Controllers;
@@ -56,8 +54,8 @@ public class NukiAuthenticationControllerTest
 		// Assert
 		var ex = _controller.RedirectByClientId("VALID_CLIENT_ID") as ObjectResult;
 		ex.Should().NotBeNull();
-		ex.StatusCode.Should().Be(400);
-		ex.Value.Should().BeOfType<InvalidParametersError>();
+		ex?.StatusCode.Should().Be(400);
+		ex?.Value.Should().BeOfType<InvalidParametersError>();
 		return Task.CompletedTask;
 	}
 	
@@ -78,7 +76,7 @@ public class NukiAuthenticationControllerTest
 		var response = result.Result as ObjectResult;
 		// Assert
 		_interactorToken.Verify(c => 
-			c.Handle(It.Is<NukiAccountExternalRequestDto>( p => p.Code.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
+			c.Handle(It.Is<NukiAccountExternalRequestDto>( p => p.Code!.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
 		response?.Value.Should().BeOfType<NukiAccountPresentationDto>();
 		response?.Value.Should().BeEquivalentTo(shouldResponseDto);
 	}
@@ -108,7 +106,7 @@ public class NukiAuthenticationControllerTest
 	
 		// Assert
 		var content = (await _controller.RetrieveTokenByCode("VALID_CLIENT_ID", "VALID_CODE")).Result as ObjectResult;
-		content.Value.Should().NotBeNull().And.BeEquivalentTo(error);
+		content?.Value.Should().NotBeNull().And.BeEquivalentTo(error);
 		switch (error)
 		{
 			case InvalidParametersError:
