@@ -28,4 +28,8 @@
       <ProjectReference Include="..\..\src\Kerbero.Infrastructure\Kerbero.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="NukiAuthentication" />
+    </ItemGroup>
+
 </Project>

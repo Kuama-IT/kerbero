@@ -1,4 +1,4 @@
-namespace Kerbero.Domain.Common.Errors.CreateNukiAccountErrors;
+namespace Kerbero.Domain.Common.Errors;
 
 public class UnauthorizedAccessError: KerberoError
 {

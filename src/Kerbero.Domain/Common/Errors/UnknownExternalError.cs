@@ -1,4 +1,4 @@
-namespace Kerbero.Domain.Common.Errors.CommonErrors;
+namespace Kerbero.Domain.Common.Errors;
 
 public class UnknownExternalError: KerberoError
 {
