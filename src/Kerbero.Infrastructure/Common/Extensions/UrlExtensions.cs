@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Kerbero.Infrastructure.Common.Extensions;
 
-public static class GeneratedExtensions
+public static class UrlExtensions
 {
     public static async Task<Result<TResponse>> NukiPostJsonAsync<TResponse>(this Url url, object body, ILogger logger)
     {
