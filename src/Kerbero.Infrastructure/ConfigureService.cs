@@ -22,7 +22,6 @@ public static class ConfigureService
 		services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 		services.AddScoped<INukiAccountPersistentRepository, NukiAccountPersistentRepository>();
 		services.AddScoped<INukiAccountExternalRepository, NukiAccountExternalRepository>();
-		services.AddScoped<InteractorAsync<NukiAccountAuthenticatedRequestDto, NukiAccountAuthenticatedResponseDto>, GetNukiAccountInteractor>();
 		return services;
 	}
 }
