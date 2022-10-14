@@ -9,8 +9,7 @@ using Kerbero.Domain.NukiAuthentication.Repositories;
 namespace Kerbero.Domain.NukiActions.Interactors;
 
 public class
-	GetNukiSmartLocksListInteractor : InteractorAsync<NukiAuthenticatedRequestDto,
-		NukiSmartLocksListPresentationDto>
+	GetNukiSmartLocksListInteractor : InteractorAsyncNoParam<NukiSmartLocksListPresentationDto>
 {
 	private readonly INukiSmartLockExternalRepository _nukiSmartLockClient;
 
@@ -19,11 +18,10 @@ public class
 		_nukiSmartLockClient = nukiSmartLockClient;
 	}
 
-	public async Task<Result<NukiSmartLocksListPresentationDto>> Handle(
-		NukiAuthenticatedRequestDto nukiAuthenticatedRequestDto)
+	public async Task<Result<NukiSmartLocksListPresentationDto>> Handle()
 	{
 
-		var smartLockList = await _nukiSmartLockClient.GetNukiSmartLockList(nukiAuthenticatedRequestDto.KerberoAccountId);
+		var smartLockList = await _nukiSmartLockClient.GetNukiSmartLockList();
 		if (smartLockList.IsFailed)
 		{
 			return Result.Fail(smartLockList.Errors);
