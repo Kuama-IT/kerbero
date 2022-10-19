@@ -1,6 +1,8 @@
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.WebApi.Models.CustomActionResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,8 +12,8 @@ namespace Kerbero.WebApi.Controllers;
 [Route("nuki/auth")]
 public class NukiAuthenticationController: ControllerBase
 {
-	private readonly Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto> _provideRedirectUrlInteractor;
-	private readonly InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto> _createAccountInteractor;
+	private readonly Interactor<NukiRedirectPresentationRequest, NukiRedirectPresentationResponse> _provideRedirectUrlInteractor;
+	private readonly InteractorAsync<NukiAccountPresentationRequest, NukiAccountPresentationResponse> _createAccountInteractor;
 
 	public NukiAuthenticationController(IProvideNukiAuthRedirectUrlInteractor provideRedirectUrlInteractor,
 		ICreateNukiAccountInteractor createAccountInteractor)
@@ -27,7 +29,7 @@ public class NukiAuthenticationController: ControllerBase
 	[HttpGet("start")]
 	public ActionResult RedirectByClientId(string clientId)
 	{
-		var interactorResponse = _provideRedirectUrlInteractor.Handle(new NukiRedirectExternalRequestDto(clientId));
+		var interactorResponse = _provideRedirectUrlInteractor.Handle(new NukiRedirectPresentationRequest(clientId));
 		if (interactorResponse.IsSuccess)
 			return Redirect(interactorResponse.Value.RedirectUri.ToString());
 		
@@ -43,9 +45,9 @@ public class NukiAuthenticationController: ControllerBase
 	/// <param name="code"></param>
 	/// <returns></returns>
 	[HttpGet("token/{clientId}")]
-	public async Task<ActionResult<NukiAccountPresentationDto>> RetrieveTokenByCode(string clientId, string code)
+	public async Task<ActionResult<NukiAccountPresentationResponse>> RetrieveTokenByCode(string clientId, string code)
 	{
-		var interactorResponse = await _createAccountInteractor.Handle(new NukiAccountExternalRequestDto
+		var interactorResponse = await _createAccountInteractor.Handle(new NukiAccountPresentationRequest
 		{
 			Code = code,
 			ClientId = clientId

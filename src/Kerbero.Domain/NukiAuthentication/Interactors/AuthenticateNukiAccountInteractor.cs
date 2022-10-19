@@ -1,10 +1,12 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
-using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Mappers;
 using Kerbero.Domain.NukiAuthentication.Models;
-using Kerbero.Domain.NukiAuthentication.Models.AccountMapper;
+using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 
 namespace Kerbero.Domain.NukiAuthentication.Interactors;
@@ -29,11 +31,11 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
     /// If the account has expired token, it calls the refresh token
     /// Update the persistent entry and return the authenticated account
     /// </summary>
-    /// <param name="request"></param>
+    /// <param name="repositoryPresentationRequest"></param>
     /// <returns></returns>
-    public async Task<Result<NukiAccountAuthenticatedResponseDto>> Handle(NukiAccountAuthenticatedRequestDto request)
+    public async Task<Result<AuthenticateRepositoryPresentationResponse>> Handle(AuthenticateRepositoryPresentationRequest repositoryPresentationRequest)
     {
-        var account = _nukiAccountPersistentRepository.GetAccount(request.NukiAccountId);
+        var account = _nukiAccountPersistentRepository.GetAccount(repositoryPresentationRequest.NukiAccountId);
         if (account.IsFailed || account.Value == null)
         {
             return Result.Fail(new UnauthorizedAccessError());
@@ -42,7 +44,7 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
         // Refresh token
         if (account.Value.ExpiryDate < DateTime.Now)
         {
-            var extRes = await _nukiAccountExternalRepository.RefreshToken(new NukiAccountExternalRequestDto
+            var extRes = await _nukiAccountExternalRepository.RefreshToken(new NukiAccountExternalRequest
             {
                 ClientId = account.Value.ClientId,
                 RefreshToken = account.Value.RefreshToken

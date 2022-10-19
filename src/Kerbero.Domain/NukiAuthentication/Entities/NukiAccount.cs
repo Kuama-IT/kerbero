@@ -2,7 +2,7 @@ namespace Kerbero.Domain.NukiAuthentication.Entities;
 public class NukiAccount
 {
 	public int Id { get; set; }
-	public string? Token { get; set; } = null!;
+	public string? Token { get; set; }
 	public string RefreshToken { get; set; } = null!;
 	public int TokenExpiringTimeInSeconds { get; set; }
 	public DateTime ExpiryDate { get; set; }

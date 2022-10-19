@@ -35,4 +35,7 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { }
+namespace Kerbero.WebApi
+{
+	public partial class Program { }
+}

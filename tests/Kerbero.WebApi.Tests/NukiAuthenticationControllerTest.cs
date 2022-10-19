@@ -2,11 +2,9 @@ using System.Net;
 using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
-using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -30,8 +28,8 @@ public class NukiAuthenticationControllerTest
 	public void RedirectForCode_AndRedirect_Test()
 	{
 		// Arrange
-		_interactorCode.Setup(c => c.Handle(It.IsAny<NukiRedirectExternalRequestDto>()))
-			.Returns(Result.Ok(new NukiRedirectPresentationDto(new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
+		_interactorCode.Setup(c => c.Handle(It.IsAny<NukiRedirectPresentationRequest>()))
+			.Returns(Result.Ok(new NukiRedirectPresentationResponse(new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
 			                           "&client_id=v7kn_NX7vQ7VjQdXFGK43g" +
 			                           "&redirect_uri=https://test.com/nuki/code/v7kn_NX7vQ7VjQdXFGK43g" + 
 			                           "&scope=account notification smartlock smartlock.readOnly smartlock.action" +
@@ -41,7 +39,7 @@ public class NukiAuthenticationControllerTest
 		var redirect = _controller.RedirectByClientId("VALID_CLIENT_ID");
 
 		// Assert
-		_interactorCode.Verify(c => c.Handle(It.Is<NukiRedirectExternalRequestDto>(s => s.ClientId.Contains("VALID_CLIENT_ID"))));
+		_interactorCode.Verify(c => c.Handle(It.Is<NukiRedirectPresentationRequest>(s => s.ClientId.Contains("VALID_CLIENT_ID"))));
 		redirect.Should().BeOfType<RedirectResult>();
 	}
 	
@@ -49,7 +47,7 @@ public class NukiAuthenticationControllerTest
 	public Task RedirectForCode_ReturnInvalidParameters_Test()
 	{
 		// Arrange
-		_interactorCode.Setup(c => c.Handle(It.IsAny<NukiRedirectExternalRequestDto>()))
+		_interactorCode.Setup(c => c.Handle(It.IsAny<NukiRedirectPresentationRequest>()))
 			.Returns(Result.Fail(new InvalidParametersError("client_id")));
 		
 		// Act
@@ -66,12 +64,12 @@ public class NukiAuthenticationControllerTest
 	public async Task RetrieveToken_Success_Test()
 	{
 		// Arrange
-		var shouldResponseDto = new NukiAccountPresentationDto
+		var shouldResponseDto = new NukiAccountPresentationResponse
 		{
 			Id = 1,
 			ClientId = "VALID_CLIENT_ID"
 		};
-		_interactorToken.Setup(c => c.Handle(It.IsAny<NukiAccountExternalRequestDto>()))
+		_interactorToken.Setup(c => c.Handle(It.IsAny<NukiAccountPresentationRequest>()))
 			.Returns(async () => await Task.FromResult(Result.Ok(shouldResponseDto)));
 
 		// Act
@@ -79,8 +77,8 @@ public class NukiAuthenticationControllerTest
 		var response = result.Result as ObjectResult;
 		// Assert
 		_interactorToken.Verify(c => 
-			c.Handle(It.Is<NukiAccountExternalRequestDto>( p => p.Code!.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
-		response?.Value.Should().BeOfType<NukiAccountPresentationDto>();
+			c.Handle(It.Is<NukiAccountPresentationRequest>( p => p.Code!.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
+		response?.Value.Should().BeOfType<NukiAccountPresentationResponse>();
 		response?.Value.Should().BeEquivalentTo(shouldResponseDto);
 	}
 	
@@ -102,7 +100,7 @@ public class NukiAuthenticationControllerTest
 	public async Task RetrieveToken_KerberoError_Test(KerberoError error)
 	{
 		// Arrange
-		_interactorToken.Setup(c => c.Handle(It.IsAny<NukiAccountExternalRequestDto>()))
+		_interactorToken.Setup(c => c.Handle(It.IsAny<NukiAccountPresentationRequest>()))
 			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 		
 		// Act

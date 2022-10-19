@@ -1,9 +1,11 @@
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 
 namespace Kerbero.Domain.NukiAuthentication.Interfaces;
 
-public interface IProvideNukiAuthRedirectUrlInteractor: Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto>
+public interface IProvideNukiAuthRedirectUrlInteractor: Interactor<NukiRedirectPresentationRequest, NukiRedirectPresentationResponse>
 {
     
 }

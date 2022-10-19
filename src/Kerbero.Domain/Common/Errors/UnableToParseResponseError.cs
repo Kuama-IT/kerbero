@@ -1,6 +1,4 @@
-using Kerbero.Domain.Common.Errors;
-
-namespace Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
+namespace Kerbero.Domain.Common.Errors;
 
 public class UnableToParseResponseError: KerberoError
 {
