@@ -1,17 +1,17 @@
 using FluentResults;
-using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Mappers;
 using Kerbero.Domain.NukiActions.Repositories;
 
 namespace Kerbero.Domain.NukiActions.Interactors;
 
 public class
-	GetNukiSmartLocksListInteractor : InteractorAsyncNoParam<List<KerberoSmartLockPresentationDto>>
+	GetNukiSmartLockListInteractor : IGetNukiSmartLockListInteractor
 {
 	private readonly INukiSmartLockExternalRepository _nukiSmartLockClient;
 
-	public GetNukiSmartLocksListInteractor(INukiSmartLockExternalRepository nukiSmartLockClient)
+	public GetNukiSmartLockListInteractor(INukiSmartLockExternalRepository nukiSmartLockClient)
 	{
 		_nukiSmartLockClient = nukiSmartLockClient;
 	}

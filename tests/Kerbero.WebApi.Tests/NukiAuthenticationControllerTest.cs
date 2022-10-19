@@ -5,6 +5,7 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
 using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
+using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,13 @@ namespace Kerbero.WebApi.Tests;
 public class NukiAuthenticationControllerTest
 {
 	private readonly NukiAuthenticationController _controller;
-	private readonly Mock<InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto>> _interactorToken;
-	private readonly Mock<Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto>> _interactorCode;
+	private readonly Mock<ICreateNukiAccountInteractor> _interactorToken;
+	private readonly Mock<IProvideNukiAuthRedirectUrlInteractor> _interactorCode;
 
 	public NukiAuthenticationControllerTest()
 	{
-		_interactorToken = new Mock<InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto>>();
-		_interactorCode = new Mock<Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto>>();
+		_interactorToken = new Mock<ICreateNukiAccountInteractor>();
+		_interactorCode = new Mock<IProvideNukiAuthRedirectUrlInteractor>();
 		_controller = new NukiAuthenticationController(_interactorCode.Object, _interactorToken.Object);
 	}
 	
