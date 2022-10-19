@@ -24,7 +24,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
         _logger = logger;
     }
     
-    public Task<Result<NukiSmartLocksListExternalResponseDto>> GetNukiSmartLockList()
+    public Task<Result<List<NukiSmartLockExternalResponseDto>>> GetNukiSmartLockList()
     {
         throw new NotImplementedException();
     }

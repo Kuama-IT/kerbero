@@ -1,15 +1,13 @@
 using FluentResults;
-using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.NukiActions.Models;
-using Kerbero.Domain.NukiActions.Models.Mapper;
+using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiActions.Mappers;
 using Kerbero.Domain.NukiActions.Repositories;
-using Kerbero.Domain.NukiAuthentication.Repositories;
 
 namespace Kerbero.Domain.NukiActions.Interactors;
 
 public class
-	GetNukiSmartLocksListInteractor : InteractorAsyncNoParam<NukiSmartLocksListPresentationDto>
+	GetNukiSmartLocksListInteractor : InteractorAsyncNoParam<List<KerberoSmartLockPresentationDto>>
 {
 	private readonly INukiSmartLockExternalRepository _nukiSmartLockClient;
 
@@ -18,7 +16,7 @@ public class
 		_nukiSmartLockClient = nukiSmartLockClient;
 	}
 
-	public async Task<Result<NukiSmartLocksListPresentationDto>> Handle()
+	public async Task<Result<List<KerberoSmartLockPresentationDto>>> Handle()
 	{
 
 		var smartLockList = await _nukiSmartLockClient.GetNukiSmartLockList();
@@ -26,8 +24,9 @@ public class
 		{
 			return Result.Fail(smartLockList.Errors);
 		}
-		
-		var mapped = NukiSmartLockListMapper.Map(smartLockList.Value);
+
+		var mapped = smartLockList.Value.Select(NukiSmartLockMapper.Map).ToList();
+
 		return Result.Ok(mapped);
 	}
 }

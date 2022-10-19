@@ -6,6 +6,6 @@ namespace Kerbero.Domain.NukiActions.Repositories;
 
 public interface INukiSmartLockExternalRepository
 {
-	Task<Result<NukiSmartLocksListExternalResponseDto>> GetNukiSmartLockList();
+	Task<Result<List<NukiSmartLockExternalResponseDto>>> GetNukiSmartLockList();
 	void Authenticate(NukiAccount nukiAccount);
 }

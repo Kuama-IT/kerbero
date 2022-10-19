@@ -7,7 +7,7 @@ public class NukiSmartLockExternalResponseDto
 	public int Type { get; set; }
 	public int LmType { get; set; }
 	public int AuthId { get; set; }
-	public string Name { get; set; }
+	public string Name { get; set; } = null!;
 	public bool Favourite { get; set; }
-	public NukiSmartLockState State { get; set; }
+	public NukiSmartLockStateExternalDto? State { get; set; }
 }
