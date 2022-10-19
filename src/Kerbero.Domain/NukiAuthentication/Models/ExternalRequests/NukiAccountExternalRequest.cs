@@ -1,6 +1,6 @@
-namespace Kerbero.Domain.NukiAuthentication.Models;
+namespace Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 
-public class NukiAccountExternalRequestDto
+public class NukiAccountExternalRequest
 {
 	public string ClientId { get; init; } = null!;
 	

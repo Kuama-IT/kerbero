@@ -4,8 +4,10 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.NukiAuthentication.Options;
+using Kerbero.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -76,7 +78,7 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 				$"/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 					+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
 		_httpTest.ShouldHaveMadeACall();
-		var presentationDto = await response.Content.ReadFromJsonAsync<NukiAccountPresentationDto>();
+		var presentationDto = await response.Content.ReadFromJsonAsync<NukiAccountPresentationResponse>();
 		presentationDto.Should().NotBeNull();
 		presentationDto?.ClientId.Should().Be(clientId);
 	}

@@ -3,9 +3,11 @@ using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Entities;
-using Kerbero.Domain.NukiAuthentication.Errors.CreateNukiAccountErrors;
 using Kerbero.Domain.NukiAuthentication.Interactors;
 using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
+using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
+using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
@@ -42,7 +44,7 @@ public class GetNukiAccountInteractorTests
             });
         _nukiSmartLockClient.Setup(c => c.Authenticate(It.IsAny<NukiAccount>()));
         
-        var response = await _interactor.Handle(new NukiAccountAuthenticatedRequestDto
+        var response = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
             NukiAccountId = 0
         });
@@ -73,7 +75,7 @@ public class GetNukiAccountInteractorTests
 
         _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
             .Returns(nukiAccount);
-        _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequestDto>()))
+        _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequest>()))
             .Returns(Task.FromResult(Result.Ok(new NukiAccountExternalResponseDto
             {
                 Token = "VALID_TOKEN",
@@ -86,7 +88,7 @@ public class GetNukiAccountInteractorTests
             .Returns(Task.FromResult(Result.Ok(nukiAccount)));
         _nukiSmartLockClient.Setup(c => c.Authenticate(It.IsAny<NukiAccount>()));
         
-        var response = await _interactor.Handle(new NukiAccountAuthenticatedRequestDto
+        var response = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
             NukiAccountId = 0
         });
@@ -94,7 +96,7 @@ public class GetNukiAccountInteractorTests
         response.IsSuccess.Should().BeTrue();
         _persistent.Verify(c => c.GetAccount(It.IsAny<int>()));
         _nukiAccountClient.Verify(c => 
-            c.RefreshToken(It.Is<NukiAccountExternalRequestDto>(n => n.RefreshToken == "VALID_REFRESH_TOKEN")));
+            c.RefreshToken(It.Is<NukiAccountExternalRequest>(n => n.RefreshToken == "VALID_REFRESH_TOKEN")));
         _persistent.Verify(c => c.Update(It.Is<NukiAccount>(p => 
                 p.Token == "VALID_TOKEN" &&
                 p.RefreshToken == "VALID_REFRESH_TOKEN" &&
@@ -116,7 +118,7 @@ public class GetNukiAccountInteractorTests
         _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
             .Returns( () =>  Result.Fail(new UnauthorizedAccessError()));
         
-        var result = await _interactor.Handle(new NukiAccountAuthenticatedRequestDto
+        var result = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
             NukiAccountId = 12
         });
@@ -141,10 +143,10 @@ public class GetNukiAccountInteractorTests
         };
         _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
             .Returns(nukiAccount);
-        _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequestDto>()))
+        _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequest>()))
             .Returns(async () => await  Task.FromResult(Result.Fail(new ExternalServiceUnreachableError())));
 
-        var response = await _interactor.Handle(new NukiAccountAuthenticatedRequestDto
+        var response = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
             NukiAccountId = 0
         });
@@ -152,7 +154,7 @@ public class GetNukiAccountInteractorTests
         response.IsFailed.Should().BeTrue();
         _persistent.Verify(c => c.GetAccount(It.IsAny<int>()));
         _nukiAccountClient.Verify(c => 
-            c.RefreshToken(It.Is<NukiAccountExternalRequestDto>(n => n.RefreshToken == "VALID_REFRESH_TOKEN")));
+            c.RefreshToken(It.Is<NukiAccountExternalRequest>(n => n.RefreshToken == "VALID_REFRESH_TOKEN")));
         response.Errors.First().Should().BeEquivalentTo(new ExternalServiceUnreachableError());
     }
     

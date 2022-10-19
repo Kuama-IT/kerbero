@@ -1,6 +1,4 @@
-using Kerbero.Domain.Common.Errors;
-
-namespace Kerbero.Domain.NukiAuthentication.Errors.CommonErrors;
+namespace Kerbero.Domain.Common.Errors;
 
 public class UnknownExternalError: KerberoError
 {

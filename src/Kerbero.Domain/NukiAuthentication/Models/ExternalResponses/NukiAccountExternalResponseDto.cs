@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Kerbero.Domain.NukiAuthentication.Models;
+namespace Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 
 public class NukiAccountExternalResponseDto
 {

@@ -1,6 +1,6 @@
-namespace Kerbero.Domain.NukiAuthentication.Models;
+namespace Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 
-public class NukiAccountAuthenticatedResponseDto
+public class AuthenticateRepositoryPresentationResponse
 {
     public int NukiAccountId { get; init; }
     
