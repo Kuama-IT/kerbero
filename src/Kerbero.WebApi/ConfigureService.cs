@@ -1,5 +1,4 @@
 using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Interactors;
 using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Models;

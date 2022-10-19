@@ -1,18 +1,19 @@
-using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Models;
+using Kerbero.Domain.NukiActions.Models.ExternalResponses;
+using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 
 namespace Kerbero.Domain.NukiActions.Mappers;
 
 public static class NukiSmartLockMapper
 {
-    public static KerberoSmartLockPresentationDto Map(NukiSmartLockExternalResponseDto nukiSmartLockExternalResponseDto)
+    public static KerberoSmartLockPresentationRequest Map(NukiSmartLockExternalResponse nukiSmartLockExternalResponse)
     {
-        return new KerberoSmartLockPresentationDto
+        return new KerberoSmartLockPresentationRequest
         {
-            ExternalName = nukiSmartLockExternalResponseDto.Name,
-            ExternalType = nukiSmartLockExternalResponseDto.Type,
-            ExternalAccountId = nukiSmartLockExternalResponseDto.AccountId,
-            ExternalSmartLockId = nukiSmartLockExternalResponseDto.AuthId
+            ExternalName = nukiSmartLockExternalResponse.Name,
+            ExternalType = nukiSmartLockExternalResponse.Type,
+            ExternalAccountId = nukiSmartLockExternalResponse.AccountId,
+            ExternalSmartLockId = nukiSmartLockExternalResponse.AuthId
         };
     }
 }

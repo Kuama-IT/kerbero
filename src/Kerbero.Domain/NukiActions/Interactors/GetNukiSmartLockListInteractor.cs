@@ -1,7 +1,7 @@
 using FluentResults;
-using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Mappers;
+using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Repositories;
 
 namespace Kerbero.Domain.NukiActions.Interactors;
@@ -16,7 +16,7 @@ public class
 		_nukiSmartLockClient = nukiSmartLockClient;
 	}
 
-	public async Task<Result<List<KerberoSmartLockPresentationDto>>> Handle()
+	public async Task<Result<List<KerberoSmartLockPresentationRequest>>> Handle()
 	{
 
 		var smartLockList = await _nukiSmartLockClient.GetNukiSmartLockList();

@@ -1,6 +1,6 @@
-namespace Kerbero.Domain.Common.Models;
+namespace Kerbero.Domain.NukiActions.Models.PresentationRequest;
 
-public class KerberoSmartLockPresentationDto
+public class KerberoSmartLockPresentationRequest
 {
 	public string? ExternalName { get; set; }
 	public int ExternalType { get; set; }

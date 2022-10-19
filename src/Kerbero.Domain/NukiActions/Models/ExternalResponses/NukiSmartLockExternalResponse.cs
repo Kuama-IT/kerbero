@@ -1,6 +1,6 @@
-namespace Kerbero.Domain.NukiActions.Models;
+namespace Kerbero.Domain.NukiActions.Models.ExternalResponses;
 
-public class NukiSmartLockExternalResponseDto
+public class NukiSmartLockExternalResponse
 {
 	public int SmartLockId { get; set; }
 	public int AccountId { get; set; }
@@ -9,5 +9,5 @@ public class NukiSmartLockExternalResponseDto
 	public int AuthId { get; set; }
 	public string Name { get; set; } = null!;
 	public bool Favourite { get; set; }
-	public NukiSmartLockStateExternalDto? State { get; set; }
+	public NukiSmartLockStateExternalResponse? State { get; set; }
 }
