@@ -1,12 +1,13 @@
 using FluentResults;
 using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Models.AccountMapper;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 
 namespace Kerbero.Domain.NukiAuthentication.Interactors;
 
-public class CreateNukiAccountInteractor: InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto>
+public class CreateNukiAccountInteractor: ICreateNukiAccountInteractor
 {
 	private readonly INukiAccountPersistentRepository _nukiAccountPersistentRepository;
 	private readonly INukiAccountExternalRepository _nukiAccountExternalRepository;

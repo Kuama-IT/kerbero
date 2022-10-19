@@ -1,4 +1,5 @@
 using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Models.CustomActionResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,8 @@ public class NukiAuthenticationController: ControllerBase
 	private readonly Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto> _provideRedirectUrlInteractor;
 	private readonly InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto> _createAccountInteractor;
 
-	public NukiAuthenticationController(Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto> provideRedirectUrlInteractor,
-		InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto> createAccountInteractor)
+	public NukiAuthenticationController(IProvideNukiAuthRedirectUrlInteractor provideRedirectUrlInteractor,
+		ICreateNukiAccountInteractor createAccountInteractor)
 	{
 		_provideRedirectUrlInteractor = provideRedirectUrlInteractor;
 		_createAccountInteractor = createAccountInteractor;
