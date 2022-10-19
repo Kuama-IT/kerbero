@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Kerbero.Domain.NukiActions.Models;
+namespace Kerbero.Domain.NukiActions.Models.ExternalResponses;
 
-public class NukiSmartLockStateExternalDto
+public class NukiSmartLockStateExternalResponse
 {
 	[JsonPropertyName("mode")]
 	public int Mode { get; set; }

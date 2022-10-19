@@ -1,9 +1,9 @@
 using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 
 namespace Kerbero.Domain.NukiActions.Interfaces;
 
-public interface IGetNukiSmartLockListInteractor: InteractorAsyncNoParam<List<KerberoSmartLockPresentationDto>>
+public interface IGetNukiSmartLockListInteractor: InteractorAsyncNoParam<List<KerberoSmartLockPresentationRequest>>
 {
     
 }

@@ -1,6 +1,7 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models;
+using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.NukiAuthentication.Options;
@@ -24,7 +25,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
         _logger = logger;
     }
     
-    public Task<Result<List<NukiSmartLockExternalResponseDto>>> GetNukiSmartLockList()
+    public Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLockList()
     {
         throw new NotImplementedException();
     }
