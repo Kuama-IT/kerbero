@@ -1,4 +1,5 @@
 using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Interactors;
 using Kerbero.Domain.NukiActions.Models;
 using Kerbero.Domain.NukiActions.Repositories;
@@ -16,7 +17,7 @@ public static
 		services.AddScoped<Interactor<NukiRedirectExternalRequestDto, NukiRedirectPresentationDto>, ProvideNukiAuthRedirectUrlInteractor>();
 		services.AddScoped<InteractorAsync<NukiAccountExternalRequestDto, NukiAccountPresentationDto>, CreateNukiAccountInteractor>();
 		services.AddScoped<InteractorAsync<NukiAccountAuthenticatedRequestDto, NukiAccountAuthenticatedResponseDto>, AuthenticateNukiAccountInteractor>();
-		services.AddScoped<InteractorAsyncNoParam<NukiSmartLocksListPresentationDto>, GetNukiSmartLocksListInteractor>();
+		services.AddScoped<InteractorAsyncNoParam<List<KerberoSmartLockPresentationDto>>, GetNukiSmartLocksListInteractor>();
 		services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
 
 		return services;

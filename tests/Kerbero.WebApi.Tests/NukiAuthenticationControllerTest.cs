@@ -113,21 +113,21 @@ public class NukiAuthenticationControllerTest
 		{
 			case InvalidParametersError:
 			case DuplicateEntryError:
-				content.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+				content?.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
 				break;
 			case ExternalServiceUnreachableError:
 			case PersistentResourceNotAvailableError:
 			case UnknownExternalError:
-				content.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
+				content?.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
 				break;
 			case UnableToParseResponseError:
-				content.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
+				content?.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
 				break;
 			case UnauthorizedAccessError:
-				content.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
+				content?.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
 				break;
 			case not null:
-				content.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+				content?.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
 				break;
 		}
 	}
