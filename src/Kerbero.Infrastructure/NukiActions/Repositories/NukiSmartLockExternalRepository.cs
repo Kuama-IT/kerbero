@@ -15,8 +15,6 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 	private readonly NukiExternalOptions _options;
 	private readonly ILogger<NukiSmartLockExternalRepository> _logger;
 
-	public bool IsAuthenticated => !string.IsNullOrEmpty(Token);
-
 	public NukiSmartLockExternalRepository(IOptions<NukiExternalOptions> options, 
 		ILogger<NukiSmartLockExternalRepository> logger)
 	{
@@ -24,19 +22,12 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 		_logger = logger;
 	}
 	
-	public async Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks()
+	public async Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks(string accessToken)
 	{
-		if (!IsAuthenticated)
-		{
-			return Result.Fail(new UnauthorizedAccessError());
-		}
 		var apiResponse = await $"{_options.BaseUrl}"
 			.AppendPathSegments("smartlock")
-			.NukiAuthGetJsonAsync<List<NukiSmartLockExternalResponse>>(Token!, _logger);
+			.NukiAuthGetJsonAsync<List<NukiSmartLockExternalResponse>>(accessToken, _logger);
 
 		return apiResponse.IsSuccess ? Result.Ok(apiResponse.Value) : apiResponse.ToResult();
 	}
-
-	public string? Token { get; set; }
-	
 }

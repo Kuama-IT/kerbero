@@ -35,23 +35,11 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
         _httpTest.Dispose();
         GC.SuppressFinalize(this);
     }
-
-    [Fact]
-    public void AuthenticateRepository_Success_Test()
-    {
-        // Act
-        _nukiSmartLockClient.Token = "ACCESS_TOKEN";
-        
-        // Assert
-        _nukiSmartLockClient.IsAuthenticated.Should().BeTrue();
-    }
-
+    
     [Fact]
 	public async Task GetNukiSmartLockList_Success_Test()
 	{
 		// Arrange
-		_nukiSmartLockClient.Token = "ACCESS_TOKEN";
-		
 		_httpTest.RespondWithJson(
 			new[]
 			{
@@ -201,7 +189,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 			});
 
 		// Act
-		var response = await _nukiSmartLockClient.GetNukiSmartLocks();
+		var response = await _nukiSmartLockClient.GetNukiSmartLocks("ACCESS_TOKEN");
 
 		// Assert
 		response.IsSuccess.Should().BeTrue();
@@ -233,21 +221,9 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 	}
 
 	[Fact]
-	public async void GetNukiSmartLockLost_ButNukiAccountIdNotExists_Test()
-	{
-		// Act
-		var response = await _nukiSmartLockClient.GetNukiSmartLocks();
-		
-		// Assert
-		response.IsFailed.Should().BeTrue();
-		response.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
-	}
-
-	[Fact]
     public async void GetNukiSmartLockList_ButNukiReturnsInvalidParameterError_Test()
     {
 	    //Arrange
-        _nukiSmartLockClient.Token = "ACCESS_TOKEN";
 	    _httpTest.RespondWith(status: 401, body: System.Text.Json.JsonSerializer.Serialize(new 
 	    {
 		    error_description = "Invalid client credentials.",
@@ -256,7 +232,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 
 	    // Act
 	    // Assert
-	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks();
+	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks("ACCESS_TOKEN");
 	    ex.IsFailed.Should().BeTrue();
 	    ex.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
 	    ex.Errors.FirstOrDefault()!.Message.Should().Contain("invalid_client: Invalid client credentials.");
@@ -266,11 +242,10 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public async void GetNukiSmartLockList_ButNukiReturnsServerOrTimeoutError_Test()
     {
 	    //Arrange
-        _nukiSmartLockClient.Token = "ACCESS_TOKEN";
 	    _httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout, body: System.Text.Json.JsonSerializer.Serialize(new { })); 
 
 	    // Act
-	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks();
+	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks("ACCESS_TOKEN");
 
 	    // Assert
 	    ex.IsFailed.Should().BeTrue();
@@ -281,7 +256,6 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public async void GetAuthenticatedProvider_ButNukiUnknownReturnsError_Test()
     {
 	    //Arrange
-        _nukiSmartLockClient.Token = "ACCESS_TOKEN";
 	    _httpTest.RespondWith(status: 435, body: System.Text.Json.JsonSerializer.Serialize(new 
 	    {
 		    error_description = "Invalid client credentials.",
@@ -290,7 +264,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 
 	    // Act
 	    // Assert
-	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks();
+	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks("ACCESS_TOKEN");
 	    ex.IsFailed.Should().BeTrue();
 	    ex.Errors.FirstOrDefault().Should().BeOfType<UnknownExternalError>();
     }
@@ -299,11 +273,10 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public async void GetAuthenticatedProvider_ButNukiReturnsNull_Test()
     {
 	    //Arrange
-        _nukiSmartLockClient.Token = "ACCESS_TOKEN";
 	    _httpTest.RespondWith(status: 200, body: null); 
 
 	    // Act
-	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks();
+	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks("ACCESS_TOKEN");
 	    // Assert
 	    ex.Errors.FirstOrDefault()!.Should().BeOfType<UnableToParseResponseError>();
 	    ex.Errors.FirstOrDefault()!.Message.Should().Contain("Response is null");
