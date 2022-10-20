@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Options;
@@ -17,7 +18,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 {
     private readonly NukiSmartLockExternalRepository _nukiSmartLockClient;
     private readonly HttpTest _httpTest;
-    private readonly object _nukiJsonSmartlockResponse;
+    private readonly object _nukiJsonSmartLockResponse;
 
     public NukiSmartLockExternalRepositoryTests()
     {
@@ -28,12 +29,12 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
             Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
             RedirectUriForCode = "/nuki/code",
             MainDomain = "https://test.com",
-            BaseUrl = "http://api.nuki.io"
+            BaseUrl = "https://api.nuki.io"
         }), helper);
         _httpTest = new HttpTest();
         
         var json = File.ReadAllText("JsonData/get-nuki-smartlock-response.json");
-        _nukiJsonSmartlockResponse = JsonSerializer.Deserialize<dynamic>(json) ?? throw new InvalidOperationException();
+        _nukiJsonSmartLockResponse = JsonSerializer.Deserialize<dynamic>(json) ?? throw new InvalidOperationException();
     }
 	
     public void Dispose()
@@ -48,7 +49,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 		_httpTest.RespondWithJson(
 			new[]
 			{
-				_nukiJsonSmartlockResponse
+				_nukiJsonSmartLockResponse
 			});
 
 		// Act
@@ -87,7 +88,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public async void GetNukiSmartLockList_ButNukiReturnsInvalidParameterError_Test()
     {
 	    //Arrange
-	    _httpTest.RespondWith(status: 401, body: System.Text.Json.JsonSerializer.Serialize(new 
+	    _httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new 
 	    {
 		    error_description = "Invalid client credentials.",
 		    error = "invalid_client"
@@ -105,7 +106,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public async void GetNukiSmartLockList_ButNukiReturnsServerOrTimeoutError_Test()
     {
 	    //Arrange
-	    _httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout, body: System.Text.Json.JsonSerializer.Serialize(new { })); 
+	    _httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout, body: JsonSerializer.Serialize(new { })); 
 
 	    // Act
 	    var ex = await _nukiSmartLockClient.GetNukiSmartLocks("ACCESS_TOKEN");
@@ -119,7 +120,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public async void GetAuthenticatedProvider_ButNukiUnknownReturnsError_Test()
     {
 	    //Arrange
-	    _httpTest.RespondWith(status: 435, body: System.Text.Json.JsonSerializer.Serialize(new 
+	    _httpTest.RespondWith(status: 435, body: JsonSerializer.Serialize(new 
 	    {
 		    error_description = "Invalid client credentials.",
 		    error = "invalid_client"
@@ -144,4 +145,39 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 	    ex.Errors.FirstOrDefault()!.Should().BeOfType<UnableToParseResponseError>();
 	    ex.Errors.FirstOrDefault()!.Message.Should().Contain("Response is null");
     }
+    
+    [Fact]
+    public async Task CreateNukiSmartLock_Success_Test()
+    {
+	    // Arrange
+	    _httpTest.RespondWithJson(_nukiJsonSmartLockResponse);
+	    
+	    // Act
+	    var response = await _nukiSmartLockClient.GetNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN", 0));
+	    
+	    // Assert
+	    response.IsSuccess.Should().BeTrue();
+	    response.Value.Should().BeEquivalentTo(new NukiSmartLockExternalResponse
+	    {
+		    AccountId = 0,
+		    AuthId = 0,
+		    Favourite = true,
+		    LmType = 0,
+		    Name = "string",
+		    SmartLockId = 0,
+		    Type = 0,
+		    State = new NukiSmartLockStateExternalResponse
+		    {
+			    BatteryCharge = 100,
+			    BatteryCharging = true,
+			    BatteryCritical = true,
+			    DoorState = 255,
+			    LastAction = 5,
+			    Mode = 4,
+			    OperationId = "string",
+			    State = 255,
+		    }
+	    });
+    }
+    
 }
