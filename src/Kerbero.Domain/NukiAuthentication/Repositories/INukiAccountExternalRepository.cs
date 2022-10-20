@@ -10,7 +10,7 @@ public interface INukiAccountExternalRepository
 {
 	public Result<NukiRedirectPresentationResponse> BuildUriForCode(NukiRedirectExternalRequest redirectExternalRequest);
 
-	public Task<Result<NukiAccountExternalResponseDto>> GetNukiAccount(NukiAccountExternalRequest accountExternalRequest);
+	public Task<Result<NukiAccountExternalResponse>> GetNukiAccount(NukiAccountExternalRequest accountExternalRequest);
 	
-	public Task<Result<NukiAccountExternalResponseDto>> RefreshToken(NukiAccountExternalRequest accountExternalRequest);
+	public Task<Result<NukiAccountExternalResponse>> RefreshToken(NukiAccountExternalRequest accountExternalRequest);
 }

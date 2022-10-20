@@ -31,7 +31,7 @@ public class CreateNukiAccountInteractorTests
 	public async Task Handle_ReturnASuccessfulResponse_Test()
 	{
 		// Arrange
-		var nukiAccountDto = new NukiAccountExternalResponseDto
+		var nukiAccountDto = new NukiAccountExternalResponse
 		{
 			Token = "VALID_TOKEN",
 			RefreshToken = "VALID_REFRESH_TOKEN",
@@ -110,7 +110,7 @@ public class CreateNukiAccountInteractorTests
 	public async Task Handle_PersistentReturnAnError_Test(KerberoError error)
 	{
 		// Arrange
-		var nukiAccountDto = new NukiAccountExternalResponseDto
+		var nukiAccountDto = new NukiAccountExternalResponse
 		{
 			Token = "VALID_TOKEN",
 			RefreshToken = "VALID_REFRESH_TOKEN",

@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
+namespace Kerbero.Domain.Common.Models.ExternalResponses;
 
-public class NukiErrorExternalResponseDto
+public class NukiErrorExternalResponse
 {
     [JsonPropertyName("error")] 
     public string? Error { get; set; } = "Response is null";

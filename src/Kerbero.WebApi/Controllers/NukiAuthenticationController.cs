@@ -3,7 +3,7 @@ using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
-using Kerbero.WebApi.Models.CustomActionResults;
+using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kerbero.WebApi.Controllers;

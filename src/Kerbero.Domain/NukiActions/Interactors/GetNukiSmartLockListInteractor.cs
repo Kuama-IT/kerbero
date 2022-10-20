@@ -19,7 +19,7 @@ public class
 	public async Task<Result<List<KerberoSmartLockPresentationRequest>>> Handle()
 	{
 
-		var smartLockList = await _nukiSmartLockClient.GetNukiSmartLockList();
+		var smartLockList = await _nukiSmartLockClient.GetNukiSmartLocks();
 		if (smartLockList.IsFailed)
 		{
 			return Result.Fail(smartLockList.Errors);

@@ -7,17 +7,17 @@ namespace Kerbero.Domain.NukiAuthentication.Mappers;
 
 public static class NukiAccountMapper
 {
-	public static NukiAccount MapToEntity(NukiAccountExternalResponseDto nukiAccountExternalResponseDto)
+	public static NukiAccount MapToEntity(NukiAccountExternalResponse nukiAccountExternalResponse)
 	{
 		return new NukiAccount
 		{
-			Token = nukiAccountExternalResponseDto.Token,
-			RefreshToken = nukiAccountExternalResponseDto.RefreshToken,
-			TokenExpiringTimeInSeconds = nukiAccountExternalResponseDto.TokenExpiresIn,
-			TokenType = nukiAccountExternalResponseDto.TokenType,
-			ClientId = nukiAccountExternalResponseDto.ClientId,
+			Token = nukiAccountExternalResponse.Token,
+			RefreshToken = nukiAccountExternalResponse.RefreshToken,
+			TokenExpiringTimeInSeconds = nukiAccountExternalResponse.TokenExpiresIn,
+			TokenType = nukiAccountExternalResponse.TokenType,
+			ClientId = nukiAccountExternalResponse.ClientId,
 			// UTC date?
-			ExpiryDate =  DateTime.Now.ToUniversalTime().AddSeconds(nukiAccountExternalResponseDto.TokenExpiresIn)
+			ExpiryDate =  DateTime.Now.ToUniversalTime().AddSeconds(nukiAccountExternalResponse.TokenExpiresIn)
 		};
 	}
 	public static NukiAccountPresentationResponse MapToPresentation(NukiAccount nukiAccount)

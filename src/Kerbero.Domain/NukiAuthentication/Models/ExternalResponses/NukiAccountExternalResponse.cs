@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 
-public class NukiAccountExternalResponseDto
+public class NukiAccountExternalResponse
 {
 	[JsonPropertyName("access_token")]
 	public string Token { get; set; } = null!;

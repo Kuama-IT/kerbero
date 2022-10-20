@@ -1,4 +1,4 @@
-namespace Kerbero.Infrastructure.NukiAuthentication.Options;
+namespace Kerbero.Infrastructure.Common.Options;
 
 public class NukiExternalOptions
 {

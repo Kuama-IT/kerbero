@@ -4,6 +4,7 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Domain.NukiAuthentication.Interactors;
+using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
@@ -42,7 +43,6 @@ public class GetNukiAccountInteractorTests
                 ClientId = "VALID_CLIENT_ID",
                 TokenType = "bearer",
             });
-        _nukiSmartLockClient.Setup(c => c.Authenticate(It.IsAny<NukiAccount>()));
         
         var response = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
@@ -51,12 +51,6 @@ public class GetNukiAccountInteractorTests
 
         response.IsSuccess.Should().BeTrue();
         _persistent.Verify(c => c.GetAccount(It.IsAny<int>()));
-        _nukiSmartLockClient.Verify(c => c.Authenticate(It.Is<NukiAccount>(account => account.Id == 1 &&
-            account.Token == "VALID_TOKEN" &&
-            account.RefreshToken == "VALID_REFRESH_TOKEN" &&
-            account.TokenExpiringTimeInSeconds == 2592000 &&
-            account.ClientId == "VALID_CLIENT_ID" &&
-            account.TokenType == "bearer")));
     }    
     
     [Fact]
@@ -76,7 +70,7 @@ public class GetNukiAccountInteractorTests
         _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
             .Returns(nukiAccount);
         _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequest>()))
-            .Returns(Task.FromResult(Result.Ok(new NukiAccountExternalResponseDto
+            .Returns(Task.FromResult(Result.Ok(new NukiAccountExternalResponse
             {
                 Token = "VALID_TOKEN",
                 RefreshToken = "VALID_REFRESH_TOKEN",
@@ -86,7 +80,6 @@ public class GetNukiAccountInteractorTests
             })));
         _persistent.Setup(c => c.Update(It.IsAny<NukiAccount>()))
             .Returns(Task.FromResult(Result.Ok(nukiAccount)));
-        _nukiSmartLockClient.Setup(c => c.Authenticate(It.IsAny<NukiAccount>()));
         
         var response = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
@@ -104,12 +97,6 @@ public class GetNukiAccountInteractorTests
                 p.ClientId == "VALID_CLIENT_ID" &&
                 p.TokenType == "bearer"
         )));
-        _nukiSmartLockClient.Verify(c => c.Authenticate(It.Is<NukiAccount>(account => account.Id == 1 &&
-            account.Token == "VALID_TOKEN" &&
-            account.RefreshToken == "VALID_REFRESH_TOKEN" &&
-            account.TokenExpiringTimeInSeconds == 2592000 &&
-            account.ClientId == "VALID_CLIENT_ID" &&
-            account.TokenType == "bearer")));
     }
 
     [Fact]

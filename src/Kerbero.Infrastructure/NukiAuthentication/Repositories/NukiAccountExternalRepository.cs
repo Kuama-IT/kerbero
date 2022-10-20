@@ -1,13 +1,12 @@
 using FluentResults;
 using Flurl;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Extensions;
-using Kerbero.Infrastructure.NukiAuthentication.Options;
+using Kerbero.Infrastructure.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ArgumentNullException = System.ArgumentNullException;
@@ -67,7 +66,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 	/// </summary>
 	/// <param name="accountExternalRequest"></param>
 	/// <returns></returns>
-	public async Task<Result<NukiAccountExternalResponseDto>> GetNukiAccount(NukiAccountExternalRequest accountExternalRequest)
+	public async Task<Result<NukiAccountExternalResponse>> GetNukiAccount(NukiAccountExternalRequest accountExternalRequest)
 	{
 		if (string.IsNullOrWhiteSpace(accountExternalRequest.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
 		Url redirectUriClientId;
@@ -99,7 +98,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 	/// </summary>
 	/// <param name="accountExternalRequest"></param>
 	/// <returns></returns>
-	public async Task<Result<NukiAccountExternalResponseDto>> RefreshToken(NukiAccountExternalRequest accountExternalRequest)
+	public async Task<Result<NukiAccountExternalResponse>> RefreshToken(NukiAccountExternalRequest accountExternalRequest)
 	{
 		if (string.IsNullOrWhiteSpace(accountExternalRequest.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
 
@@ -112,12 +111,12 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 		});
 	}
 
-	private async Task<Result<NukiAccountExternalResponseDto>> AuthRequest(string clientId, object postBody)
+	private async Task<Result<NukiAccountExternalResponse>> AuthRequest(string clientId, object postBody)
 	{
 		var response = await $"{_options.BaseUrl}"
 			.AppendPathSegment("oauth")
 			.AppendPathSegment("token")
-			.NukiPostJsonAsync<NukiAccountExternalResponseDto>(postBody, _logger);
+			.NukiPostJsonAsync<NukiAccountExternalResponse>(postBody, _logger);
 
 		if (response.IsFailed)
 		{

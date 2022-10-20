@@ -3,7 +3,6 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Mappers;
-using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
@@ -19,9 +18,9 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
     private readonly INukiSmartLockExternalRepository _nukiSmartLockExternalRepository;
 
     public AuthenticateNukiAccountInteractor(INukiAccountPersistentRepository nukiAccountPersistentRepository,
-        INukiAccountExternalRepository nukiAccountExternalRepositoryRepository, INukiSmartLockExternalRepository nukiSmartLockExternalRepository)
+        INukiAccountExternalRepository nukiAccountExternalRepository, INukiSmartLockExternalRepository nukiSmartLockExternalRepository)
     {
-        _nukiAccountExternalRepository = nukiAccountExternalRepositoryRepository;
+        _nukiAccountExternalRepository = nukiAccountExternalRepository;
         _nukiAccountPersistentRepository = nukiAccountPersistentRepository;
         _nukiSmartLockExternalRepository = nukiSmartLockExternalRepository;
     }
@@ -69,7 +68,7 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
         }
         
         // authenticating external repo
-        _nukiSmartLockExternalRepository.Authenticate(account.Value);
+        _nukiSmartLockExternalRepository.Token = account.Value.Token;
         return NukiAccountMapper.MapToAuthenticatedResponse(account.Value);
 
     }
