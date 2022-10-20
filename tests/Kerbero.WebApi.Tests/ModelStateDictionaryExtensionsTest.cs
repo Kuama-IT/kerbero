@@ -1,8 +1,11 @@
 using System.Net;
 using FluentAssertions;
+using FluentResults;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 
 namespace Kerbero.WebApi.Tests;
 

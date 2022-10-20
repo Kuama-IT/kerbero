@@ -6,7 +6,7 @@ using Kerbero.Domain.NukiAuthentication.Interfaces;
 
 namespace Kerbero.Domain.NukiActions.Repositories;
 
-public interface INukiSmartLockExternalRepository: ITokenAuthenticationHolder
+public interface INukiSmartLockExternalRepository
 {
-	Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks();
+	Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks(string accessToken);
 }

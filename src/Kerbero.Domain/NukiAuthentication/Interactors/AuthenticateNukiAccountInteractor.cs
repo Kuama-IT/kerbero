@@ -68,7 +68,6 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
         }
         
         // authenticating external repo
-        _nukiSmartLockExternalRepository.Token = account.Value.Token;
         return NukiAccountMapper.MapToAuthenticatedResponse(account.Value);
 
     }
