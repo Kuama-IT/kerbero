@@ -5,7 +5,7 @@ using Kerbero.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Kerbero.WebApi.Models.CustomActionResults;
+namespace Kerbero.WebApi.Utils.Extensions;
 
 public static class ModelStateDictionaryExtensions
 {

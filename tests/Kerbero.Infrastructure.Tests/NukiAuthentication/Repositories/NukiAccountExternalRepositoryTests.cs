@@ -3,11 +3,10 @@ using FluentAssertions;
 using FluentResults;
 using Flurl.Http.Testing;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
-using Kerbero.Infrastructure.NukiAuthentication.Options;
+using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -24,7 +23,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	{
 		// Arrange
 		_logger = new Mock<ILogger<NukiAccountExternalRepository>>();
-		_nukiClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
+		_nukiClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = "/nuki/code",
@@ -117,8 +116,8 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		
 		// Assert
 		_httpTest.ShouldHaveMadeACall();
-		nukiAccount.Should().BeOfType<Result<NukiAccountExternalResponseDto>>();
-		nukiAccount.Value.Should().BeEquivalentTo(new NukiAccountExternalResponseDto()
+		nukiAccount.Should().BeOfType<Result<NukiAccountExternalResponse>>();
+		nukiAccount.Value.Should().BeEquivalentTo(new NukiAccountExternalResponse()
 		{
 			Token = "ACCESS_TOKEN",
 			RefreshToken = "REFRESH_TOKEN",
@@ -222,8 +221,8 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		
 		// Assert
 		_httpTest.ShouldHaveMadeACall();
-		nukiAccount.Should().BeOfType<Result<NukiAccountExternalResponseDto>>();
-		nukiAccount.Value.Should().BeEquivalentTo(new NukiAccountExternalResponseDto()
+		nukiAccount.Should().BeOfType<Result<NukiAccountExternalResponse>>();
+		nukiAccount.Value.Should().BeEquivalentTo(new NukiAccountExternalResponse()
 		{
 			Token = "ACCESS_TOKEN",
 			RefreshToken = "REFRESH_TOKEN",

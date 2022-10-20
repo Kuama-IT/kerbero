@@ -10,7 +10,7 @@ public class ApplicationDbContext: IdentityDbContext, IApplicationDbContext
 {
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
 
-	public DbSet<NukiAccount> NukiAccounts { get; set; } = null!;
+	public DbSet<NukiAccount> NukiAccounts => Set<NukiAccount>();
 	
 	protected override void OnModelCreating(ModelBuilder builder)
 	{

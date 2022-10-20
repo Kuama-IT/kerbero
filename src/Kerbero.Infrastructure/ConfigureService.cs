@@ -1,13 +1,9 @@
-using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.NukiActions.Models;
 using Kerbero.Domain.NukiActions.Repositories;
-using Kerbero.Domain.NukiAuthentication.Interactors;
-using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.Common.Interfaces;
-using Kerbero.Infrastructure.NukiActions;
-using Kerbero.Infrastructure.NukiAuthentication.Options;
+using Kerbero.Infrastructure.Common.Options;
+using Kerbero.Infrastructure.NukiActions.Repositories;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
