@@ -26,6 +26,7 @@ public static class ConfigureService
 		services.AddScoped<INukiAccountExternalRepository, NukiAccountExternalRepository>();
 		services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
 		services.AddScoped<INukiSmartLockPersistentRepository, NukiSmartLockPersistentRepository>();
+		
 		services.AddScoped<NukiSafeHttpCallHelper>();
 		
 		return services;

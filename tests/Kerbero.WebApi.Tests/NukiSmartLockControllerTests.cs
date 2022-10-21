@@ -3,8 +3,8 @@ using FluentResults;
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Interactors;
+using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Interfaces;
-using Kerbero.Domain.NukiActions.Models;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
@@ -19,16 +19,21 @@ namespace Kerbero.WebApi.Tests;
 public class NukiSmartLockControllerTests
 {
 	private readonly NukiSmartLockController _controller;
+	private readonly Mock<IGetNukiSmartLocksInteractor> _getNukiSmartLocksInteractor;
 	private readonly Mock<IAuthenticateNukiAccountInteractor> _authInteractor;
 	private readonly Mock<ICreateNukiSmartLockInteractor> _createNukiSmartLockInteractor;
-	private readonly Mock<IGetNukiSmartLocksInteractor> _getNukiSmartLockListInteractor;
+	private readonly Mock<IOpenNukiSmartLockInteractor> _openNukiSmartLockInteractor;
 
 	public NukiSmartLockControllerTests()
 	{
-		_getNukiSmartLockListInteractor = new Mock<IGetNukiSmartLocksInteractor>();
+		_getNukiSmartLocksInteractor = new Mock<IGetNukiSmartLocksInteractor>();
 		_createNukiSmartLockInteractor = new Mock<ICreateNukiSmartLockInteractor>();
 		_authInteractor = new Mock<IAuthenticateNukiAccountInteractor>();
-		_controller = new NukiSmartLockController(_authInteractor.Object, _getNukiSmartLockListInteractor.Object, _createNukiSmartLockInteractor.Object);
+		_openNukiSmartLockInteractor = new Mock<IOpenNukiSmartLockInteractor>();
+		_controller = new NukiSmartLockController(_authInteractor.Object, 
+			_getNukiSmartLocksInteractor.Object, 
+			_createNukiSmartLockInteractor.Object,
+			_openNukiSmartLockInteractor.Object);
 	}
 
 	[Fact]
@@ -41,7 +46,7 @@ public class NukiSmartLockControllerTests
 				{
 					Token = "ACCESS_TOKEN"
 				})));
-		_getNukiSmartLockListInteractor.Setup(c => c.Handle(It.IsAny<NukiSmartLocksPresentationRequest>()))
+		_getNukiSmartLocksInteractor.Setup(c => c.Handle(It.IsAny<NukiSmartLocksPresentationRequest>()))
 			.Returns(() => Task.FromResult(Result.Ok(new List<KerberoSmartLockPresentationResponse>
 			{
 				new()
@@ -59,7 +64,7 @@ public class NukiSmartLockControllerTests
 		// Assert
 		resp.Should().BeOfType<OkObjectResult>();
 		var okResult = resp as OkObjectResult;
-		okResult?.Value.Should().BeEquivalentTo(new List<KerberoSmartLockPresentationResponse>
+		okResult!.Value.Should().BeEquivalentTo(new List<KerberoSmartLockPresentationResponse>
 		{
 			new()
 			{
@@ -95,7 +100,7 @@ public class NukiSmartLockControllerTests
 		var okResult = resp as OkObjectResult;
 
 		// Assert
-		okResult?.Value.Should().BeEquivalentTo(new KerberoSmartLockPresentationResponse
+		okResult!.Value.Should().BeEquivalentTo(new KerberoSmartLockPresentationResponse
 		{
 			ExternalName = "kquarter",
 			ExternalType = 2,
@@ -106,4 +111,63 @@ public class NukiSmartLockControllerTests
 			It.Is<CreateNukiSmartLockPresentationRequest>(p => p.NukiSmartLockId == 1)));
 	}
 	
+	[Fact]
+	public async Task OpenNukiSmartLockByIdAndKerberoAccount_Success_Test()
+	{
+		// Arrange
+		_authInteractor.Setup(i => i.Handle(It.IsAny<AuthenticateRepositoryPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok(new AuthenticateRepositoryPresentationResponse
+			{
+				Token = "ACCESS_TOKEN"
+			})));
+		_openNukiSmartLockInteractor.Setup(c => c.Handle(It.IsAny<OpenNukiSmartLockPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok()));
+		
+		// Act
+		var result = await _controller.OpenNukiSmartLockById(1,1) as OkResult;
+
+		// Assert
+		_openNukiSmartLockInteractor.Verify(i =>
+			i.Handle(It.Is<OpenNukiSmartLockPresentationRequest>(x =>
+				x.AccessToken == "ACCESS_TOKEN" && x.NukiSmartLockId == 1)));
+		result!.StatusCode.Should().Be(200);
+	}
+	
+	[Fact]
+	public async Task OpenNukiSmartLockByIdAndKerberoAccount_SmartLockNotFound_Test()
+	{
+		// Arrange
+		_authInteractor.Setup(i => i.Handle(It.IsAny<AuthenticateRepositoryPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok(new AuthenticateRepositoryPresentationResponse
+			{
+				Token = "ACCESS_TOKEN"
+			})));
+		_openNukiSmartLockInteractor.Setup(c => c.Handle(It.IsAny<OpenNukiSmartLockPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
+		
+		// Act
+		var result = await _controller.OpenNukiSmartLockById(1,1) as ObjectResult;
+
+		// Assert
+		result!.StatusCode.Should().Be(400);
+	}
+	
+	[Fact]
+	public async Task OpenNukiSmartLockByIdAndKerberoAccount_SmartLockNotReachable_Test()
+	{
+		// Arrange
+		_authInteractor.Setup(i => i.Handle(It.IsAny<AuthenticateRepositoryPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok(new AuthenticateRepositoryPresentationResponse
+			{
+				Token = "ACCESS_TOKEN"
+			})));
+		_openNukiSmartLockInteractor.Setup(c => c.Handle(It.IsAny<OpenNukiSmartLockPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Fail(new SmartLockNotReachableError())));
+
+		// Act
+		var result = await _controller.OpenNukiSmartLockById(1, 1) as ObjectResult;
+
+		// Assert
+		result!.StatusCode.Should().Be(502);
+	}
 }

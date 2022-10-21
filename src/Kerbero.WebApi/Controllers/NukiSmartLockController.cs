@@ -12,14 +12,17 @@ namespace Kerbero.WebApi.Controllers;
 public class NukiSmartLockController : ControllerBase
 {
 	private readonly IAuthenticateNukiAccountInteractor _authenticateNukiAccountInteractor;
+	private readonly IOpenNukiSmartLockInteractor _openNukiSmartLockInteractor;
 	private readonly IGetNukiSmartLocksInteractor _getNukiSmartLocksInteractor;
 	private readonly ICreateNukiSmartLockInteractor _createNukiSmartLockInteractor;
 
 	public NukiSmartLockController(IAuthenticateNukiAccountInteractor authenticateNukiAccountInteractor,
 		IGetNukiSmartLocksInteractor getNukiSmartLocksInteractor,
-		ICreateNukiSmartLockInteractor createNukiSmartLockInteractor)
+		ICreateNukiSmartLockInteractor createNukiSmartLockInteractor,
+		IOpenNukiSmartLockInteractor openNukiSmartLockInteractor)
 	{
 		_authenticateNukiAccountInteractor = authenticateNukiAccountInteractor;
+		_openNukiSmartLockInteractor = openNukiSmartLockInteractor;
 		_getNukiSmartLocksInteractor = getNukiSmartLocksInteractor;
 		_createNukiSmartLockInteractor = createNukiSmartLockInteractor;
 	}
@@ -72,5 +75,32 @@ public class NukiSmartLockController : ControllerBase
 		}
 
 		return Ok(interactorResponse.Value);
+	}
+
+	[HttpPost("{smartLockId:int}/unlock")]
+	public async Task<ActionResult> OpenNukiSmartLockById(int accountId, int smartLockId)
+	{
+		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
+		{
+			NukiAccountId = accountId
+		});
+		if (authenticationResponse.IsFailed)
+		{
+			var error = authenticationResponse.Errors.First();
+			return ModelState.AddErrorAndReturnAction(error);
+		}
+
+		var interactorResponse =
+			await _openNukiSmartLockInteractor.Handle(
+				new OpenNukiSmartLockPresentationRequest(authenticationResponse.Value.Token, smartLockId)
+			);
+
+		if (interactorResponse.IsFailed)
+		{
+			var error = interactorResponse.Errors.First();
+			return ModelState.AddErrorAndReturnAction(error);
+		}
+
+		return Ok();
 	}
 }
