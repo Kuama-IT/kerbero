@@ -1,6 +1,7 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Entities;
+using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -29,31 +30,43 @@ public class NukiSmartLockPersistentRepository: INukiSmartLockPersistentReposito
             await _applicationDbContext.SaveChangesAsync();
             return Result.Ok(response.Entity);
         }
-        catch (NotSupportedException e)
+        catch (NotSupportedException exception)
         {
-            _logger.LogError(e, "Error while adding a NukiAccount to the database");
+            _logger.LogError(exception, "Error while adding a NukiAccount to the database");
             return Result.Fail(new PersistentResourceNotAvailableError());
         }
-        catch (DbUpdateException e)
+        catch (DbUpdateException exception)
         {
-            _logger.LogError(e, "Error while adding a NukiSmartLock to the database");
-            if (e.InnerException?.InnerException is NpgsqlException && e.InnerException.InnerException.HResult >
-                int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) && e.InnerException.InnerException.HResult <
+            _logger.LogError(exception, "Error while adding a NukiSmartLock to the database");
+            if (exception.InnerException?.InnerException is NpgsqlException && exception.InnerException.InnerException.HResult >
+                int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) && exception.InnerException.InnerException.HResult <
                 int.Parse(PostgresErrorCodes.CheckViolation))
             {
                 return Result.Fail(new DuplicateEntryError("Nuki SmartLock"));
             }
             return Result.Fail(new PersistentResourceNotAvailableError());
         }
-        catch(Exception e)
+        catch(Exception exception)
         {
-            _logger.LogError(e, "Error while adding a NukiAccount to the database");
+            _logger.LogError(exception, "Error while adding a NukiAccount to the database");
             return Result.Fail(new KerberoError());
         }
     }
-
-    public Result<NukiSmartLock> GetById(int smartLockId)
+    
+    public async Task<Result<NukiSmartLock>> GetById(int smartLockId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var smartLock = await _applicationDbContext.NukiSmartLocks
+                .FindAsync(smartLockId);
+            return smartLock is null
+                ? Result.Fail(new SmartLockNotFoundError())
+                : Result.Ok(smartLock);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error while retrieving a NukiAccount to the database");
+            return Result.Fail(new UnknownExternalError());
+        }
     }
 }

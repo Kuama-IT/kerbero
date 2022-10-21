@@ -1,5 +1,7 @@
 using FluentAssertions;
+using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Entities;
+using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.NukiActions.Repositories;
@@ -12,8 +14,8 @@ namespace Kerbero.Infrastructure.Tests.NukiActions.Repositories;
 public class NukiSmartLockPersistentRepositoryTests
 {
     private readonly NukiSmartLockPersistentRepository _persistent;
-    private readonly Mock<DbSet<NukiSmartLock>> _dbSetNukiAccount;
     private readonly NukiSmartLock _data;
+    private readonly ApplicationDbContext _appDbContext;
 
     public NukiSmartLockPersistentRepositoryTests()
     {        
@@ -41,9 +43,8 @@ public class NukiSmartLockPersistentRepositoryTests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: "AppDbContext")
             .Options;
-        var appDbContext = new ApplicationDbContext(options);
-        _dbSetNukiAccount = new Mock<DbSet<NukiSmartLock>>();
-        _persistent = new NukiSmartLockPersistentRepository(appDbContext, logger.Object);
+        _appDbContext = new ApplicationDbContext(options);
+        _persistent = new NukiSmartLockPersistentRepository(_appDbContext, logger.Object);
     }
 
     [Fact]
@@ -59,5 +60,34 @@ public class NukiSmartLockPersistentRepositoryTests
         response.IsSuccess.Should().BeTrue();
         _data.Id = 1;
         response.Value.Should().BeEquivalentTo(_data);
+    }
+    [Fact]
+    public async Task Read_Success_Test()
+    {
+        // Arrange
+        var ent = _appDbContext.NukiSmartLocks.Add(new NukiSmartLock
+        {
+            NukiAccountId = 1,
+            Favourite = true,
+            Name = "kquarter",
+            ExternalSmartLockId = 432414,
+            Type = 0
+        });
+        await _appDbContext.SaveChangesAsync();
+        
+        // Act
+        var response = await _persistent.GetById(ent.Entity.Id);
+        
+        response.IsSuccess.Should().BeTrue();
+        response.Value.Name.Should().Be("kquarter");
+        response.Value.ExternalSmartLockId.Should().Be(432414);
+
+    }
+    [Fact]    
+    public async Task Read_NotFound_Test()
+    {
+        var response = await _persistent.GetById(0);
+        response.IsFailed.Should().BeTrue();
+        response.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError());
     }
 }

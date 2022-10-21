@@ -28,25 +28,25 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 			await _dbContext.SaveChangesAsync();
 			return Result.Ok(res.Entity);
 		}
-		catch (NotSupportedException e)
+		catch (NotSupportedException exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new PersistentResourceNotAvailableError());
 		}
-		catch (DbUpdateException e)
+		catch (DbUpdateException exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
-			if (e.InnerException?.InnerException is NpgsqlException && e.InnerException.InnerException.HResult >
-			    int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) && e.InnerException.InnerException.HResult <
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
+			if (exception.InnerException?.InnerException is NpgsqlException && exception.InnerException.InnerException.HResult >
+			    int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) && exception.InnerException.InnerException.HResult <
 			    int.Parse(PostgresErrorCodes.CheckViolation))
 			{
 				return Result.Fail(new DuplicateEntryError("Nuki account"));
 			}
 			return Result.Fail(new PersistentResourceNotAvailableError());
 		}
-		catch(Exception e)
+		catch(Exception exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new KerberoError());
 		}
 	}
@@ -58,19 +58,19 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 			var res = _dbContext.NukiAccounts.First(c => c.Id == kerberoAccountId);
 			return Result.Ok(res);
 		}
-		catch (NotSupportedException e)
+		catch (NotSupportedException exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new PersistentResourceNotAvailableError());
 		}
-		catch(InvalidOperationException e)
+		catch(InvalidOperationException exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new UnauthorizedAccessError());
 		}
-		catch(Exception e)
+		catch(Exception exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new KerberoError());
 		}
 	}
@@ -83,25 +83,25 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 			await _dbContext.SaveChangesAsync();
 			return Result.Ok(res.Entity);
 		}
-		catch (NotSupportedException e)
+		catch (NotSupportedException exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new PersistentResourceNotAvailableError());
 		}
-		catch (DbUpdateException e)
+		catch (DbUpdateException exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
-			if (e.InnerException?.InnerException is NpgsqlException && e.InnerException.InnerException.HResult >
-			    int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) && e.InnerException.InnerException.HResult <
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
+			if (exception.InnerException?.InnerException is NpgsqlException && exception.InnerException.InnerException.HResult >
+			    int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) && exception.InnerException.InnerException.HResult <
 			    int.Parse(PostgresErrorCodes.CheckViolation))
 			{
 				return Result.Fail(new DuplicateEntryError("Nuki account"));
 			}
 			return Result.Fail(new PersistentResourceNotAvailableError());
 		}
-		catch(Exception e)
+		catch(Exception exception)
 		{
-			_logger.LogError(e, "Error while adding a NukiAccount to the database");
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
 			return Result.Fail(new KerberoError());
 		}
 	}
