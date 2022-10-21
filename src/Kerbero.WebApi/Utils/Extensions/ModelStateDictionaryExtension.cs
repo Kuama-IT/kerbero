@@ -1,6 +1,7 @@
 using System.Net;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -28,11 +29,13 @@ public static class ModelStateDictionaryExtension
 			case UnableToParseResponseError:
 			case ExternalServiceUnreachableError:
 			case PersistentResourceNotAvailableError:
+			case SmartLockNotReachableError:
 				return HttpStatusCode.BadGateway;
 			case UnauthorizedAccessError:
 				return HttpStatusCode.Unauthorized;
 			case InvalidParametersError:
 			case DuplicateEntryError:
+			case SmartLockNotFoundError:
 				return HttpStatusCode.BadRequest;
 			default:
 				throw new DevException("Forgot to map the error with status code");
