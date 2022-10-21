@@ -19,7 +19,7 @@ public class CloseNukiSmartLockInteractor: ICloseNukiSmartLockInteractor
 
     public async Task<Result> Handle(CloseNukiSmartLockPresentationRequest request)
     {
-        var smartLock = _persistentRepository.GetById(request.SmartLockId);
+        var smartLock = await _persistentRepository.GetById(request.SmartLockId);
 
         if (smartLock.IsFailed)
         {

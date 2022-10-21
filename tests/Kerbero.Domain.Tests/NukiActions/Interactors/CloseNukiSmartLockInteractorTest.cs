@@ -5,7 +5,6 @@ using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Interactors;
 using Kerbero.Domain.NukiActions.Interfaces;
-using Kerbero.Domain.NukiActions.Models;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Repositories;
@@ -32,11 +31,11 @@ public class CloseNukiSmartLockInteractorTest
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
             {
                 ExternalSmartLockId = 1,
                 // other things
-            }));
+            })));
         _external.Setup(c => c.CloseNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(() => Task.FromResult(Result.Ok()));
             
@@ -54,7 +53,7 @@ public class CloseNukiSmartLockInteractorTest
     public async Task Handle_NoSmartLockFound()
     {
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Result.Fail(new SmartLockNotFoundError()));
+            .Returns(async () => await Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
         
         // Act
         var result = await _interactor.Handle(new CloseNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0));
@@ -67,11 +66,11 @@ public class CloseNukiSmartLockInteractorTest
     public async Task Handle_ErrorOnOpening()
     {
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
             {
                 ExternalSmartLockId = 1,
                 // other things
-            }));
+            })));
         _external.Setup(c => c.CloseNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(() => Task.FromResult(Result.Fail(new ExternalServiceUnreachableError())));
         

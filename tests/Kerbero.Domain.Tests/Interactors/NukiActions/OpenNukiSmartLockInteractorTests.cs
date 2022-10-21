@@ -31,10 +31,10 @@ public class OpenNukiSmartLockInteractorTests
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
             {
                 ExternalSmartLockId = 0
-            }));
+            })));
         _external.Setup(c => c.OpenNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(Task.FromResult(Result.Ok()));
         
@@ -53,7 +53,7 @@ public class OpenNukiSmartLockInteractorTests
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(() => Result.Fail(new SmartLockNotFoundError()));
+            .Returns(async () => await Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
         
         // Act
         var result = await _interactor.Handle(new OpenNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0 )); // get external id from db, then call the client
@@ -70,10 +70,10 @@ public class OpenNukiSmartLockInteractorTests
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
             {
                 ExternalSmartLockId = 0
-            }));
+            })));
         _external.Setup(c => c.OpenNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(async () => await Task.FromResult(Result.Fail(new ExternalServiceUnreachableError("It is not possible open the SmartLock due to an external error."))));
         
