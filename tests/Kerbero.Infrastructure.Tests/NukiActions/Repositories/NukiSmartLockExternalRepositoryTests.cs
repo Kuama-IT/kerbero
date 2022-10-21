@@ -6,6 +6,7 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Infrastructure.Common.Helpers;
+using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiActions.Repositories;
 using Microsoft.Extensions.Logging;
@@ -180,4 +181,59 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 	    });
     }
     
+    [Fact]
+    public async Task OpenSmartLock_Success()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 204);
+
+	    // Act
+	    var response = await _nukiSmartLockClient.OpenNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN", 0));
+
+	    // Assert
+	    response.IsSuccess.Should().BeTrue();
+	    _httpTest.ShouldHaveCalled("https://api.nuki.io/smartlock/0/action/unlock");
+    }
+    
+    [Fact]
+    public async Task OpenSmartLock_BadParameter()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 400);
+
+	    // Act
+	    var response = await _nukiSmartLockClient.OpenNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN", 0));
+
+	    // Assert
+	    response.IsFailed.Should().BeTrue();
+	    response.Errors.First().Should().BeEquivalentTo(new InvalidParametersError("/smartlock/0/action/unlock"));
+    }    
+    
+    [Fact]
+    public async Task OpenSmartLock_NotAuthorized()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 401);
+
+	    // Act
+	    var response = await _nukiSmartLockClient.OpenNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN",0));
+	    
+	    // Assert
+	    response.IsFailed.Should().BeTrue();
+	    response.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
+    }   
+    
+    [Fact]
+    public async Task OpenSmartLock_NotAllowed()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 405);
+
+	    // Act
+	    var response = await _nukiSmartLockClient.OpenNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN",0));
+	    
+	    // Assert
+	    response.IsFailed.Should().BeTrue();
+	    response.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
+    }
 }
