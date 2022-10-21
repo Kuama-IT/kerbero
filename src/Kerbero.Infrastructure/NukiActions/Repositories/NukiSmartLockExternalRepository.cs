@@ -1,6 +1,7 @@
 using FluentResults;
 using Flurl;
 using Flurl.Http;
+using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Repositories;
@@ -40,9 +41,16 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 			.GetJsonAsync<NukiSmartLockExternalResponse>());
 	}
 
-	public Task<Result> OpenNukiSmartLock(NukiSmartLockExternalRequest request)
+	public async Task<Result> OpenNukiSmartLock(NukiSmartLockExternalRequest request)
 	{
-		throw new NotImplementedException();
+		var response = await _nukiSafeHttpCallHelper.Handle(() => $"{_options.BaseUrl}"
+			.AppendPathSegments("smartlock", 
+				$"{request.ExternalId}", 
+				"action", 
+				"unlock")
+			.WithOAuthBearerToken(request.AccessToken)
+			.PostAsync());
+		return response.IsFailed ? response.ToResult() : Result.Ok();
 	}
 	
 	public Task<Result> CloseNukiSmartLock(NukiSmartLockExternalRequest requestDto)

@@ -33,14 +33,19 @@ public class NukiSafeHttpCallHelper
         catch (FlurlHttpException exception)
         {
             _logger.LogError(exception, "Error while calling nuki Apis with request");
-            if (exception.StatusCode == (int)HttpStatusCode.Unauthorized)
+            if (exception.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.MethodNotAllowed)
             {
                 var error = await exception.GetResponseJsonAsync<NukiErrorExternalResponse>();
-                if (error.Error?.Contains("invalid") == true)
+                if (error?.Error?.Contains("invalid") == true)
                 {
                     return Result.Fail(new InvalidParametersError(error.Error + ": " + error.ErrorMessage));
                 }
                 return Result.Fail(new UnauthorizedAccessError());
+            }
+
+            if (exception.StatusCode is (int)HttpStatusCode.BadRequest)
+            {
+                return Result.Fail(new InvalidParametersError(exception.Call.HttpRequestMessage.RequestUri!.PathAndQuery));
             }
 
             if (exception.StatusCode is (int)HttpStatusCode.RequestTimeout or >= 500)
