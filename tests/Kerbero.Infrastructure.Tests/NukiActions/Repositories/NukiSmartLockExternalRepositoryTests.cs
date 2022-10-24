@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.Common.Errors;
@@ -16,6 +17,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 {
     private readonly NukiSmartLockExternalRepository _nukiSmartLockClient;
     private readonly HttpTest _httpTest;
+    private readonly object _nukiJsonSmartlockResponse;
 
     public NukiSmartLockExternalRepositoryTests()
     {
@@ -29,6 +31,9 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
             BaseUrl = "http://api.nuki.io"
         }), helper);
         _httpTest = new HttpTest();
+        
+        var json = File.ReadAllText("JsonData/get-nuki-smartlock-response.json");
+        _nukiJsonSmartlockResponse = JsonSerializer.Deserialize<dynamic>(json) ?? throw new InvalidOperationException();
     }
 	
     public void Dispose()
@@ -44,149 +49,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 		_httpTest.RespondWithJson(
 			new[]
 			{
-				new
-				{
-					smartlockId = 0,
-					accountId = 0,
-					type = 0,
-					lmType = 0,
-					authId = 0,
-					name = "string",
-					favorite = true,
-					config = new
-					{
-						name = "string",
-						latitude = 0,
-						longitude = 0,
-						capabilities = 2,
-						autoUnlatch = true,
-						liftUpHandle = true,
-						pairingEnabled = true,
-						buttonEnabled = true,
-						ledEnabled = true,
-						ledBrightness = 0,
-						timezoneOffset = 0,
-						daylightSavingMode = 0,
-						fobPaired = true,
-						fobAction1 = 8,
-						fobAction2 = 8,
-						fobAction3 = 8,
-						singleLock = true,
-						operatingMode = 0,
-						advertisingMode = 3,
-						keypadPaired = true,
-						keypad2Paired = true,
-						homekitState = 3,
-						timezoneId = 45,
-						deviceType = 0,
-						wifiEnabled = true,
-						operationId = "string"
-					},
-					advancedConfig = new
-					{
-						lngTimeout = 5,
-						singleButtonPressAction = 0,
-						doubleButtonPressAction = 0,
-						automaticBatteryTypeDetection = true,
-						unlatchDuration = 1,
-						operationId = "string",
-						totalDegrees = 0,
-						singleLockedPositionOffsetDegrees = 0,
-						unlockedToLockedTransitionOffsetDegrees = 0,
-						unlockedPositionOffsetDegrees = 0,
-						lockedPositionOffsetDegrees = 0,
-						detachedCylinder = true,
-						batteryType = 0,
-						autoLock = true,
-						autoLockTimeout = 0,
-						autoUpdateEnabled = true
-					},
-					openerAdvancedConfig = new
-					{
-						intercomId = 0,
-						busModeSwitch = 0,
-						shortCircuitDuration = 0,
-						electricStrikeDelay = 0,
-						randomElectricStrikeDelay = true,
-						electricStrikeDuration = 0,
-						disableRtoAfterRing = true,
-						rtoTimeout = 0,
-						doorbellSuppression = 0,
-						doorbellSuppressionDuration = 0,
-						soundRing = 0,
-						soundOpen = 0,
-						soundRto = 0,
-						soundCm = 0,
-						soundConfirmation = 0,
-						soundLevel = 0,
-						singleButtonPressAction = 0,
-						doubleButtonPressAction = 0,
-						batteryType = 0,
-						automaticBatteryTypeDetection = true,
-						autoUpdateEnabled = true,
-						operationId = "string"
-					},
-					smartdoorAdvancedConfig = new
-					{
-						lngTimeout = 5,
-						singleButtonPressAction = 0,
-						doubleButtonPressAction = 0,
-						automaticBatteryTypeDetection = true,
-						unlatchDuration = 1,
-						operationId = "string",
-						buzzerVolume = 0,
-						supportedBatteryTypes = new[] { 0 },
-						batteryType = 0,
-						autoLockTimeout = 0,
-						autoLock = true
-					},
-					webConfig = new
-					{
-						batteryWarningPerMailEnabled = true,
-						dismissedLiftUpHandleWarning = new[] { 0 }
-					},
-					state = new
-					{
-						mode = 4,
-						state = 255,
-						trigger = 6,
-						lastAction = 5,
-						batteryCritical = true,
-						batteryCharging = true,
-						batteryCharge = 100,
-						keypadBatteryCritical = true,
-						doorsensorBatteryCritical = true,
-						doorState = 255,
-						ringToOpenTimer = 65535,
-						ringToOpenEnd = "2022-10-04T08=10=52.765Z",
-						nightMode = true,
-						operationId = "string"
-					},
-					firmwareVersion = 0,
-					hardwareVersion = 0,
-					operationId = "string",
-					serverState = 4,
-					adminPinState = 2,
-					virtualDevice = true,
-					creationDate = "2022-10-04T08:10:52.765Z",
-					updateDate = "2022-10-04T08=10:52.765Z",
-					subscriptions = new[]
-					{
-						new
-						{
-							type = "B2C",
-							state = "ACTIVE",
-							updateDate = "2022-10-04T08:10:52.765Z",
-							creationDate = "2022-10-04T08:10:52.765Z"
-						}
-					},
-					opener = true,
-					box = true,
-					smartDoor = true,
-					keyturner = true,
-					smartlock3 = true
-				}
-
+				_nukiJsonSmartlockResponse
 			});
 
 		// Act

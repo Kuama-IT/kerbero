@@ -37,7 +37,6 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 	public void Dispose()
 	{
 		_httpTest.Dispose();
-		GC.SuppressFinalize(this);
 	}
 
 	[Fact]
@@ -118,7 +117,7 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 			await client.GetAsync(
 				$"/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 				+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
-		response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+		response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
 		resJson?["message"].Should().NotBeNull();
@@ -182,17 +181,13 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 
 public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 {
-	private readonly WebApplicationFactory<Program> _application;
-	private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-		.AddJsonFile("appsettings.Test.json")
-		.AddEnvironmentVariables()
-		.Build();
+	private readonly KerberoWebApplicationFactory<Program> _application;
 
 	private readonly HttpTest _httpTest;
 
 	public NukiAuthenticationIntegrationInvalidConfigurationTests()
 	{
-		_application = new KerberoWebApplicationFactory<Program>();
+		_application = new KerberoWebApplicationFactory<Program>(true);
 		_application.Server.PreserveExecutionContext = true; // fixture for Flurl
 		_httpTest = new HttpTest();
 	}
@@ -200,7 +195,6 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 	public void Dispose()
 	{
 		_httpTest.Dispose();
-		GC.SuppressFinalize(this);
 	}
 	
 	[Fact]
@@ -214,7 +208,7 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 		};
 		var client = _application.CreateClient(opts);
 		
-		var clientId = Config["client_id"];
+		var clientId = _application.Config["client_id"];
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		
 		
@@ -231,7 +225,7 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 	{
 		var client = _application.CreateClient();
 
-		var clientId = Config["client_id"];
+		var clientId = _application.Config["client_id"];
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		var response =
 			await client.GetAsync(
@@ -241,46 +235,6 @@ public class NukiAuthenticationIntegrationInvalidConfigurationTests: IDisposable
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
 		resJson.Should().NotBeNull();
 		resJson?["message"].Should().NotBeNull();
-	}
-
-	private class KerberoWebApplicationFactory<TStartup>
-		: WebApplicationFactory<TStartup> where TStartup: class
-	{
-		protected override void ConfigureWebHost(IWebHostBuilder builder)
-		{
-			
-			builder.ConfigureTestServices(services =>
-			{
-				services.Configure<NukiExternalOptions>(opts =>
-				{
-					opts.RedirectUriForCode = null!;
-				});
-			});
-			
-			builder.ConfigureServices(services =>
-			{
-				var descriptor = services.SingleOrDefault(
-					d => d.ServiceType ==
-					     typeof(DbContextOptions<ApplicationDbContext>));
-
-				if (descriptor is not null)
-					services.Remove(descriptor);
-
-				services.AddDbContext<ApplicationDbContext>(options => 
-					options.UseInMemoryDatabase(Config["ConnectionStrings:TestString"]!));
-
-				var sp = services.BuildServiceProvider();
-
-				using var scope = sp.CreateScope();
-				var scopedServices = scope.ServiceProvider;
-				var db = scopedServices.GetRequiredService<ApplicationDbContext>();
-				var logger = scopedServices
-					.GetRequiredService<ILogger<KerberoWebApplicationFactory<TStartup>>>();
-
-				db.Database.EnsureCreated();
-				
-			});
-		}
 	}
 }
 

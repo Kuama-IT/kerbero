@@ -8,7 +8,7 @@ using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.Interactors.NukiAuthentication;
+namespace Kerbero.Domain.Tests.NukiAuthentication.Interactors;
 
 public class ProvideNukiAuthRedirectUrlTest
 {

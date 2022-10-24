@@ -40,12 +40,12 @@ public class ModelStateDictionaryExtensionsTest: ControllerBase
 			case DuplicateEntryError:
 				action?.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
 				break;
-			case ExternalServiceUnreachableError:
-			case PersistentResourceNotAvailableError:
 			case UnknownExternalError:
 				action?.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
 				break;
 			case UnableToParseResponseError:
+			case ExternalServiceUnreachableError:
+			case PersistentResourceNotAvailableError:
 				action?.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
 				break;
 			case UnauthorizedAccessError:

@@ -28,4 +28,11 @@
       <ProjectReference Include="..\Kerbero.WebApi.Tests\Kerbero.WebApi.Tests.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\Kerbero.Common.Data.Tests\JsonData\get-nuki-smartlock-response.json">
+        <Link>JsonData\get-nuki-smartlock-response.json</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
