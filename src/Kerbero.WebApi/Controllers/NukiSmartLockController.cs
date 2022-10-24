@@ -12,21 +12,21 @@ namespace Kerbero.WebApi.Controllers;
 [Route("api/nuki/smartlock")]
 public class NukiSmartLockController : ControllerBase
 {
-	private readonly IAuthenticateNukiAccountInteractor _authenticateInteractor;
-	private readonly IGetNukiSmartLockListInteractor _nukiSmartLocksListInteractor;
+	private readonly IAuthenticateNukiAccountInteractor _authenticateNukiAccountInteractor;
+	private readonly IGetNukiSmartLocksInteractor _getNukiSmartLocksInteractor;
 
-	public NukiSmartLockController(IGetNukiSmartLockListInteractor nukiSmartLocksListInteractor,
-		IAuthenticateNukiAccountInteractor authenticateInteractor)
+	public NukiSmartLockController(IGetNukiSmartLocksInteractor getNukiSmartLocksInteractor,
+		IAuthenticateNukiAccountInteractor authenticateNukiAccountInteractor)
 	{
-		_authenticateInteractor = authenticateInteractor;
-		_nukiSmartLocksListInteractor = nukiSmartLocksListInteractor;
+		_authenticateNukiAccountInteractor = authenticateNukiAccountInteractor;
+		_getNukiSmartLocksInteractor = getNukiSmartLocksInteractor;
 	}
 
 
 	[HttpGet]
 	public async Task<ActionResult> GetSmartLocksByKerberoAccount(int accountId)
 	{
-		var authenticationResponse = await _authenticateInteractor.Handle(new AuthenticateRepositoryPresentationRequest
+		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
 		{
 			NukiAccountId = accountId
 		});
@@ -36,7 +36,7 @@ public class NukiSmartLockController : ControllerBase
 			return ModelState.AddErrorAndReturnAction(error);
 		}
 
-		var interactorResponse = await _nukiSmartLocksListInteractor.Handle(
+		var interactorResponse = await _getNukiSmartLocksInteractor.Handle(
 			new NukiSmartLocksPresentationRequest(authenticationResponse.Value.Token)
 		);
 		if (interactorResponse.IsFailed)

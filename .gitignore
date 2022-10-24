@@ -195,6 +195,9 @@ Backup*/
 UpgradeLog*.XML
 UpgradeLog*.htm
 
+# EF Core generated files
+*.targets
+
 # SQL Server files
 *.mdf
 *.ldf

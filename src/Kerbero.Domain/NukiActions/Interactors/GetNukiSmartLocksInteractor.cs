@@ -7,7 +7,7 @@ using Kerbero.Domain.NukiActions.Repositories;
 
 namespace Kerbero.Domain.NukiActions.Interactors;
 
-public class GetNukiSmartLocksInteractor : IGetNukiSmartLockListInteractor
+public class GetNukiSmartLocksInteractor : IGetNukiSmartLocksInteractor
 {
 	private readonly INukiSmartLockExternalRepository _nukiSmartLockClient;
 

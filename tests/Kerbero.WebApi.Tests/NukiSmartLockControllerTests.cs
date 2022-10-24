@@ -18,13 +18,13 @@ namespace Kerbero.WebApi.Tests;
 public class NukiSmartLockControllerTests
 {
 	private readonly NukiSmartLockController _controller;
-	private readonly Mock<IGetNukiSmartLockListInteractor> _interactor;
+	private readonly Mock<IGetNukiSmartLocksInteractor> _interactor;
 	private readonly Mock<IAuthenticateNukiAccountInteractor> _authInteractor;
 
 	public NukiSmartLockControllerTests()
 	{
 		_authInteractor = new Mock<IAuthenticateNukiAccountInteractor>();
-		_interactor = new Mock<IGetNukiSmartLockListInteractor>();
+		_interactor = new Mock<IGetNukiSmartLocksInteractor>();
 		_controller = new NukiSmartLockController(_interactor.Object, _authInteractor.Object);
 	}
 

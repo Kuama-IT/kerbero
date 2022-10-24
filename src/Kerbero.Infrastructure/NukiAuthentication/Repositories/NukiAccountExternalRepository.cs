@@ -1,13 +1,13 @@
 using FluentResults;
 using Flurl;
+using Flurl.Http;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Domain.NukiAuthentication.Repositories;
-using Kerbero.Infrastructure.Common.Extensions;
+using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ArgumentNullException = System.ArgumentNullException;
 
@@ -16,13 +16,13 @@ namespace Kerbero.Infrastructure.NukiAuthentication.Repositories;
 public class NukiAccountExternalRepository: INukiAccountExternalRepository
 {
 	private readonly NukiExternalOptions _options;
-	private readonly ILogger<NukiAccountExternalRepository> _logger;
+	private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
 
 	public NukiAccountExternalRepository(IOptions<NukiExternalOptions> options,
-		ILogger<NukiAccountExternalRepository> logger)
+		NukiSafeHttpCallHelper nukiSafeHttpCallHelper)
 	{
 		_options = options.Value;
-		_logger = logger;
+		_nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
 	}
 
 	/// <summary>
@@ -49,14 +49,12 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 				})
 				.ToUri()));
 		}
-		catch (ArgumentNullException e)
+		catch (ArgumentNullException)
 		{
-			_logger.LogError(e, "Error while building redirect URI");
 			return Result.Fail(new InvalidParametersError("options"));
 		}
-		catch(Exception e)
+		catch(Exception)
 		{
-			_logger.LogError(e, "Error while building redirect URI");
 			return Result.Fail(new KerberoError());
 		}
 	}
@@ -76,9 +74,8 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 				.AppendPathSegment(_options.RedirectUriForCode)
 				.AppendPathSegment(accountExternalRequest.ClientId);
 		}
-		catch (ArgumentNullException e)
+		catch (ArgumentNullException)
 		{
-			_logger.LogError(e, "Error while calling nuki Apis with redirectExternalRequest: {Message}", e.Message);
 			return Result.Fail(new InvalidParametersError("options"));
 		}
 		
@@ -107,16 +104,19 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 			client_id = accountExternalRequest.ClientId,
 			client_secret = _options.ClientSecret,
 			grant_type = "refresh_token",
-			refresh_token = accountExternalRequest.RefreshToken
+			refresh_token = accountExternalRequest.RefreshToken,
+			scope = _options.Scopes
 		});
 	}
 
 	private async Task<Result<NukiAccountExternalResponse>> AuthRequest(string clientId, object postBody)
 	{
-		var response = await $"{_options.BaseUrl}"
-			.AppendPathSegment("oauth")
-			.AppendPathSegment("token")
-			.NukiPostJsonAsync<NukiAccountExternalResponse>(postBody, _logger);
+		var response = await _nukiSafeHttpCallHelper.Handle(
+			async () => await $"{_options.BaseUrl}"
+					.AppendPathSegment("oauth")
+					.AppendPathSegment("token")
+					.PostUrlEncodedAsync(postBody)
+					.ReceiveJson<NukiAccountExternalResponse>());
 
 		if (response.IsFailed)
 		{
