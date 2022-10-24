@@ -1,34 +1,34 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Domain.Common.Entities;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Interactors;
 using Kerbero.Domain.NukiActions.Models;
+using Kerbero.Domain.NukiActions.Models.ExternalResponses;
+using Kerbero.Domain.NukiActions.Models.PresentationRequest;
+using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 using Kerbero.Domain.NukiActions.Repositories;
-using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
-namespace Kerbero.Common.Tests.NukiActions.Interactors;
+namespace Kerbero.Domain.Tests.NukiActions.Interactors;
 
 public class GetNukiSmartLocksListInteractorTest
 {
-	private readonly GetNukiSmartLocksListInteractor _interactor;
+	private readonly GetNukiSmartLocksInteractor _interactor;
 	private readonly Mock<INukiSmartLockExternalRepository> _nukiClient;
 
 	public GetNukiSmartLocksListInteractorTest()
 	{
 		_nukiClient = new Mock<INukiSmartLockExternalRepository>();
-		_interactor = new GetNukiSmartLocksListInteractor(_nukiClient.Object);
+		_interactor = new GetNukiSmartLocksInteractor(_nukiClient.Object);
 	}
 
 	[Fact]
 	public async Task GetNukiSmartLocksList_Success_Test()
 	{
 		// Arrange
-		var clientResponse = Task.FromResult(Result.Ok(new NukiSmartLocksListExternalResponseDto
+		var clientResponse = Task.FromResult(Result.Ok(new List<NukiSmartLockExternalResponse>()
 		{
-			NukiSmartLockList = new List<NukiSmartLockExternalResponseDto> {
 				new()
 				{
 					SmartLockId = 0,
@@ -38,7 +38,7 @@ public class GetNukiSmartLocksListInteractorTest
 					AuthId = 0,
 					Name = "kquarter",
 					Favourite = true,
-					State = new NukiSmartLockState()
+					State = new NukiSmartLockStateExternalResponse()
 					{
 						Mode = 4,
 						State = 255,
@@ -50,38 +50,23 @@ public class GetNukiSmartLocksListInteractorTest
 						OperationId = "string"
 					}
 				}
-			}
 		}));
-		_nukiClient.Setup(c => c.GetNukiSmartLockList(It.IsAny<int>()))
+		_nukiClient.Setup(c => c.GetNukiSmartLocks(It.IsAny<string>()))
 			.Returns(clientResponse);
 		// Act
-		var nukiSmartLocksList = await _interactor.Handle(new NukiAuthenticatedRequestDto());
+		var nukiSmartLocksList = await _interactor.Handle(new NukiSmartLocksPresentationRequest("ACCESS_TOKEN"));
 
 		// Assert
 		nukiSmartLocksList.IsSuccess.Should().BeTrue();
-		nukiSmartLocksList.Value.Should().BeEquivalentTo(new NukiSmartLocksListPresentationDto
+		nukiSmartLocksList.Value.Should().BeEquivalentTo(new List<KerberoSmartLockPresentationResponse>()
 		{
-			NukiSmartLocksList =
-			{
-				new KerberoSmartLockPresentationDto<NukiSmartLockState>()
+			new()
 				{
 					ExternalSmartLockId = 0,
 					ExternalAccountId = 0,
 					ExternalType = 0,
-					ExternalName = "kquarter",
-					ExternalState = new NukiSmartLockState
-					{
-						Mode = 4,
-						State = 255,
-						LastAction = 5,
-						BatteryCritical = true,
-						BatteryCharging = true,
-						BatteryCharge = 100,
-						DoorState = 255,
-						OperationId = "string"
-					}
+					ExternalName = "kquarter"
 				}
-			}
 		});
 	}	
 	
@@ -89,10 +74,10 @@ public class GetNukiSmartLocksListInteractorTest
 	public async Task GetNukiSmartLocksList_UnauthorizedRequest_Test()
 	{
 		// Arrange
-		_nukiClient.Setup(c => c.GetNukiSmartLockList(It.IsAny<int>()))
+		_nukiClient.Setup(c => c.GetNukiSmartLocks(It.IsAny<string>()))
 			.Returns(async () => await Task.FromResult(Result.Fail(new UnauthorizedAccessError())));
 		// Act
-		var nukiSmartLocksList = await _interactor.Handle(new NukiAuthenticatedRequestDto());
+		var nukiSmartLocksList = await _interactor.Handle(new NukiSmartLocksPresentationRequest("ACCESS_TOKEN"));
 
 		// Assert
 		nukiSmartLocksList.IsFailed.Should().BeTrue();

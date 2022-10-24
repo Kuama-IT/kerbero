@@ -4,15 +4,13 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Domain.NukiAuthentication.Interactors;
-using Kerbero.Domain.NukiAuthentication.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.Interactors.NukiAuthentication;
+namespace Kerbero.Domain.Tests.NukiAuthentication.Interactors;
 
 public class GetNukiAccountInteractorTests
 {

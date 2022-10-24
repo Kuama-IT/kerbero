@@ -28,5 +28,9 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\Kerbero.Domain\Kerbero.Domain.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Content Include="..\JsonData\*.json" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
 
 </Project>

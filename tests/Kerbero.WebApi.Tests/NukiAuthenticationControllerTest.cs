@@ -106,27 +106,27 @@ public class NukiAuthenticationControllerTest
 		// Act
 	
 		// Assert
-		var content = (await _controller.RetrieveTokenByCode("VALID_CLIENT_ID", "VALID_CODE")).Result as ObjectResult;
-		content?.Value.Should().NotBeNull().And.BeEquivalentTo(error);
+		var action = (await _controller.RetrieveTokenByCode("VALID_CLIENT_ID", "VALID_CODE")).Result as ObjectResult;
+		action?.Value.Should().NotBeNull().And.BeEquivalentTo(error);
 		switch (error)
 		{
 			case InvalidParametersError:
 			case DuplicateEntryError:
-				content?.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+				action?.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
 				break;
-			case ExternalServiceUnreachableError:
-			case PersistentResourceNotAvailableError:
 			case UnknownExternalError:
-				content?.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
+				action?.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
 				break;
 			case UnableToParseResponseError:
-				content?.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
+			case ExternalServiceUnreachableError:
+			case PersistentResourceNotAvailableError:
+				action?.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
 				break;
 			case UnauthorizedAccessError:
-				content?.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
+				action?.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
 				break;
 			case not null:
-				content?.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+				action?.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
 				break;
 		}
 	}

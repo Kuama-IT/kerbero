@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Kerbero.WebApi.Utils.Extensions;
 
-public static class ModelStateDictionaryExtensions
+public static class ModelStateDictionaryExtension
 {
 	public static ActionResult AddErrorAndReturnAction(this ModelStateDictionary modelStateDict, IError error)
 	{
@@ -23,11 +23,11 @@ public static class ModelStateDictionaryExtensions
 	{
 		switch (error)
 		{
-			case ExternalServiceUnreachableError:
 			case UnknownExternalError:
-			case PersistentResourceNotAvailableError:
 				return HttpStatusCode.ServiceUnavailable;
 			case UnableToParseResponseError:
+			case ExternalServiceUnreachableError:
+			case PersistentResourceNotAvailableError:
 				return HttpStatusCode.BadGateway;
 			case UnauthorizedAccessError:
 				return HttpStatusCode.Unauthorized;

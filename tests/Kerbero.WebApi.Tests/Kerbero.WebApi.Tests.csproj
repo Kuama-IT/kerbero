@@ -27,5 +27,5 @@
       <ProjectReference Include="..\..\src\Kerbero.Infrastructure\Kerbero.Infrastructure.csproj" />
       <ProjectReference Include="..\..\src\Kerbero.WebApi\Kerbero.WebApi.csproj" />
     </ItemGroup>
-
+    
 </Project>

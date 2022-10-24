@@ -38,7 +38,6 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void Dispose()
 	{
 		_httpTest.Dispose();
-		GC.SuppressFinalize(this);
 	}
 	
 	#region BuildUriForCode
