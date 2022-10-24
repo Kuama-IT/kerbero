@@ -4,7 +4,7 @@ using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 
 namespace Kerbero.Domain.NukiActions.Interfaces;
 
-public interface IGetNukiSmartLockListInteractor: InteractorAsync<NukiSmartLocksPresentationRequest, List<KerberoSmartLockPresentationResponse>>
+public interface IGetNukiSmartLocksInteractor: InteractorAsync<NukiSmartLocksPresentationRequest, List<KerberoSmartLockPresentationResponse>>
 {
     
 }

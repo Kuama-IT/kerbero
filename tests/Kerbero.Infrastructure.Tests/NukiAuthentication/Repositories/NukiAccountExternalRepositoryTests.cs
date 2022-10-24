@@ -6,6 +6,7 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
+using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.Extensions.Logging;
@@ -15,21 +16,22 @@ namespace Kerbero.Infrastructure.Tests.NukiAuthentication.Repositories;
 
 public class NukiAccountExternalRepositoryTests: IDisposable
 {
-	private readonly NukiAccountExternalRepository _nukiClient;
+	private readonly NukiAccountExternalRepository _nukiAccountExternalRepository;
 	private readonly HttpTest _httpTest;
-	private readonly Mock<ILogger<NukiAccountExternalRepository>> _logger;
-	
+	private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
+
 	public NukiAccountExternalRepositoryTests()
 	{
 		// Arrange
-		_logger = new Mock<ILogger<NukiAccountExternalRepository>>();
-		_nukiClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions
+		var logger = new Mock<ILogger<NukiSafeHttpCallHelper>>();
+		 _nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(logger.Object);
+		_nukiAccountExternalRepository = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = "/nuki/code",
 			MainDomain = "https://test.com",
 			BaseUrl = "http://api.nuki.io"
-		}), _logger.Object);
+		}), _nukiSafeHttpCallHelper);
 		_httpTest = new HttpTest();
 	}
 	
@@ -45,7 +47,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void BuildUriForCode_UriForRedirect_Success_Test()
 	{
 		// Act
-		var redirect = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequest("v7kn_NX7vQ7VjQdXFGK43g"));
+		var redirect = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest("v7kn_NX7vQ7VjQdXFGK43g"));
 
 		// Assert
 		var equalUri = new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
@@ -60,7 +62,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void BuildUriForCode_ButClientIdIsEmpty_Test()
 	{
 		// Act
-		var exCode = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequest(""));
+		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest(""));
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
 	}	
@@ -69,13 +71,13 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void BuildUriForCode_ArgumentNullException_Test()
 	{
 		// Arrange
-		var errorClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions()
+		var errorClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions
 		{
 			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
 			RedirectUriForCode = null!,
 			MainDomain = "https://test.com",
 			BaseUrl = "http://api.nuki.io"
-		}), _logger.Object);
+		}), _nukiSafeHttpCallHelper);
 		
 		// Act
 		var exCode = errorClient.BuildUriForCode(new NukiRedirectExternalRequest("INVALID_CLIENT_ID"));
@@ -90,7 +92,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		// Arrange
 		_httpTest.SimulateException(new Exception());
 		// Act
-		var exCode = _nukiClient.BuildUriForCode(new NukiRedirectExternalRequest(""));
+		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest(""));
 		// Assert
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
@@ -112,7 +114,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		}); // from nuki documentation
 		
 		// Act
-		var nukiAccount = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequest(){ ClientId = "clientId", Code = "code"});
+		var nukiAccount = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest(){ ClientId = "clientId", Code = "code"});
 		
 		// Assert
 		_httpTest.ShouldHaveMadeACall();
@@ -131,7 +133,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
     public async void GetNukiAccount_ButClientIdIsEmpty_Test()
 	{
 		// Act
-		var exToken = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "", Code = ""}) ;
+		var exToken = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "", Code = ""}) ;
 		// Assert
 		exToken.IsFailed.Should().BeTrue();
 		exToken.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
@@ -149,7 +151,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 
 	    // Act
 	    // Assert
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
 	    ex.IsFailed.Should().BeTrue();
 	    ex.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
 	    ex.Errors.FirstOrDefault()!.Message.Should().Contain("invalid_client: Invalid client credentials.");
@@ -162,7 +164,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	    _httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout, body: System.Text.Json.JsonSerializer.Serialize(new { })); 
 
 	    // Act
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
 
 	    // Assert
 	    ex.IsFailed.Should().BeTrue();
@@ -181,7 +183,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 
 	    // Act
 	    // Assert
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
 	    ex.IsFailed.Should().BeTrue();
 	    ex.Errors.FirstOrDefault().Should().BeOfType<UnknownExternalError>();
     }
@@ -193,7 +195,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	    _httpTest.RespondWith(status: 200, body: null); 
 
 	    // Act
-	    var ex = await _nukiClient.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
+	    var ex = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest() {ClientId = "clientId", Code = "code"});
 	    // Assert
 	    ex.Errors.FirstOrDefault()!.Should().BeOfType<UnableToParseResponseError>();
 	    ex.Errors.FirstOrDefault()!.Message.Should().Contain("Response is null");
@@ -216,7 +218,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		}); // from nuki documentation
 		
 		// Act
-		var nukiAccount = await _nukiClient.RefreshToken(
+		var nukiAccount = await _nukiAccountExternalRepository.RefreshToken(
 			new NukiAccountExternalRequest{ ClientId = "clientId", RefreshToken = "VALID_REFRESH_TOKEN"});
 		
 		// Assert
@@ -236,7 +238,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
     public async void RefreshToken_ButClientIdIsEmpty_Test()
 	{
 		// Act
-		var exToken = await _nukiClient.RefreshToken(new NukiAccountExternalRequest() {ClientId = "", Code = ""}) ;
+		var exToken = await _nukiAccountExternalRepository.RefreshToken(new NukiAccountExternalRequest() {ClientId = "", Code = ""}) ;
 		// Assert
 		exToken.IsFailed.Should().BeTrue();
 		exToken.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();

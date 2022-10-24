@@ -13,7 +13,7 @@ public static
 		services.AddScoped<IProvideNukiAuthRedirectUrlInteractor, ProvideNukiAuthRedirectUrlInteractor>();
 		services.AddScoped<ICreateNukiAccountInteractor, CreateNukiAccountInteractor>();
 		services.AddScoped<IAuthenticateNukiAccountInteractor, AuthenticateNukiAccountInteractor>();
-		services.AddScoped<IGetNukiSmartLockListInteractor, GetNukiSmartLocksInteractor>();
+		services.AddScoped<IGetNukiSmartLocksInteractor, GetNukiSmartLocksInteractor>();
 
 		return services;
 	}

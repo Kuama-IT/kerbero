@@ -3,6 +3,7 @@ using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
+using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiActions.Repositories;
 using Microsoft.Extensions.Logging;
@@ -19,14 +20,14 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public NukiSmartLockExternalRepositoryTests()
     {
         // Arrange
-        var logger = new Mock<ILogger<NukiSmartLockExternalRepository>>();
+        var helper = new NukiSafeHttpCallHelper(new Mock<ILogger<NukiSafeHttpCallHelper>>().Object);
         _nukiSmartLockClient = new NukiSmartLockExternalRepository(Options.Create(new NukiExternalOptions()
         {
             Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
             RedirectUriForCode = "/nuki/code",
             MainDomain = "https://test.com",
             BaseUrl = "http://api.nuki.io"
-        }), logger.Object);
+        }), helper);
         _httpTest = new HttpTest();
     }
 	

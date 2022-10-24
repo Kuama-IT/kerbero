@@ -1,6 +1,7 @@
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
+using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiActions.Repositories;
@@ -22,6 +23,7 @@ public static class ConfigureService
 		services.AddScoped<INukiAccountPersistentRepository, NukiAccountPersistentRepository>();
 		services.AddScoped<INukiAccountExternalRepository, NukiAccountExternalRepository>();
 		services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
+		services.AddScoped<NukiSafeHttpCallHelper>();
 		
 		return services;
 	}
