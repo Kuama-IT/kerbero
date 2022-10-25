@@ -18,5 +18,6 @@ public class NukiSmartLockState
 		
     public string? OperationId { get; set; }
 
+    public int NukiSmartLockId { get; set; }
     public NukiSmartLock NukiSmartLock { get; set; } = null!;
 }

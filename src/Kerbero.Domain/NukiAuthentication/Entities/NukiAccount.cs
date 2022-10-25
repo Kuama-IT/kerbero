@@ -1,3 +1,5 @@
+using Kerbero.Domain.NukiActions.Entities;
+
 namespace Kerbero.Domain.NukiAuthentication.Entities;
 public class NukiAccount
 {
@@ -9,4 +11,5 @@ public class NukiAccount
 	public string? TokenType { get; set; }
 	public string ClientId { get; set; } = null!;
 	
+	public List<NukiSmartLock>? NukiSmartLocks { get; set; }
 }
