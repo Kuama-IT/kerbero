@@ -9,4 +9,5 @@ public interface INukiSmartLockExternalRepository
 {
 	Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks(string accessToken);
 	Task<Result<NukiSmartLockExternalResponse>> GetNukiSmartLock(NukiSmartLockExternalRequest request);
+	Task<Result> OpenNukiSmartLock(NukiSmartLockExternalRequest request);
 }

@@ -5,5 +5,6 @@ namespace Kerbero.Domain.NukiActions.Repositories;
 
 public interface INukiSmartLockPersistentRepository
 {
-    Task<Result<NukiSmartLock>> CreateSmartLock(NukiSmartLock nukiSmartLock);
+    Task<Result<NukiSmartLock>> Create(NukiSmartLock nukiSmartLock);
+    Task<Result<NukiSmartLock>> GetById(int smartLockId);
 }

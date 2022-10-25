@@ -1,7 +1,6 @@
 using FluentResults;
 using Flurl;
 using Flurl.Http;
-using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Repositories;
@@ -33,6 +32,11 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 	}
 
 	public Task<Result<NukiSmartLockExternalResponse>> GetNukiSmartLock(NukiSmartLockExternalRequest request)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<Result> OpenNukiSmartLock(NukiSmartLockExternalRequest request)
 	{
 		throw new NotImplementedException();
 	}
