@@ -20,7 +20,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 		_nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
 		_options = options.Value;
 	}
-	
+
 	public async Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks(string accessToken)
 	{
 		var apiResponse = await _nukiSafeHttpCallHelper.Handle( () => _options.BaseUrl
@@ -37,6 +37,11 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 	}
 
 	public Task<Result> OpenNukiSmartLock(NukiSmartLockExternalRequest request)
+	{
+		throw new NotImplementedException();
+	}
+	
+	public Task<Result> CloseNukiSmartLock(NukiSmartLockExternalRequest requestDto)
 	{
 		throw new NotImplementedException();
 	}
