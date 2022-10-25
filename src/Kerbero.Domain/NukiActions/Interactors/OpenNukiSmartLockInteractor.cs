@@ -20,7 +20,7 @@ public class OpenNukiSmartLockInteractor: IOpenNukiSmartLockInteractor
 
     public async Task<Result> Handle(OpenNukiSmartLockPresentationRequest presentationRequest)
     {
-        var dbResult = await _nukiSmartLockPersistentRepository.GetById(presentationRequest.NukiSmartLockId);
+        var dbResult = _nukiSmartLockPersistentRepository.GetById(presentationRequest.NukiSmartLockId);
 
         if (dbResult.IsFailed)
         {
