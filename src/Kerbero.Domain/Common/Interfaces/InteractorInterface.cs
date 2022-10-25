@@ -12,12 +12,7 @@ public interface InteractorAsync<in TRequest, TResult>
 	public Task<Result<TResult>> Handle(TRequest request);
 }
 
-public interface InteractorAsyncNoParam<T> 
+public interface InteractorAsync<in TRequest>
 {
-	public Task<Result<T>> Handle();
-}
-
-public interface InteractorAsync<T>
-{
-	public Task<Result> Handle(T? request = default);
+	public Task<Result> Handle(TRequest request);
 }

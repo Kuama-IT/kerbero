@@ -52,7 +52,7 @@ public class CreateNukiSmartLockInteractorTest
         // Arrange
         _smartLockClient.Setup(c => c.GetNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(_clientResponse);
-        _smartLockPersistent.Setup(c => c.CreateSmartLock(It.IsAny<NukiSmartLock>()))
+        _smartLockPersistent.Setup(c => c.Create(It.IsAny<NukiSmartLock>()))
             .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
             {
                 Favourite = true,
@@ -81,7 +81,7 @@ public class CreateNukiSmartLockInteractorTest
         _smartLockClient.Verify(c =>
             c.GetNukiSmartLock(It.Is<NukiSmartLockExternalRequest>(req =>
                 req.ExternalId == 0 && req.AccessToken == "ACCESS_TOKEN")));
-        _smartLockPersistent.Verify(c => c.CreateSmartLock(It.Is<NukiSmartLock>(req => req.Favourite == true &&
+        _smartLockPersistent.Verify(c => c.Create(It.Is<NukiSmartLock>(req => req.Favourite == true &&
                                                                 req.Name == "kquarter" && 
                                                                 req.Type == 0 &&
                                                                 req.NukiAccountId == 0 &&
@@ -114,7 +114,7 @@ public class CreateNukiSmartLockInteractorTest
         // Arrange
         _smartLockClient.Setup(c => c.GetNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(_clientResponse);
-        _smartLockPersistent.Setup(c => c.CreateSmartLock(It.IsAny<NukiSmartLock>()))
+        _smartLockPersistent.Setup(c => c.Create(It.IsAny<NukiSmartLock>()))
             .Returns(async () => await Task.FromResult(Result.Fail(new PersistentResourceNotAvailableError())));
         
         // Act

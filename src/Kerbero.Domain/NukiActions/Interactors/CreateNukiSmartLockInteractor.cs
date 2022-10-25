@@ -28,7 +28,7 @@ public class CreateNukiSmartLockInteractor: ICreateNukiSmartLockInteractor
             return extResponse.ToResult();
         }
         
-        var smartLockEntity = await _nukiSmartLockPersistentRepository.CreateSmartLock(NukiSmartLockMapper.MapToEntity(extResponse.Value));
+        var smartLockEntity = await _nukiSmartLockPersistentRepository.Create(NukiSmartLockMapper.MapToEntity(extResponse.Value));
         if (smartLockEntity.IsFailed)
         {
             return smartLockEntity.ToResult();
