@@ -45,16 +45,6 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 			ClientId = "VALID_CLIENT_ID",
 			TokenType = "bearer",
 		};
-		
-		var data = new NukiAccount
-		{
-			Id = 1,
-			Token = nukiAccount.Token,
-			RefreshToken = nukiAccount.RefreshToken,
-			TokenExpiringTimeInSeconds = nukiAccount.TokenExpiringTimeInSeconds,
-			ClientId = nukiAccount.ClientId,
-			TokenType = nukiAccount.TokenType,
-		};
 
 		// Act
 		var res = await _repository.Create(nukiAccount);

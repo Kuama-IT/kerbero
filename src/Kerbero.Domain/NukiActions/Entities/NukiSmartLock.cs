@@ -4,6 +4,8 @@ namespace Kerbero.Domain.NukiActions.Entities;
 
 public class NukiSmartLock
 {
+	public int Id { get; set; }
+	
     public int ExternalSmartLockId { get; set; }
 	
     public int Type { get; set; }
