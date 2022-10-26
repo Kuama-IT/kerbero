@@ -38,21 +38,21 @@ public class ModelStateDictionaryExtensionsTest: ControllerBase
 		{
 			case InvalidParametersError:
 			case DuplicateEntryError:
-				action?.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+				action!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
 				break;
 			case UnknownExternalError:
-				action?.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
+				action!.StatusCode.Should().Be((int)HttpStatusCode.ServiceUnavailable);
 				break;
 			case UnableToParseResponseError:
 			case ExternalServiceUnreachableError:
 			case PersistentResourceNotAvailableError:
-				action?.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
+				action!.StatusCode.Should().Be((int)HttpStatusCode.BadGateway);
 				break;
 			case UnauthorizedAccessError:
-				action?.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
+				action!.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
 				break;
 			case not null:
-				action?.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+				action!.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
 				break;
 		}
 	}

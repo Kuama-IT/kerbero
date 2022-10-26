@@ -15,14 +15,12 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
 
     private readonly INukiAccountPersistentRepository _nukiAccountPersistentRepository;
     private readonly INukiAccountExternalRepository _nukiAccountExternalRepository;
-    private readonly INukiSmartLockExternalRepository _nukiSmartLockExternalRepository;
 
     public AuthenticateNukiAccountInteractor(INukiAccountPersistentRepository nukiAccountPersistentRepository,
-        INukiAccountExternalRepository nukiAccountExternalRepository, INukiSmartLockExternalRepository nukiSmartLockExternalRepository)
+        INukiAccountExternalRepository nukiAccountExternalRepository)
     {
         _nukiAccountExternalRepository = nukiAccountExternalRepository;
         _nukiAccountPersistentRepository = nukiAccountPersistentRepository;
-        _nukiSmartLockExternalRepository = nukiSmartLockExternalRepository;
     }
 
     /// <summary>
@@ -41,7 +39,7 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
         }
 
         // Refresh token
-        if (account.Value.ExpiryDate < DateTime.Now)
+        if (account.Value.ExpiryDate < DateTime.Now.ToUniversalTime()) // Data on DB are mandatory converted to UTC
         {
             var extRes = await _nukiAccountExternalRepository.RefreshToken(new NukiAccountExternalRequest
             {
@@ -54,6 +52,7 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
             }
 
             var nukiAccount = NukiAccountMapper.MapToEntity(extRes.Value);
+            nukiAccount.Id = repositoryPresentationRequest.NukiAccountId;
             account = await _nukiAccountPersistentRepository.Update(nukiAccount);
 
             if (account.IsFailed)

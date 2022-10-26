@@ -13,8 +13,8 @@ public static class NukiSmartLockMapper
         {
             ExternalName = nukiSmartLockExternalResponse.Name,
             ExternalType = nukiSmartLockExternalResponse.Type,
-            ExternalAccountId = nukiSmartLockExternalResponse.AccountId,
-            ExternalSmartLockId = nukiSmartLockExternalResponse.AuthId
+            AccountId = nukiSmartLockExternalResponse.AccountId,
+            ExternalSmartLockId = nukiSmartLockExternalResponse.SmartLockId
         };
     }
     
@@ -26,8 +26,9 @@ public static class NukiSmartLockMapper
         {
             ExternalName = entity.Name,
             ExternalType = entity.Type,
-            ExternalAccountId = entity.NukiAccountId,
-            ExternalSmartLockId = entity.ExternalSmartLockId
+            AccountId = entity.NukiAccountId,
+            ExternalSmartLockId = entity.ExternalSmartLockId,
+            SmartLockId = entity.Id
         };
     }
 
