@@ -1,3 +1,5 @@
+using Kerbero.Domain.NukiActions.Entities;
+using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
@@ -67,5 +69,12 @@ public class KerberoWebApplicationFactory<TStartup>
 		using var scope = Services.CreateScope();
 		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiAccountPersistentRepository>();
 		await accountPersistentRepository.Create(account);
+	}
+
+	public async Task CreateNukiSmartLock(NukiSmartLock smartLock)
+	{
+		using var scope = Services.CreateScope();
+		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiSmartLockPersistentRepository>();
+		await accountPersistentRepository.Create(smartLock);
 	}
 }
