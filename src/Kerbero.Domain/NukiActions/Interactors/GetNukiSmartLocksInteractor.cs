@@ -25,7 +25,7 @@ public class GetNukiSmartLocksInteractor : IGetNukiSmartLocksInteractor
 			return Result.Fail(smartLockList.Errors);
 		}
 
-		var mapped = smartLockList.Value.Select(NukiSmartLockMapper.Map).ToList();
+		var mapped = smartLockList.Value.Select(NukiSmartLockMapper.MapToPresentation).ToList();
 
 		return Result.Ok(mapped);
 	}
