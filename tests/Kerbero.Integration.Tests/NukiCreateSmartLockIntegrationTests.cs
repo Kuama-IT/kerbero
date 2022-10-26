@@ -59,7 +59,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 			ExternalType = 0,
 			AccountId = 1,
 			ExternalSmartLockId = 0,
-			SmartLockId = 1
+			SmartLockId = content!.SmartLockId
 		});
 	}
 
