@@ -1,7 +1,6 @@
 using FluentResults;
 using Flurl;
 using Flurl.Http;
-using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Repositories;
@@ -48,6 +47,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 				"action", 
 				"unlock")
 			.WithOAuthBearerToken(request.AccessToken)
+			.WithHeader("accept", "application/json")
 			.PostAsync());
 		return response.IsFailed ? response.ToResult() : Result.Ok();
 	}
