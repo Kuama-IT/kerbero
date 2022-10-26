@@ -63,9 +63,10 @@ public class GetNukiSmartLocksListInteractorTest
 			new()
 				{
 					ExternalSmartLockId = 0,
-					ExternalAccountId = 0,
+					AccountId = 0,
 					ExternalType = 0,
-					ExternalName = "kquarter"
+					ExternalName = "kquarter",
+					SmartLockId = 0
 				}
 		});
 	}	

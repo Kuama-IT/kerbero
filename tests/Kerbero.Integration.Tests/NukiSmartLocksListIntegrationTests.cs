@@ -54,7 +54,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 		response.EnsureSuccessStatusCode();
 		content.Should()
 			.BeEquivalentTo(
-				"[{\"externalName\":\"string\",\"externalType\":0,\"externalAccountId\":0,\"externalSmartLockId\":0}]");
+			"[{\"externalName\":\"string\",\"externalType\":0,\"accountId\":0,\"externalSmartLockId\":0,\"smartLockId\":0}]");
 	}
 	
 	[Fact]

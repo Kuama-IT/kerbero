@@ -48,8 +48,9 @@ public class NukiSmartLockControllerTests
 				{
 					ExternalName = "kquarter",
 					ExternalType = 2,
-					ExternalAccountId = 1,
-					ExternalSmartLockId = 1
+					AccountId = 1,
+					ExternalSmartLockId = 1,
+					SmartLockId = 1
 				}
 			})));
 		
@@ -65,8 +66,9 @@ public class NukiSmartLockControllerTests
 			{
 				ExternalName = "kquarter",
 				ExternalType = 2,
-				ExternalAccountId = 1,
-				ExternalSmartLockId = 1
+				AccountId = 1,
+				ExternalSmartLockId = 1,
+				SmartLockId = 1
 			}
 		});
 	}
@@ -86,8 +88,9 @@ public class NukiSmartLockControllerTests
 			{
 				ExternalName = "kquarter",
 				ExternalType = 2,
-				ExternalAccountId = 1,
-				ExternalSmartLockId = 1
+				AccountId = 1,
+				ExternalSmartLockId = 1,
+				SmartLockId = 1
 			})));
 
 		// Act
@@ -99,8 +102,9 @@ public class NukiSmartLockControllerTests
 		{
 			ExternalName = "kquarter",
 			ExternalType = 2,
-			ExternalAccountId = 1,
-			ExternalSmartLockId = 1
+			AccountId = 1,
+			ExternalSmartLockId = 1,
+			SmartLockId = 1
 		});
 		_createNukiSmartLockInteractor.Verify(c => c.Handle(
 			It.Is<CreateNukiSmartLockPresentationRequest>(p => p.NukiSmartLockId == 1)));

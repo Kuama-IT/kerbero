@@ -17,14 +17,12 @@ public class GetNukiAccountInteractorTests
     private readonly AuthenticateNukiAccountInteractor _interactor;
     private readonly Mock<INukiAccountPersistentRepository> _persistent;
     private readonly Mock<INukiAccountExternalRepository> _nukiAccountClient;
-    private readonly Mock<INukiSmartLockExternalRepository> _nukiSmartLockClient;
 
     public GetNukiAccountInteractorTests()
     {
         _nukiAccountClient = new Mock<INukiAccountExternalRepository>();
-        _nukiSmartLockClient = new Mock<INukiSmartLockExternalRepository>();
         _persistent = new Mock<INukiAccountPersistentRepository>();
-        _interactor = new AuthenticateNukiAccountInteractor(_persistent.Object, _nukiAccountClient.Object, _nukiSmartLockClient.Object);
+        _interactor = new AuthenticateNukiAccountInteractor(_persistent.Object, _nukiAccountClient.Object);
     }
 
     [Fact]

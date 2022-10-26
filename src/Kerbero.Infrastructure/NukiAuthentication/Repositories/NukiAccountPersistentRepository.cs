@@ -79,9 +79,20 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 	{
 		try
 		{
-			var res = _dbContext.NukiAccounts.Update(nukiAccount);
+			var res = GetAccount(nukiAccount.Id);
+			if (res.IsFailed)
+			{
+				return Result.Fail(new UnauthorizedAccessError());
+			}
+
+			var account = res.Value;
+			account.Token = nukiAccount.Token;
+			account.ExpiryDate = nukiAccount.ExpiryDate;
+			account.RefreshToken = nukiAccount.RefreshToken;
+			account.TokenType = nukiAccount.TokenType;
+			account.TokenExpiringTimeInSeconds = nukiAccount.TokenExpiringTimeInSeconds;
 			await _dbContext.SaveChangesAsync();
-			return Result.Ok(res.Entity);
+			return Result.Ok(account);
 		}
 		catch (NotSupportedException exception)
 		{

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Entities;
 using Kerbero.Domain.NukiAuthentication.Repositories;
@@ -36,7 +37,6 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 	public async Task CreateNukiAccount_Success_Test()
 	{
 		// Arrange
-		_repository.Should().BeAssignableTo<INukiAccountPersistentRepository>();
 		var nukiAccount = new NukiAccount
 		{
 			Token = "VALID_TOKEN",
@@ -45,13 +45,20 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 			ClientId = "VALID_CLIENT_ID",
 			TokenType = "bearer",
 		};
-
-		// Act
-		var res = await _repository.Create(nukiAccount);
+		
+		var res = await CreateHelper(nukiAccount);
 		
 		// Assert
 		nukiAccount.Id = 1;
 		res.Value.Should().BeEquivalentTo(nukiAccount);
+	}
+
+	private async Task<Result<NukiAccount>> CreateHelper(NukiAccount nukiAccount)
+	{
+		_repository.Should().BeAssignableTo<INukiAccountPersistentRepository>();
+
+		// Act
+		return await _repository.Create(nukiAccount);
 	}
 	#endregion
 
@@ -123,6 +130,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 			ClientId = "VALID_CLIENT_ID",
 			TokenType = "bearer",
 		};
+		await CreateHelper(nukiAccount);
 
 		// Act
 		var res = await _repository.Update(nukiAccount);
