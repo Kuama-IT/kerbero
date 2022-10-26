@@ -75,7 +75,7 @@ public class CreateNukiSmartLockInteractorTest
             })));
         
         // Act
-        var result = await _interactor.Handle(new CreateNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0));
+        var result = await _interactor.Handle(new CreateNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0, 0));
         
         // Assert
         _smartLockClient.Verify(c =>
@@ -100,7 +100,7 @@ public class CreateNukiSmartLockInteractorTest
             .Returns(async () => await Task.FromResult(Result.Fail(new UnauthorizedAccessError())));
         
         // Act
-        var result = await _interactor.Handle(new CreateNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0));
+        var result = await _interactor.Handle(new CreateNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0, 0));
         
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -118,7 +118,7 @@ public class CreateNukiSmartLockInteractorTest
             .Returns(async () => await Task.FromResult(Result.Fail(new PersistentResourceNotAvailableError())));
         
         // Act
-        var result = await _interactor.Handle(new CreateNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0));
+        var result = await _interactor.Handle(new CreateNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0, 0));
         
         // Assert
         result.IsFailed.Should().BeTrue();

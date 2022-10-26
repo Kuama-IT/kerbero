@@ -1,7 +1,7 @@
 using FluentResults;
 using Kerbero.Domain.NukiActions.Interfaces;
+using Kerbero.Domain.NukiActions.Mappers;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
-using Kerbero.Domain.NukiActions.Models.Mapper;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 using Kerbero.Domain.NukiActions.Repositories;
@@ -28,7 +28,8 @@ public class CreateNukiSmartLockInteractor: ICreateNukiSmartLockInteractor
             return extResponse.ToResult();
         }
         
-        var smartLockEntity = await _nukiSmartLockPersistentRepository.Create(NukiSmartLockMapper.MapToEntity(extResponse.Value));
+        var smartLock = NukiSmartLockMapper.MapToEntity(extResponse.Value, request.AccountId);
+        var smartLockEntity = await _nukiSmartLockPersistentRepository.Create(smartLock);
         if (smartLockEntity.IsFailed)
         {
             return smartLockEntity.ToResult();
