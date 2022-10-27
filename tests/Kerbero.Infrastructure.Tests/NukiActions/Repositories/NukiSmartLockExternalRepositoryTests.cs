@@ -39,7 +39,6 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     public void Dispose()
     {
         _httpTest.Dispose();
-        GC.SuppressFinalize(this);
     }
     
     [Fact]

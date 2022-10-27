@@ -19,15 +19,15 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 {
 	private readonly HttpTest _httpTest;
 	private readonly HttpClient _client;
+	private readonly KerberoWebApplicationFactory<Program> _application;
 	private readonly object _nukiJsonSmartLockResponse;
 
 	public NukiSmartLocksListIntegrationTests()
 	{
-		WebApplicationFactory<Program> application = new KerberoWebApplicationFactory<Program>();
-		application.Server.PreserveExecutionContext = true; // fixture for Flurl
+		_application = new KerberoWebApplicationFactory<Program>();
+		_application.Server.PreserveExecutionContext = true; // fixture for Flurl
 		_httpTest = new HttpTest();
-		_client = application.CreateClient();
-		
+		_client = _application.CreateClient();
 		var json = File.ReadAllText("JsonData/get-nuki-smartlock-response.json");
 		_nukiJsonSmartLockResponse = JsonSerializer.Deserialize<dynamic>(json) ?? throw new InvalidOperationException();
 	}
@@ -41,6 +41,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_Success()
 	{
 		// Arrange
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWithJson(
 			new[]
 			{
@@ -59,6 +60,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_RefreshToken_AndCannotParseTheResponse_Text()
 	{
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWithJson(new
 		{
 			access_token ="ACCESS_TOKEN", 
@@ -75,6 +77,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_Unauthorized_Test()
 	{
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new
 		{
 			detailMessage = "Your access token is not authorized",
@@ -93,7 +96,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_NoAccount_Test()
 	{
-	
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		var response = await _client.GetAsync("api/nuki/smartlock?accountId=0");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
@@ -106,6 +109,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_TimeoutNuki_Test()
 	{
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWith(status: 408); 
 		
 		var response = await _client.GetAsync("api/nuki/smartlock?accountId=1");
