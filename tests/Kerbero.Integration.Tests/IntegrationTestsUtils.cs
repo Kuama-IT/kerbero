@@ -8,33 +8,16 @@ public static class IntegrationTestsUtils
 {
 	#region Seed DB
 
-	public static void InitializeDbForTests(ApplicationDbContext db)
+	public static NukiAccount GetSeedingNukiAccount()
 	{
-		db.NukiAccounts.AddRange(GetSeedingMessages());
-		db.SaveChanges();
-	}
-	
-	private static IEnumerable<NukiAccount> GetSeedingMessages()
-	{
-		return new List<NukiAccount>()
+		return new NukiAccount()
 		{
-			new() {
-				Token = "VALID_TOKEN",
-				RefreshToken = "VALID_REFRESH_TOKEN",
-				TokenExpiringTimeInSeconds = 2592000,
-				ClientId = "VALID_CLIENT_ID",
-				TokenType = "bearer",
-				ExpiryDate = DateTime.Now.AddSeconds(2592000)
-			},
-			new()
-			{
-				Token = "VALID_TOKEN",
-				RefreshToken = "VALID_REFRESH_TOKEN",
-				TokenExpiringTimeInSeconds = 2592000,
-				ClientId = "VALID_CLIENT_ID",
-				TokenType = "bearer",
-				ExpiryDate = DateTime.Now.AddSeconds(-2592000)
-			}
+			Token = "VALID_TOKEN",
+			RefreshToken = "VALID_REFRESH_TOKEN",
+			TokenExpiringTimeInSeconds = 2592000,
+			ClientId = "VALID_CLIENT_ID",
+			TokenType = "bearer",
+			ExpiryDate = DateTime.Now.AddSeconds(2592000)
 		};
 	}
 

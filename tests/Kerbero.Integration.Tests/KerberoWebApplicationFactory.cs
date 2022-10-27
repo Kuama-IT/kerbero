@@ -1,3 +1,5 @@
+using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.Common.Options;
 using Microsoft.AspNetCore.Hosting;
@@ -50,28 +52,20 @@ public class KerberoWebApplicationFactory<TStartup>
 			services.AddDbContext<ApplicationDbContext>(options => 
 				options.UseInMemoryDatabase(Config["ConnectionStrings:TestString"]!));
 
-
-
 			var sp = services.BuildServiceProvider();
 
 			using var scope = sp.CreateScope();
 			var scopedServices = scope.ServiceProvider;
 			var db = scopedServices.GetRequiredService<ApplicationDbContext>();
-			var logger = scopedServices
-				.GetRequiredService<ILogger<KerberoWebApplicationFactory<TStartup>>>();
 
 			db.Database.EnsureCreated();
-
-			try
-			{
-				IntegrationTestsUtils.InitializeDbForTests(db);
-			}
-			catch (Exception ex)
-			{
-				logger.LogError(ex, "An error occurred seeding the " +
-				                    "database with test messages. Error: {Message}", ex.Message);
-			}
-				
 		});
+	}
+
+	public async Task CreateNukiAccount(NukiAccount account)
+	{
+		using var scope = Services.CreateScope();
+		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiAccountPersistentRepository>();
+		await accountPersistentRepository.Create(account);
 	}
 }
