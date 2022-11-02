@@ -236,4 +236,49 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 	    response.IsFailed.Should().BeTrue();
 	    response.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
     }
+    
+    [Fact]
+    public async Task CloseNukiSmartLock_Success()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 204);
+	    
+	    // Act
+	    var result = await _nukiSmartLockClient.CloseNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN", 0));
+	    
+	    // Assert
+	    _httpTest.ShouldHaveMadeACall();
+	    result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CloseNukiSmartLock_BadRequest()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 400);
+	    
+	    // Act
+	    var result = await _nukiSmartLockClient.CloseNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN", 0));
+
+	    // Assert
+	    result.Errors.First().Should().BeEquivalentTo(new InvalidParametersError("/smartlock/0/action/lock"));
+	    result.IsFailed.Should().BeTrue();
+	    _httpTest.ShouldHaveMadeACall();
+    }
+    
+    [Fact]
+    public async Task CloseNukiSmartLock_NukiUnauthorized()
+    {
+	    // Arrange
+	    _httpTest.RespondWith(status: 401);
+	    
+	    // Act
+	    var result = await _nukiSmartLockClient.CloseNukiSmartLock(new NukiSmartLockExternalRequest("ACCESS_TOKEN", 0));
+	    
+	    // Assert
+	    result.IsFailed.Should().BeTrue();
+	    result.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
+	    _httpTest.ShouldHaveMadeACall();
+    }
+    
 }
