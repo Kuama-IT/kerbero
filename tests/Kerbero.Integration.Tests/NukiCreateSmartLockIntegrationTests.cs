@@ -49,7 +49,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 		
 		var client = _application.CreateClient();
 
-		var response = await client.GetAsync($"api/nuki/smartlock/{1}?accountId=1");
+		var response = await client.PostAsync($"api/nuki/smartlock/{1}?accountId=1", null);
 
 		response.EnsureSuccessStatusCode();
 		var content = await response.Content.ReadFromJsonAsync<KerberoSmartLockPresentationResponse>();
@@ -76,7 +76,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 		var client = _application.CreateClient();
 
 		// Act
-		var response = await client.GetAsync($"api/nuki/smartlock/{1}?accountId=1");
+		var response = await client.PostAsync($"api/nuki/smartlock/{1}?accountId=1", null);
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		var content = await response.Content.ReadFromJsonAsync<JsonObject>();

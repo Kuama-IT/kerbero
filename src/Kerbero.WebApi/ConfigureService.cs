@@ -14,6 +14,7 @@ public static
 		services.AddScoped<ICreateNukiAccountInteractor, CreateNukiAccountInteractor>();
 		services.AddScoped<IAuthenticateNukiAccountInteractor, AuthenticateNukiAccountInteractor>();
 		services.AddScoped<IGetNukiSmartLocksInteractor, GetNukiSmartLocksInteractor>();
+		services.AddScoped<ICloseNukiSmartLockInteractor, CloseNukiSmartLockInteractor>();
 		services.AddScoped<ICreateNukiSmartLockInteractor, CreateNukiSmartLockInteractor>();
 		services.AddScoped<IOpenNukiSmartLockInteractor, OpenNukiSmartLockInteractor>();
 		
