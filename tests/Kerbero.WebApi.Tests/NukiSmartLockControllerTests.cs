@@ -23,6 +23,7 @@ public class NukiSmartLockControllerTests
 	private readonly Mock<IAuthenticateNukiAccountInteractor> _authInteractor;
 	private readonly Mock<ICreateNukiSmartLockInteractor> _createNukiSmartLockInteractor;
 	private readonly Mock<IOpenNukiSmartLockInteractor> _openNukiSmartLockInteractor;
+	private readonly Mock<ICloseNukiSmartLockInteractor> _closeNukiSmartLockInteractor;
 
 	public NukiSmartLockControllerTests()
 	{
@@ -30,10 +31,12 @@ public class NukiSmartLockControllerTests
 		_createNukiSmartLockInteractor = new Mock<ICreateNukiSmartLockInteractor>();
 		_authInteractor = new Mock<IAuthenticateNukiAccountInteractor>();
 		_openNukiSmartLockInteractor = new Mock<IOpenNukiSmartLockInteractor>();
+		_closeNukiSmartLockInteractor = new Mock<ICloseNukiSmartLockInteractor>();
 		_controller = new NukiSmartLockController(_authInteractor.Object, 
 			_getNukiSmartLocksInteractor.Object, 
 			_createNukiSmartLockInteractor.Object,
-			_openNukiSmartLockInteractor.Object);
+			_openNukiSmartLockInteractor.Object,
+			_closeNukiSmartLockInteractor.Object);
 	}
 
 	[Fact]
@@ -76,6 +79,27 @@ public class NukiSmartLockControllerTests
 				SmartLockId = 1
 			}
 		});
+	}
+
+	[Fact]
+	public async Task CloseNukiSmartLockById_Success_Test()
+	{
+		// Arrange
+		_authInteractor.Setup(i => i.Handle(It.IsAny<AuthenticateRepositoryPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok(new AuthenticateRepositoryPresentationResponse
+			{
+				Token = "ACCESS_TOKEN"
+			})));
+		_closeNukiSmartLockInteractor.Setup(i => i.Handle(It.IsAny<CloseNukiSmartLockPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok()));
+		
+		// Act
+		var res = await _controller.CloseSmartLockById(1,0);
+
+		// Assert
+		_closeNukiSmartLockInteractor.Verify(i =>
+			i.Handle(It.Is<CloseNukiSmartLockPresentationRequest>(x => x.AccessToken == "ACCESS_TOKEN")));
+		res.Should().BeAssignableTo<OkResult>();
 	}
 	
 	[Fact]
@@ -173,5 +197,23 @@ public class NukiSmartLockControllerTests
 
 		// Assert
 		result!.StatusCode.Should().Be(502);
+	}
+	[Fact]
+	public async Task CloseNukiSmartLockById_SmartLockNotFound_Test()
+	{
+		// Arrange
+		_authInteractor.Setup(i => i.Handle(It.IsAny<AuthenticateRepositoryPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Ok(new AuthenticateRepositoryPresentationResponse
+			{
+				Token = "ACCESS_TOKEN"
+			})));
+		_closeNukiSmartLockInteractor.Setup(i => i.Handle(It.IsAny<CloseNukiSmartLockPresentationRequest>()))
+			.Returns(Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
+		
+		// Act
+		var res = await _controller.CloseSmartLockById(1,0) as ObjectResult;
+
+		// Assert
+		res!.Value.Should().BeEquivalentTo(new SmartLockNotFoundError());
 	}
 }
