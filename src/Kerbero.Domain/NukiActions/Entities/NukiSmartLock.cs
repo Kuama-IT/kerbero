@@ -17,7 +17,9 @@ public class NukiSmartLock
     public bool Favourite { get; set; }
 
     public int NukiAccountId { get; set; }
+    
     public NukiAccount Account { get; set; } = null!;
+    
     public NukiSmartLockState? State { get; set; }
 }
 

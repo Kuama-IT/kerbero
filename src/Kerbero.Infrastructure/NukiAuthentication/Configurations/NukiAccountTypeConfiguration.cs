@@ -8,5 +8,8 @@ public class NukiAccountTypeConfiguration: IEntityTypeConfiguration<NukiAccount>
 {
 	public void Configure(EntityTypeBuilder<NukiAccount> builder)
 	{
+		builder
+			.HasIndex(a => a.ClientId)
+			.IsUnique();
 	}
 }
