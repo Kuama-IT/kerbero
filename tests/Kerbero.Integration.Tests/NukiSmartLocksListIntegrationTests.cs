@@ -48,7 +48,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 				_nukiJsonSmartLockResponse
 			});
 		
-		var response = await _client.GetAsync("api/nuki/smartlock?accountId=1");
+		var response = await _client.GetAsync("api/smartlocks?accountId=1");
 
 		var content = await response.Content.ReadAsStringAsync();
 		response.EnsureSuccessStatusCode();
@@ -69,7 +69,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 			refresh_token = "REFRESH_TOKEN"
 		}); // from nuki documentation
 		
-		var response = await _client.GetAsync("api/nuki/smartlock?accountId=1");
+		var response = await _client.GetAsync("api/smartlocks?accountId=1");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 	}
@@ -85,7 +85,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 			suppressedExceptions = Array.Empty<object>()
 		})); 
 		
-		var response = await _client.GetAsync("api/nuki/smartlock?accountId=1");
+		var response = await _client.GetAsync("api/smartlocks?accountId=1");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
@@ -97,7 +97,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_NoAccount_Test()
 	{
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
-		var response = await _client.GetAsync("api/nuki/smartlock?accountId=0");
+		var response = await _client.GetAsync("api/smartlocks?accountId=0");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -112,7 +112,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWith(status: 408); 
 		
-		var response = await _client.GetAsync("api/nuki/smartlock?accountId=1");
+		var response = await _client.GetAsync("api/smartlocks?accountId=1");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		response.StatusCode.Should().Be(HttpStatusCode.BadGateway);

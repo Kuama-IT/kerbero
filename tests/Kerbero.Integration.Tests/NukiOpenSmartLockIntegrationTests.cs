@@ -1,7 +1,11 @@
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
+using Flurl.Http.Content;
 using Flurl.Http.Testing;
 using Kerbero.WebApi;
+using Kerbero.WebApi.Models.Requests;
 using Microsoft.Extensions.Configuration;
 
 namespace Kerbero.Integration.Tests;
@@ -37,7 +41,8 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
         var client = _application.CreateClient();
 
         // Act
-        var response = await client.PutAsync("api/nuki/smartlock/1/unlock?accountId=1", null);
+        var response = await client.PutAsJsonAsync("api/smartlocks/unlock",
+            new OpenNukiSmartLockRequest(1, 1));
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -50,7 +55,8 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
         var client = _application.CreateClient();
 
         // Act
-        var response = await client.PutAsync("api/nuki/smartlock/1/unlock?accountId=0", null);
+        var response = await client.PutAsJsonAsync("api/smartlocks/unlock",
+            new OpenNukiSmartLockRequest(0, 1));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -63,7 +69,8 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
         var client = _application.CreateClient();
 
         // Act
-        var response = await client.PutAsync($"api/nuki/smartlock/{0}/unlock?accountId=1", null);
+        var response = await client.PutAsJsonAsync("api/smartlocks/unlock",
+            new OpenNukiSmartLockRequest(1, 0));
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

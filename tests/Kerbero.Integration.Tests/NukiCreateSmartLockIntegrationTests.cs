@@ -6,6 +6,7 @@ using Flurl.Http.Testing;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.WebApi;
+using Kerbero.WebApi.Models.Requests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -48,10 +49,10 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 		_httpTest.RespondWithJson(_nukiJsonSmartLockResponse);
 		
 		var client = _application.CreateClient();
+		
+		var response = await client.PostAsJsonAsync("api/smartlocks/import/nuki/", new CreateNukiSmartLockRequest(1 ,1));
 
-		var response = await client.PostAsync($"api/nuki/smartlock/{1}?accountId=1", null);
-
-		response.EnsureSuccessStatusCode();
+		response.Should().BeSuccessful();
 		var content = await response.Content.ReadFromJsonAsync<KerberoSmartLockPresentationResponse>();
 		content!.Should().BeEquivalentTo(new KerberoSmartLockPresentationResponse
 		{
@@ -68,7 +69,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 	{
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 
-		_httpTest.RespondWith(status: 401, body: System.Text.Json.JsonSerializer.Serialize(new 
+		_httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new 
 		{
 			error_description = "Invalid client credentials.",
 			error = "invalid_client"
@@ -76,7 +77,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 		var client = _application.CreateClient();
 
 		// Act
-		var response = await client.PostAsync($"api/nuki/smartlock/{1}?accountId=1", null);
+		var response = await client.PostAsJsonAsync("api/smartlocks/import/nuki/", new CreateNukiSmartLockRequest(1 ,1));
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		var content = await response.Content.ReadFromJsonAsync<JsonObject>();
