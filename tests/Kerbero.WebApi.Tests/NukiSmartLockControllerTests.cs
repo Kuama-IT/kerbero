@@ -11,6 +11,7 @@ using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.WebApi.Controllers;
+using Kerbero.WebApi.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -94,7 +95,7 @@ public class NukiSmartLockControllerTests
 			.Returns(Task.FromResult(Result.Ok()));
 		
 		// Act
-		var res = await _controller.CloseSmartLockById(1,0);
+		var res = await _controller.CloseSmartLockById(new CloseNukiSmartLockRequest(1, 0));
 
 		// Assert
 		_closeNukiSmartLockInteractor.Verify(i =>
@@ -123,7 +124,7 @@ public class NukiSmartLockControllerTests
 			})));
 
 		// Act
-		var resp = await _controller.CreateNukiSmartLockById(1, 1);
+		var resp = await _controller.CreateNukiSmartLockById(new CreateNukiSmartLockRequest(1, 1));
 		var okResult = resp as OkObjectResult;
 
 		// Assert
@@ -152,7 +153,7 @@ public class NukiSmartLockControllerTests
 			.Returns(Task.FromResult(Result.Ok()));
 		
 		// Act
-		var result = await _controller.OpenNukiSmartLockById(1,1) as OkResult;
+		var result = await _controller.OpenNukiSmartLockById(new OpenNukiSmartLockRequest(1, 1)) as OkResult;
 
 		// Assert
 		_openNukiSmartLockInteractor.Verify(i =>
@@ -174,7 +175,7 @@ public class NukiSmartLockControllerTests
 			.Returns(Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
 		
 		// Act
-		var result = await _controller.OpenNukiSmartLockById(1,1) as ObjectResult;
+		var result = await _controller.OpenNukiSmartLockById(new OpenNukiSmartLockRequest(1, 1)) as ObjectResult;
 
 		// Assert
 		result!.StatusCode.Should().Be(400);
@@ -193,7 +194,7 @@ public class NukiSmartLockControllerTests
 			.Returns(Task.FromResult(Result.Fail(new SmartLockNotReachableError())));
 
 		// Act
-		var result = await _controller.OpenNukiSmartLockById(1, 1) as ObjectResult;
+		var result = await _controller.OpenNukiSmartLockById(new OpenNukiSmartLockRequest(1, 1)) as ObjectResult;
 
 		// Assert
 		result!.StatusCode.Should().Be(502);
@@ -211,7 +212,7 @@ public class NukiSmartLockControllerTests
 			.Returns(Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
 		
 		// Act
-		var res = await _controller.CloseSmartLockById(1,0) as ObjectResult;
+		var res = await _controller.CloseSmartLockById(new CloseNukiSmartLockRequest(1, 0)) as ObjectResult;
 
 		// Assert
 		res!.Value.Should().BeEquivalentTo(new SmartLockNotFoundError());

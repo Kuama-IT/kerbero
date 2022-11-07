@@ -2,13 +2,14 @@ using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
+using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kerbero.WebApi.Controllers;
 
 [ApiController]
-[Route("api/nuki/smartlock")]
+[Route("api/smartlocks")]
 public class NukiSmartLockController : ControllerBase
 {
 	private readonly IAuthenticateNukiAccountInteractor _authenticateNukiAccountInteractor;
@@ -57,12 +58,12 @@ public class NukiSmartLockController : ControllerBase
 	}
 	
 	
-	[HttpPost("{smartLockId:int}")]
-	public async Task<ActionResult> CreateNukiSmartLockById(int accountId, int smartLockId)
+	[HttpPost("import/nuki/")]
+	public async Task<ActionResult> CreateNukiSmartLockById(CreateNukiSmartLockRequest createNukiSmartLockRequest)
 	{
 		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
 		{
-			NukiAccountId = accountId
+			NukiAccountId = createNukiSmartLockRequest.AccountId
 		});
 		if (authenticationResponse.IsFailed)
 		{
@@ -70,7 +71,9 @@ public class NukiSmartLockController : ControllerBase
 			return ModelState.AddErrorAndReturnAction(error);
 		}
 		var interactorResponse =
-			await _createNukiSmartLockInteractor.Handle(new CreateNukiSmartLockPresentationRequest(authenticationResponse.Value.Token, accountId, smartLockId));
+			await _createNukiSmartLockInteractor.Handle(new CreateNukiSmartLockPresentationRequest(
+				authenticationResponse.Value.Token, createNukiSmartLockRequest.AccountId,
+				createNukiSmartLockRequest.ExternalSmartLockId));
 		if (interactorResponse.IsFailed)
 		{
 			var error = interactorResponse.Errors.First();
@@ -80,12 +83,12 @@ public class NukiSmartLockController : ControllerBase
 		return Ok(interactorResponse.Value);
 	}
 
-	[HttpPut("{smartLockId:int}/unlock")]
-	public async Task<ActionResult> OpenNukiSmartLockById(int accountId, int smartLockId)
+	[HttpPut("unlock")]
+	public async Task<ActionResult> OpenNukiSmartLockById(OpenNukiSmartLockRequest openNukiSmartLockRequest)
 	{
 		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
 		{
-			NukiAccountId = accountId
+			NukiAccountId = openNukiSmartLockRequest.AccountId
 		});
 		if (authenticationResponse.IsFailed)
 		{
@@ -95,7 +98,7 @@ public class NukiSmartLockController : ControllerBase
 
 		var interactorResponse =
 			await _openNukiSmartLockInteractor.Handle(
-				new OpenNukiSmartLockPresentationRequest(authenticationResponse.Value.Token, smartLockId)
+				new OpenNukiSmartLockPresentationRequest(authenticationResponse.Value.Token, openNukiSmartLockRequest.SmartLockId)
 			);
 
 		if (interactorResponse.IsFailed)
@@ -107,13 +110,13 @@ public class NukiSmartLockController : ControllerBase
 		return Ok();
 	}
 
-	[HttpPut("{smartLockId:int}/lock")]
-	public async Task<ActionResult> CloseSmartLockById(int accountId, int smartLockId)
+	[HttpPut("lock")]
+	public async Task<ActionResult> CloseSmartLockById(CloseNukiSmartLockRequest closeNukiSmartLockRequest)
 	{
 		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(
 			new AuthenticateRepositoryPresentationRequest
 		{
-			NukiAccountId = accountId
+			NukiAccountId = closeNukiSmartLockRequest.AccountId
 		});
 		if (authenticationResponse.IsFailed)
 		{
@@ -123,7 +126,7 @@ public class NukiSmartLockController : ControllerBase
 		
 		var interactorResponse =
 			await _closeNukiSmartLockInteractor.Handle(
-				new CloseNukiSmartLockPresentationRequest(authenticationResponse.Value.Token, smartLockId));
+				new CloseNukiSmartLockPresentationRequest(authenticationResponse.Value.Token, closeNukiSmartLockRequest.SmartLockId));
 
 		if (interactorResponse.IsFailed)
 		{
