@@ -32,7 +32,7 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
     /// <returns></returns>
     public async Task<Result<AuthenticateRepositoryPresentationResponse>> Handle(AuthenticateRepositoryPresentationRequest repositoryPresentationRequest)
     {
-        var account = _nukiAccountPersistentRepository.GetAccount(repositoryPresentationRequest.NukiAccountId);
+        var account = await _nukiAccountPersistentRepository.GetById(repositoryPresentationRequest.NukiAccountId);
         if (account.IsFailed || account.Value == null)
         {
             return Result.Fail(new UnauthorizedAccessError());
@@ -57,7 +57,7 @@ public class AuthenticateNukiAccountInteractor: IAuthenticateNukiAccountInteract
 
             if (account.IsFailed)
             {
-                Result.Fail(new PersistentResourceNotAvailableError());
+                return account.ToResult();
             }
         }
 

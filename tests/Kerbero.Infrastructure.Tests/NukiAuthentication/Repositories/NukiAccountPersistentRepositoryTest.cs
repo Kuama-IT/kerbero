@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
@@ -65,7 +66,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 	#region GetNukiAccount
 
 	[Fact]
-	public void GetNukiAccount_Success_Test()
+	public async Task GetNukiAccount_Success_Test()
 	{
 		// Arrange
 		for (var i = 1; i < 3; i++)
@@ -81,12 +82,12 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 			_dbContext.NukiAccounts.Add(nukiAccount);
 		}
 
-		_dbContext.SaveChanges();
+		await _dbContext.SaveChangesAsync();
 		
 		_repository.Should().BeAssignableTo<INukiAccountPersistentRepository>();
 
 		// Act
-		var res = _repository.GetAccount(1);
+		var res = await _repository.GetById(1);
 		
 		// Assert
 		res.Value.Should().BeEquivalentTo(new NukiAccount
@@ -101,16 +102,16 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 	}
 
 	[Fact]
-	public void GetNukiAccount_NotValidProviderAccountFoundError_Test()
+	public async Task GetNukiAccount_NotValidProviderAccountFoundError_Test()
 	{
 		// Arrange
 
 		// Act
-		var res = _repository.GetAccount(0);
+		var res = await _repository.GetById(0);
 	
 		// Assert
 		res.IsFailed.Should().BeTrue();
-		res.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
+		res.Errors.First().Should().BeEquivalentTo(new NukiAccountNotFoundError());
 	}
 
 	#endregion
