@@ -1,6 +1,7 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -51,12 +52,12 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 		}
 	}
 	
-	public Result<NukiAccount> GetAccount(int kerberoAccountId)
+	public async Task<Result<NukiAccount>> GetById(int id)
 	{
 		try
 		{
-			var res = _dbContext.NukiAccounts.First(c => c.Id == kerberoAccountId);
-			return Result.Ok(res);
+			var res = await _dbContext.NukiAccounts.FindAsync(id);
+			return res is null ? Result.Fail(new NukiAccountNotFoundError()) : Result.Ok(res);
 		}
 		catch (NotSupportedException exception)
 		{
@@ -79,7 +80,7 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 	{
 		try
 		{
-			var res = GetAccount(nukiAccount.Id);
+			var res = await GetById(nukiAccount.Id);
 			if (res.IsFailed)
 			{
 				return Result.Fail(new UnauthorizedAccessError());

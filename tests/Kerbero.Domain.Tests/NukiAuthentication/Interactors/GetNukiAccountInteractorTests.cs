@@ -28,8 +28,8 @@ public class GetNukiAccountInteractorTests
     [Fact]
     public async Task Handle_Success_Test()
     {
-        _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
-            .Returns(new NukiAccount
+        _persistent.Setup(c => c.GetById(It.IsAny<int>()))
+            .ReturnsAsync(new NukiAccount
             {
                 Id = 1,
                 Token = "VALID_TOKEN",
@@ -46,7 +46,7 @@ public class GetNukiAccountInteractorTests
         });
 
         response.IsSuccess.Should().BeTrue();
-        _persistent.Verify(c => c.GetAccount(It.IsAny<int>()));
+        _persistent.Verify(c => c.GetById(It.IsAny<int>()));
     }    
     
     [Fact]
@@ -63,8 +63,8 @@ public class GetNukiAccountInteractorTests
             TokenType = "bearer",
         };
 
-        _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
-            .Returns(nukiAccount);
+        _persistent.Setup(c => c.GetById(It.IsAny<int>()))
+            .ReturnsAsync(nukiAccount);
         _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequest>()))
             .Returns(Task.FromResult(Result.Ok(new NukiAccountExternalResponse
             {
@@ -83,7 +83,7 @@ public class GetNukiAccountInteractorTests
         });
 
         response.IsSuccess.Should().BeTrue();
-        _persistent.Verify(c => c.GetAccount(It.IsAny<int>()));
+        _persistent.Verify(c => c.GetById(It.IsAny<int>()));
         _nukiAccountClient.Verify(c => 
             c.RefreshToken(It.Is<NukiAccountExternalRequest>(n => n.RefreshToken == "VALID_REFRESH_TOKEN")));
         _persistent.Verify(c => c.Update(It.Is<NukiAccount>(p => 
@@ -98,8 +98,8 @@ public class GetNukiAccountInteractorTests
     [Fact]
     public async Task Handle_NoAccountFound_Test()
     {
-        _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
-            .Returns( () =>  Result.Fail(new UnauthorizedAccessError()));
+        _persistent.Setup(c => c.GetById(It.IsAny<int>()))
+            .ReturnsAsync( Result.Fail(new UnauthorizedAccessError()));
         
         var result = await _interactor.Handle(new AuthenticateRepositoryPresentationRequest
         {
@@ -107,7 +107,7 @@ public class GetNukiAccountInteractorTests
         });
 
         result.IsFailed.Should().BeTrue();
-        _persistent.Verify(c => c.GetAccount(It.Is<int>(p => p.Equals(12))));
+        _persistent.Verify(c => c.GetById(It.Is<int>(p => p.Equals(12))));
         result.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
     }
     
@@ -124,8 +124,8 @@ public class GetNukiAccountInteractorTests
             ClientId = "VALID_CLIENT_ID",
             TokenType = "bearer",
         };
-        _persistent.Setup(c => c.GetAccount(It.IsAny<int>()))
-            .Returns(nukiAccount);
+        _persistent.Setup(c => c.GetById(It.IsAny<int>()))
+            .ReturnsAsync(nukiAccount);
         _nukiAccountClient.Setup(c => c.RefreshToken(It.IsAny<NukiAccountExternalRequest>()))
             .Returns(async () => await  Task.FromResult(Result.Fail(new ExternalServiceUnreachableError())));
 
@@ -135,7 +135,7 @@ public class GetNukiAccountInteractorTests
         });
 
         response.IsFailed.Should().BeTrue();
-        _persistent.Verify(c => c.GetAccount(It.IsAny<int>()));
+        _persistent.Verify(c => c.GetById(It.IsAny<int>()));
         _nukiAccountClient.Verify(c => 
             c.RefreshToken(It.Is<NukiAccountExternalRequest>(n => n.RefreshToken == "VALID_REFRESH_TOKEN")));
         response.Errors.First().Should().BeEquivalentTo(new ExternalServiceUnreachableError());

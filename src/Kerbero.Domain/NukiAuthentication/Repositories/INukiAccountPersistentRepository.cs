@@ -6,6 +6,6 @@ namespace Kerbero.Domain.NukiAuthentication.Repositories;
 public interface INukiAccountPersistentRepository
 {
 	Task<Result<NukiAccount>> Create(NukiAccount nukiAccount);
-	Result<NukiAccount> GetAccount(int kerberoAccountId);
+	Task<Result<NukiAccount>> GetById(int id);
 	Task<Result<NukiAccount>> Update(NukiAccount nukiAccount);
 }
