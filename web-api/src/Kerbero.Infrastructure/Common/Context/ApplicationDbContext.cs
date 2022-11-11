@@ -1,13 +1,13 @@
 using System.Reflection;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Identity.Common;
 using Kerbero.Infrastructure.Common.Interfaces;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kerbero.Infrastructure.Common.Context;
 
-public class ApplicationDbContext: IdentityDbContext, IApplicationDbContext 
+public class ApplicationDbContext: KerberoIdentityDbContext, IApplicationDbContext 
 {
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
 

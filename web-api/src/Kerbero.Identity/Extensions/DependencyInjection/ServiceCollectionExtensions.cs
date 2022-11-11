@@ -13,6 +13,7 @@ using Kerbero.Identity.Library.Modules.Users.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -55,35 +56,15 @@ public static class ServiceCollectionExtensions
       .AddDefaultTokenProviders();
 
     // Authentication
-    if (kuIdentityOptions.IsCookieService)
-    {
-      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie(options =>
-        {
-          options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-          options.SlidingExpiration = true;
-        });
-    }
-    else
-    {
-      services.AddAuthentication(options =>
-        {
-          options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-          options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(jwtOptions =>
-        {
-          jwtOptions.SaveToken = true;
-          jwtOptions.TokenValidationParameters = new TokenValidationParameters
-          {
-            ValidateAudience = false,
-            ValidateIssuer = false,
-            IssuerSigningKey =
-              new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.AccessTokenSingKey)),
-            ValidateLifetime = true,
-          };
-        });
-    }
+    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+      .AddCookie(options =>
+      {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+      });
 
     // Authorization
     services.AddAuthorization(options =>
