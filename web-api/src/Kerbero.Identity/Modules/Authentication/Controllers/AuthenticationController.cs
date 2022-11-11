@@ -1,8 +1,10 @@
-﻿using Kerbero.Identity.Modules.Authentication.Services;
-using Kerbero.Identity.Library.Common.Dtos;
+﻿using System.Security.Claims;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IAuthenticationService = Kerbero.Identity.Modules.Authentication.Services.IAuthenticationService;
 
 namespace Kerbero.Identity.Modules.Authentication.Controllers;
 
@@ -17,17 +19,14 @@ public class AuthenticationController : ControllerBase
     _authenticationService = authenticationService;
   }
 
-  [HttpPost("email")]
+  [HttpPost("login")]
   [AllowAnonymous]
-  public async Task<ActionResult<AuthenticatedDto>> LoginWithEmail(LoginEmailDto loginEmailDto)
+  public async Task<ActionResult> Login(LoginDto loginDto)
   {
-    return await _authenticationService.LoginWithEmail(loginEmailDto);
-  }
+    var authenticatedDto = await _authenticationService.Login(loginDto);
+    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+      new ClaimsPrincipal(authenticatedDto.ClaimIdentity), authenticatedDto.Properties);
 
-  [HttpPost("refresh-token")]
-  [AllowAnonymous]
-  public async Task<ActionResult<AuthenticatedDto>> LoginWithRefreshToken(LoginRefreshTokenDto loginRefreshTokenDto)
-  {
-    return await _authenticationService.LoginWithRefreshToken(loginRefreshTokenDto);
+    return new OkResult();
   }
 }

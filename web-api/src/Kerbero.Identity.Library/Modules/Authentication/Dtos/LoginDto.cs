@@ -2,7 +2,7 @@
 
 namespace Kerbero.Identity.Library.Modules.Authentication.Dtos;
 
-public class LoginEmailDto
+public class LoginDto
 {
   [Required]
   [EmailAddress]

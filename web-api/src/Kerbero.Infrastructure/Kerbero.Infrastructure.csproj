@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Kerbero.Domain\Kerbero.Domain.csproj" />
+      <ProjectReference Include="..\Kerbero.Identity\Kerbero.Identity.csproj" />
     </ItemGroup>
 
     <ItemGroup>
