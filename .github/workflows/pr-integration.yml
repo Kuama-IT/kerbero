@@ -8,6 +8,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./web-api
     strategy:
       matrix:
         dotnet-version: [ '6.0.x' ]
