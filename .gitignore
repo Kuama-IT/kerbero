@@ -242,8 +242,8 @@ src/WebUI/ClientApp/package-lock.json
 
 # macos files
 .DS_Store
-src/Kerbero.WebApi/gen-dev-crt.sh
+**/gen-dev-crt.sh
 
-src/Kerbero.WebApi/dev.key
+**/dev.key
 
-src/Kerbero.WebApi/dev.crt
+**/dev.crt
