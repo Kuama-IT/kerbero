@@ -1,6 +1,6 @@
 # DB set up
 echo '\033[4;32mDB compose\033[0m'
-cd database
+cd docker
 docker compose up -d
 cd ..
 
