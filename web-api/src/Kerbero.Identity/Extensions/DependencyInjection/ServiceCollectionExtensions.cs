@@ -1,5 +1,4 @@
-﻿using System.Text;
-using FluentValidation;
+﻿using FluentValidation;
 using Kerbero.Identity.Common;
 using Kerbero.Identity.Modules.Authentication.Services;
 using Kerbero.Identity.Modules.Claims.Services;
@@ -11,12 +10,12 @@ using Kerbero.Identity.Modules.Users.Services;
 using Kerbero.Identity.Modules.Users.Validators;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Models;
+using Kerbero.Identity.Modules.Email.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using SendGrid.Extensions.DependencyInjection;
 
 namespace Kerbero.Identity.Extensions.DependencyInjection;
 
@@ -24,17 +23,17 @@ public static class ServiceCollectionExtensions
 {
   public static void AddKerberoIdentity<TDbContext>(
     this IServiceCollection services,
-    KerberoIdentityConfiguration configuration,
+    KerberoIdentityConfiguration kerberoIdentityConfiguration,
     KerberoIdentityServicesOptions kuIdentityOptions
   )
     where TDbContext : KerberoIdentityDbContext
   {
-    if (configuration is null)
+    if (kerberoIdentityConfiguration is null)
     {
-      throw new ArgumentNullException(nameof(configuration));
+      throw new ArgumentNullException(nameof(kerberoIdentityConfiguration));
     }
 
-    services.AddSingleton(configuration);
+    services.AddSingleton(kerberoIdentityConfiguration);
 
     services.AddIdentity<User, Role>(options =>
       {
@@ -83,13 +82,18 @@ public static class ServiceCollectionExtensions
     services.AddSingleton<IValidator<IHavePassword>, PasswordValidator>();
     services.AddSingleton<IValidator<UserCreateDto>, UserCreateDtoValidator>();
     services.AddSingleton<IValidator<UserUpdateDto>, UserUpdateDtoValidator>();
+
+    services.AddScoped<IEmailSenderService, EmailSenderService>();
+    services.AddSendGrid(options =>
+    {
+      options.ApiKey = kerberoIdentityConfiguration.SendGridKey;
+    });
     
     services.AddScoped<IUserService, UserService>();
     services.AddScoped<IUserManager, UserManager>();
 
     services.AddScoped<IRoleService, RoleService>();
     services.AddScoped<IRoleManager, RoleManager>();
-
 
     services.AddScoped<IClaimService, ClaimService>();
     services.AddSingleton<IClaimManager>(ClaimManager.Create(kuIdentityOptions.Claims));

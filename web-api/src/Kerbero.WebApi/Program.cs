@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using Kerbero.Identity.Common;
+using Kerbero.Identity.Extensions;
 using Kerbero.Identity.Extensions.DependencyInjection;
 using Kerbero.Infrastructure;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.WebApi;
+using Kerbero.WebApi.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddKerberoIdentity<ApplicationDbContext>(
 	new KerberoIdentityConfiguration()
 	{
 		AccessTokenExpirationInMinutes = 48 * 60,
+		SendGridKey = builder.Configuration.GetRequiredSection("EmailSenderServiceOptions:SendGridKey").Value ??
+		              throw new DevException("SendGridKey not set")
 	},
 	new KerberoIdentityServicesOptions()
 	{
@@ -30,7 +34,7 @@ builder.Services.AddKerberoIdentity<ApplicationDbContext>(
 		AuthorizationOptionsConfigure = options =>
 		{
 			// keep for reference
-		},
+		}
 	});
 
 
