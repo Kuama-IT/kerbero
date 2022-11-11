@@ -15,5 +15,10 @@ public class AuthenticationManager : IAuthenticationManager
   public Task<SignInResult> SignInWithPassword(User user, string password)
   {
     return _signInManager.PasswordSignInAsync(user, password, false, false);
+  }  
+  
+  public async Task SignOut()
+  {
+    await _signInManager.SignOutAsync();
   }
 }

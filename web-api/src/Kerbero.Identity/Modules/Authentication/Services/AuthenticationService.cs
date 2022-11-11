@@ -36,7 +36,7 @@ public class AuthenticationService : IAuthenticationService
     {
       throw new UnauthorizedException();
     }
-    
+
     var claimIdentity = new ClaimsIdentity(
       new List<Claim>()
       {
@@ -73,6 +73,11 @@ public class AuthenticationService : IAuthenticationService
       ClaimIdentity = claimIdentity
     };
 
+  }
+  
+  public async Task Logout()
+  {
+    await _authenticationManager.SignOut();
   }
   
 }

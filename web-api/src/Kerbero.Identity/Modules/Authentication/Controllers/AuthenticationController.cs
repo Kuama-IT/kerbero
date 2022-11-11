@@ -29,4 +29,14 @@ public class AuthenticationController : ControllerBase
 
     return new OkResult();
   }
+
+  [HttpPost("logout")]
+  [AllowAnonymous]
+  public async Task<ActionResult> Logout()
+  {
+    await _authenticationService.Logout();
+    await HttpContext.SignOutAsync();
+
+    return new OkResult();
+  }
 }

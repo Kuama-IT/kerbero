@@ -18,7 +18,6 @@ public class AuthenticationServiceTest
 {
   private readonly Mock<IUserManager> _userManagerMock = new();
   private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new();
-  private readonly Mock<IAuthenticationHelper> _authenticationHelper = new();
 
   private readonly AuthenticationService _authenticationService;
 
@@ -54,7 +53,6 @@ public class AuthenticationServiceTest
 
     _userManagerMock.VerifyNoOtherCalls();
     _authenticationManagerMock.VerifyNoOtherCalls();
-    _authenticationHelper.VerifyNoOtherCalls();
   }
 
   [Fact]
@@ -74,7 +72,6 @@ public class AuthenticationServiceTest
 
     _userManagerMock.VerifyNoOtherCalls();
     _authenticationManagerMock.VerifyNoOtherCalls();
-    _authenticationHelper.VerifyNoOtherCalls();
   }
 
   [Fact]
@@ -100,7 +97,15 @@ public class AuthenticationServiceTest
 
     _userManagerMock.VerifyNoOtherCalls();
     _authenticationManagerMock.VerifyNoOtherCalls();
-    _authenticationHelper.VerifyNoOtherCalls();
+  }
+
+  [Fact]
+  public async Task Logout_WithSuccess()
+  {
+    _authenticationManagerMock.Setup(auth => auth.SignOut())
+      .Returns(Task.CompletedTask);
+    await _authenticationService.Logout();
+    _authenticationManagerMock.Verify(auth => auth.SignOut());
   }
 
 }

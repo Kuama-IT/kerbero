@@ -6,5 +6,7 @@ namespace Kerbero.Identity.Modules.Authentication.Services;
 public interface IAuthenticationService
 {
   Task<AuthenticatedModel> Login(LoginDto loginDto);
-  
+
+  public Task Logout();
+
 }
