@@ -1,12 +1,28 @@
-name: Build and Test
+name: CI
 
 on:
   pull_request:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  frontend:
+    name: Build frontend and test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./web-app
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          npm pkg delete scripts.prepare
+          npm ci
+          npm run build
+          npm run lint
+          npm run test
+          npm run cypress:ci
+  backend:
+    name: Build backend and test
     runs-on: ubuntu-latest
     defaults:
       run:
