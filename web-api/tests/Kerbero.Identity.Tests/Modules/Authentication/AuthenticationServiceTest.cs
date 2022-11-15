@@ -34,7 +34,7 @@ public class AuthenticationServiceTest
   {
     var tLoginDto = new LoginDto { Email = "tEmail", Password = "tPass" };
     var tGuid = Guid.NewGuid();
-    var tUser = new User { Id = tGuid, Email = tLoginDto.Email, UserName = "tName"};
+    var tUser = new User { Id = tGuid, Email = tLoginDto.Email, UserName = "tName", EmailConfirmed = true};
 
     _userManagerMock
       .Setup(e => e.FindByEmail(It.IsAny<string>()))
@@ -78,7 +78,7 @@ public class AuthenticationServiceTest
   public async Task Login_SignInNotSucceed_ThrowUnauthorized()
   {
     var tLoginDto = new LoginDto { Email = "tEmail", Password = "tPass" };
-    var tUser = new User();
+    var tUser = new User() { EmailConfirmed = true };
 
     _userManagerMock
       .Setup(e => e.FindByEmail(It.IsAny<string>()))
@@ -98,7 +98,7 @@ public class AuthenticationServiceTest
     _userManagerMock.VerifyNoOtherCalls();
     _authenticationManagerMock.VerifyNoOtherCalls();
   }
-
+  
   [Fact]
   public async Task Logout_WithSuccess()
   {
