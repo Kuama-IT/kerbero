@@ -1,7 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { redirectIfUnauthorized } from "./routing/routing-guards";
+import { useRouter } from "vue-router";
+import { useAuth } from "./auth/auth.store";
+
+redirectIfUnauthorized({ router: useRouter(), auth: useAuth() });
+</script>
 
 <template>
-  <div>TODO</div>
+  <router-view></router-view>
 </template>
 
 <style lang="scss"></style>
