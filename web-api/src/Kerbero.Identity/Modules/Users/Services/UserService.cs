@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Encodings.Web;
 using FluentValidation;
 using FluentValidation.Results;
 using Kerbero.Identity.Common.Exceptions;
@@ -14,6 +15,8 @@ using Kerbero.Identity.Modules.Users.Mappings;
 using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
+using Kerbero.Identity.Modules.Email.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -28,13 +31,15 @@ public class UserService : IUserService
 
   private readonly IValidator<UserCreateDto> _userCreateDtoValidator;
   private readonly IValidator<UserUpdateDto> _userUpdateDtoValidator;
+  private readonly IEmailSenderService _emailSenderService;
 
   public UserService(
     IKerberoIdentityNotifier kerberoIdentityNotifier,
     IUserManager userManager,
     IRoleManager roleManager,
     IValidator<UserCreateDto> userCreateDtoValidator,
-    IValidator<UserUpdateDto> userUpdateDtoValidator
+    IValidator<UserUpdateDto> userUpdateDtoValidator,
+    IEmailSenderService emailSenderService
   )
   {
     _kerberoIdentityNotifier = kerberoIdentityNotifier;
@@ -42,6 +47,7 @@ public class UserService : IUserService
     _roleManager = roleManager;
     _userCreateDtoValidator = userCreateDtoValidator;
     _userUpdateDtoValidator = userUpdateDtoValidator;
+    _emailSenderService = emailSenderService;
   }
 
   public async Task<List<UserReadDto>> GetAll()
@@ -84,7 +90,7 @@ public class UserService : IUserService
     }
   }
 
-  public async Task<UserReadDto> Create(UserCreateDto createDto)
+  public async Task<UserReadDto> Create(UserCreateDto createDto, HostString serviceDomain)
   {
     _userCreateDtoValidator.ValidateAndThrow(createDto);
 
@@ -94,6 +100,26 @@ public class UserService : IUserService
     HandleCreateResult(result);
 
     _kerberoIdentityNotifier.EmitUserCreateEvent(new UserCreateEvent(user.Id));
+    
+    var userId = await _userManager.GetUserIdAsync(user);
+    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+    var callbackUrl = new UriBuilder
+    {
+      Host = serviceDomain.Host,
+      Scheme = "https",
+      Path = "/api/users/confirm",
+      Query = $"userId={userId}&code={code}" 
+    };
+    
+    #if DEBUG
+    if (serviceDomain.Port is not null)
+      callbackUrl.Port = (int)serviceDomain.Port;
+    #endif
+    
+    await _emailSenderService.SendEmailAsSystem(createDto.Email, "Confirm your email",
+      $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl.ToString())}'>clicking here</a>.");
 
     return UserMappings.Map(user);
   }
@@ -115,7 +141,7 @@ public class UserService : IUserService
     }
   }
 
-  public void HandleCreateResult(IdentityResult result)
+  private void HandleCreateResult(IdentityResult result)
   {
     if (result.Succeeded) return;
 

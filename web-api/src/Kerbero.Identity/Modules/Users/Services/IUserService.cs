@@ -1,6 +1,7 @@
 ﻿using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
+using Microsoft.AspNetCore.Http;
 
 namespace Kerbero.Identity.Modules.Users.Services;
 
@@ -12,7 +13,7 @@ public interface IUserService
   Task<UserReadDto> GetById(Guid id);
   Task<List<ClaimReadDto>> GetClaimsById(Guid id);
 
-  Task<UserReadDto> Create(UserCreateDto createDto);
+  Task<UserReadDto> Create(UserCreateDto createDto, HostString serviceDomain);
   Task ConfirmEmailAsync(Guid userId, string code);
   Task<UserReadDto> CreateAdmin(UserCreateDto createDto);
   Task<UserReadDto> Update(Guid id, UserUpdateDto updateDto);

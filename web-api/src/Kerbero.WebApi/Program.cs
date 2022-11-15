@@ -22,6 +22,7 @@ builder.Host.ConfigureLogging(logging =>
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebApiServices();
 builder.Services.AddKerberoIdentity<ApplicationDbContext>(
+	builder.Configuration,
 	new KerberoIdentityConfiguration()
 	{
 		CookieExpirationInTimeSpan = TimeSpan.FromDays(1),

@@ -42,6 +42,11 @@ public class UserManager : IUserManager
     return _userManager.Users.SingleAsync(e => e.Id == id);
   }
 
+  public async Task<string> GetUserIdAsync(User user)
+  {
+    return await _userManager.GetUserIdAsync(user);
+  }
+
   public async Task<User?> FindByEmail(string email)
   {
     var user = await _userManager.FindByEmailAsync(email);
@@ -71,6 +76,11 @@ public class UserManager : IUserManager
   public Task<IdentityResult> Delete(User user)
   {
     return _userManager.DeleteAsync(user);
+  }
+
+  public Task<string> GenerateEmailConfirmationTokenAsync(User user)
+  {
+    return _userManager.GenerateEmailConfirmationTokenAsync(user);
   }
 
   public async Task<List<string>> GetRolesNamesByUser(User user)

@@ -28,7 +28,7 @@ public class EmailServiceTest
 			.Returns(new EmailSenderServiceOptions()
 			{
 				FromEmail = "kerbero@kerbero.com",
-				FromPassword = "kerbero",
+				SenderName = "kerbero",
 				SendGridKey = "KEY"
 			});
 		_emailSenderService = new EmailSenderService(_sendGridClient.Object, options.Object, logger.Object);

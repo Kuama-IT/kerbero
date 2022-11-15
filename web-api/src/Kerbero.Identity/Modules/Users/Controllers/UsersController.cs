@@ -52,10 +52,10 @@ public class UsersController : ControllerBase
   }
 
   [HttpPost]
-  [Authorize(Policy = PoliciesDefinition.Users_Create)]
+  [AllowAnonymous]
   public async Task<ActionResult<UserReadDto>> Create(UserCreateDto createDto)
   {
-    return await _userService.Create(createDto);
+    return await _userService.Create(createDto, HttpContext.Request.Host);
   }
 
   [HttpGet("confirm-email")]
