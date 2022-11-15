@@ -16,10 +16,10 @@ public interface IUserManager
   /// the source contains no elements.
   /// </exception>
   Task<User> GetById(Guid id);
+  
+  Task<string> GetUserIdAsync(User user);
 
   Task<User?> FindByEmail(string email);
-
-  Task<User?> FindByRefreshToken(string refreshToken);
 
   /// <summary>
   /// 
@@ -32,6 +32,8 @@ public interface IUserManager
 
   Task<IdentityResult> Update(User user);
   Task<IdentityResult> Delete(User user);
+  
+  Task<string> GenerateEmailConfirmationTokenAsync(User user);
 
   #region Roles
 

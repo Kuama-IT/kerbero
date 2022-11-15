@@ -22,14 +22,14 @@ public class EmailSenderService: IEmailSenderService
 
 	public async Task SendEmailAsSystem(string toEmail, string subject, string message)
 	{
-		if (string.IsNullOrWhiteSpace(_options.FromEmail) || string.IsNullOrWhiteSpace(_options.FromPassword))
+		if (string.IsNullOrWhiteSpace(_options.FromEmail) || string.IsNullOrWhiteSpace(_options.SenderName))
 		{
 			throw new Exception("From email or password not specified");
 		}
 		
 		var msg = new SendGridMessage()
 		{
-			From = new EmailAddress(_options.FromEmail, _options.FromPassword),
+			From = new EmailAddress(_options.FromEmail, _options.SenderName),
 			Subject = subject,
 			HtmlContent = message
 		};

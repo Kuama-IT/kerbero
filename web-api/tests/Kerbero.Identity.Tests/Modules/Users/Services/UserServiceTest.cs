@@ -11,12 +11,14 @@ using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
 using Kerbero.Identity.Modules.Claims.Mappings;
 using Kerbero.Identity.Modules.Claims.Utils;
+using Kerbero.Identity.Modules.Email.Services;
 using Kerbero.Identity.Modules.Notifier.Events;
 using Kerbero.Identity.Modules.Notifier.Services;
 using Kerbero.Identity.Modules.Roles.Entities;
 using Kerbero.Identity.Modules.Roles.Services;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Moq;
@@ -32,6 +34,7 @@ public class UserServiceTest
   private readonly Mock<IRoleManager> _roleManagerMock = new();
   private readonly Mock<IValidator<UserCreateDto>> _userCreateDtoValidatorMock = new();
   private readonly Mock<IValidator<UserUpdateDto>> _userUpdateDtoValidatorMock = new();
+  private readonly Mock<IEmailSenderService> _emailSenderService = new();
 
   private readonly UserService _userService;
 
@@ -42,7 +45,8 @@ public class UserServiceTest
       _userManagerMock.Object,
       _roleManagerMock.Object,
       _userCreateDtoValidatorMock.Object,
-      _userUpdateDtoValidatorMock.Object
+      _userUpdateDtoValidatorMock.Object,
+      _emailSenderService.Object
     );
   }
 
@@ -51,7 +55,7 @@ public class UserServiceTest
   {
     var entities = new List<User>
     {
-      new User(),
+      new (),
     };
 
     _userManagerMock
@@ -143,6 +147,7 @@ public class UserServiceTest
     var tCreateDto = new UserCreateDto();
     var tPassedUser = new User();
     var tResult = IdentityResult.Success;
+    var tCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes("VALID_CODE"));
 
     _userCreateDtoValidatorMock
       .Setup(e => e.Validate(It.IsAny<ValidationContext<UserCreateDto>>()))
@@ -156,17 +161,30 @@ public class UserServiceTest
     _kerberoIdentityNotifierMock
       .Setup(e => e.EmitUserCreateEvent(It.IsAny<UserCreateEvent>()));
 
-    var actual = await _userService.Create(tCreateDto);
+    _userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()))
+      .ReturnsAsync("VALID_CODE");
+    _userManagerMock.Setup(m => m.GetUserIdAsync(It.IsAny<User>()))
+      .ReturnsAsync("VALID_ID");
+    _emailSenderService.Setup(e => e.SendEmailAsSystem(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+      .Returns(Task.CompletedTask);
+
+    var actual = await _userService.Create(tCreateDto, HostString.FromUriComponent("localhost:5432"));
 
     actual.Should().BeOfType<UserReadDto>();
 
     _userCreateDtoValidatorMock.VerifyAll();
     _userManagerMock.Verify(e => e.Create(tPassedUser, tCreateDto.Password));
     _kerberoIdentityNotifierMock.Verify(e => e.EmitUserCreateEvent(new UserCreateEvent(tPassedUser.Id)));
+    _emailSenderService.Verify(e => e.SendEmailAsSystem(It.IsAny<string>(), 
+      It.Is<string>(s => s == "Confirm your email"),
+      It.Is<string>(msg => msg.Contains(tCode))));
+    _userManagerMock.Verify(m => m.GetUserIdAsync(tPassedUser));
+    _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(tPassedUser));
     
     _userManagerMock.VerifyNoOtherCalls();
     _kerberoIdentityNotifierMock.VerifyNoOtherCalls();
     _userCreateDtoValidatorMock.VerifyNoOtherCalls();
+    _emailSenderService.VerifyNoOtherCalls();
   }
 
   [Fact]
@@ -181,10 +199,10 @@ public class UserServiceTest
 
     _userManagerMock
       .Setup(e => e.Create(It.IsAny<User>(), It.IsAny<string>()))
-      .Callback<User,string>((user, password) => { tUserPassed = user;})
+      .Callback<User,string>((user, _) => { tUserPassed = user;})
       .ReturnsAsync(tResult);
 
-    var action = () => _userService.Create(tCreateDto);
+    var action = () => _userService.Create(tCreateDto, HostString.FromUriComponent("localhost:5432"));
 
     await action.Should().ThrowAsync<BadRequestException>();
 
@@ -604,7 +622,6 @@ public class UserServiceTest
     };
 
     var tId = Guid.NewGuid();
-    var tUser = new User();
 
     _userManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))

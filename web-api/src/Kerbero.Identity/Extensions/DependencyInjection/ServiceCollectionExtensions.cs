@@ -10,10 +10,12 @@ using Kerbero.Identity.Modules.Users.Services;
 using Kerbero.Identity.Modules.Users.Validators;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Models;
+using Kerbero.Identity.Modules.Email.Options;
 using Kerbero.Identity.Modules.Email.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SendGrid.Extensions.DependencyInjection;
 
@@ -21,11 +23,10 @@ namespace Kerbero.Identity.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-	public static void AddKerberoIdentity<TDbContext>(
-		this IServiceCollection services,
+	public static void AddKerberoIdentity<TDbContext>(this IServiceCollection services,
+		ConfigurationManager configurationManager,
 		KerberoIdentityConfiguration kerberoIdentityConfiguration,
-		KerberoIdentityServicesOptions kuIdentityOptions
-	)
+		KerberoIdentityServicesOptions kuIdentityOptions)
 		where TDbContext : KerberoIdentityDbContext
 	{
 		if (kerberoIdentityConfiguration is null)
@@ -88,16 +89,15 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IValidator<IHavePassword>, PasswordValidator>();
 		services.AddSingleton<IValidator<UserCreateDto>, UserCreateDtoValidator>();
 		services.AddSingleton<IValidator<UserUpdateDto>, UserUpdateDtoValidator>();
-
-		services.AddScoped<IUserService, UserService>();
-		services.AddScoped<IUserManager, UserManager>();
-
+		
 		services.AddSingleton<IValidator<IHavePassword>, PasswordValidator>();
 		services.AddSingleton<IValidator<UserCreateDto>, UserCreateDtoValidator>();
 		services.AddSingleton<IValidator<UserUpdateDto>, UserUpdateDtoValidator>();
 
 		services.AddScoped<IEmailSenderService, EmailSenderService>();
 		services.AddSendGrid(options => { options.ApiKey = kerberoIdentityConfiguration.SendGridKey; });
+		services.Configure<EmailSenderServiceOptions>(
+			configurationManager.GetSection(key: nameof(EmailSenderServiceOptions)));
 
 		services.AddScoped<IUserService, UserService>();
 		services.AddScoped<IUserManager, UserManager>();
