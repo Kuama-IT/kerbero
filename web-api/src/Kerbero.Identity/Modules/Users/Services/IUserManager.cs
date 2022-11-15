@@ -28,6 +28,7 @@ public interface IUserManager
   /// <param name="password">will be hashed</param>
   /// <returns></returns>
   Task<IdentityResult> Create(User user, string password);
+  Task<IdentityResult> ConfirmEmailAsync(User user, string code);
 
   Task<IdentityResult> Update(User user);
   Task<IdentityResult> Delete(User user);
@@ -49,4 +50,5 @@ public interface IUserManager
   Task<IdentityResult> RemoveClaimsToUser(User user, IEnumerable<Claim> claims);
 
   #endregion
+
 }

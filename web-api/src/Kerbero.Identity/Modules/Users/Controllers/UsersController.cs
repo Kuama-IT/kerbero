@@ -58,6 +58,14 @@ public class UsersController : ControllerBase
     return await _userService.Create(createDto);
   }
 
+  [HttpGet("confirm-email")]
+  [AllowAnonymous]
+  public async Task<ActionResult> ConfirmEmailByUserIdAndCode(Guid userId, string code)
+  {
+    await _userService.ConfirmEmailAsync(userId, code);
+    return new OkResult();
+  }
+
 
 #if DEBUG
 
