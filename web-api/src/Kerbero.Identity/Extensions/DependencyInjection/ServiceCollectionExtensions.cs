@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
         options.User.RequireUniqueEmail = true;
 
         // SignIn settings.
-        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedEmail = true;
       })
       .AddEntityFrameworkStores<TDbContext>()
       .AddDefaultTokenProviders();

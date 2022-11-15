@@ -30,7 +30,7 @@ public class AuthenticationService : IAuthenticationService
     {
       throw new UnauthorizedException();
     }
-
+    
     var signInResult = await _authenticationManager.SignInWithPassword(user, loginDto.Password);
     if (!signInResult.Succeeded)
     {
