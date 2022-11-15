@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
@@ -17,6 +18,7 @@ using Kerbero.Identity.Modules.Roles.Services;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Moq;
 using Xunit;
 
@@ -195,6 +197,67 @@ public class UserServiceTest
 
   }
 
+  [Fact]
+  public async Task ConfirmEmailAsync_ReturnCorrectResult()
+  {
+    var tUserId = Guid.NewGuid();
+    var tUser = new User();
+    var tCode = "VALID_CODE";
+    var tEncoded = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(tCode));
+
+    _userManagerMock.Setup(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()))
+      .ReturnsAsync(IdentityResult.Success);
+    
+    _userManagerMock
+      .Setup(e => e.GetById(It.IsAny<Guid>()))
+      .ReturnsAsync(tUser);
+    
+    await _userService.ConfirmEmailAsync(tUserId, tEncoded);
+    
+    _userManagerMock.Verify(m => m.ConfirmEmailAsync(tUser, tCode));
+
+    _userManagerMock.Verify(m => m.GetById(tUserId));
+  }
+  
+  [Fact]
+  public async Task ConfirmEmailAsync_NoAccountFound()
+  {
+    var tUserId = Guid.NewGuid();
+    var tCode = "VALID_CODE";
+
+    _userManagerMock
+      .Setup(e => e.GetById(It.IsAny<Guid>()))
+      .Returns(Task.FromResult<User>(null!));
+    
+    var action = () => _userService.ConfirmEmailAsync(tUserId, tCode);
+    
+    await action.Should().ThrowAsync<UnauthorizedException>();
+  }
+  
+  [Fact]
+  public async Task ConfirmEmailAsync_ConfirmationFails()
+  {
+    var tUserId = Guid.NewGuid();
+    var tUser = new User();
+    var tCode = "VALID_CODE";
+    var tEncoded = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(tCode));
+
+    _userManagerMock.Setup(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()))
+      .ReturnsAsync(IdentityResult.Failed());
+    
+    _userManagerMock
+      .Setup(e => e.GetById(It.IsAny<Guid>()))
+      .ReturnsAsync(tUser);
+    
+    var action = () => _userService.ConfirmEmailAsync(tUserId, tEncoded);
+
+    await action.Should().ThrowAsync<ApplicationException>();
+
+    _userManagerMock.Verify(m => m.ConfirmEmailAsync(tUser, tCode));
+
+    _userManagerMock.Verify(m => m.GetById(tUserId));
+  }
+  
   [Fact]
   public async Task Update_ValidInput_ReturnCorrectResult()
   {

@@ -58,6 +58,11 @@ public class UserManager : IUserManager
     return _userManager.CreateAsync(user, password);
   }
 
+  public async Task<IdentityResult> ConfirmEmailAsync(User user, string code)
+  {
+    return await _userManager.ConfirmEmailAsync(user, code);
+  }
+
   public Task<IdentityResult> Update(User user)
   {
     return _userManager.UpdateAsync(user);

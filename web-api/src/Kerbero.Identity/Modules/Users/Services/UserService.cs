@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Text;
+using FluentValidation;
 using FluentValidation.Results;
 using Kerbero.Identity.Common.Exceptions;
 using Kerbero.Identity.Common.Mappings;
@@ -14,6 +15,7 @@ using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Kerbero.Identity.Modules.Users.Services;
 
@@ -96,6 +98,22 @@ public class UserService : IUserService
     return UserMappings.Map(user);
   }
 
+  public async Task ConfirmEmailAsync(Guid userId, string code)
+  {
+    var user = await _userManager.GetById(userId);
+    if (user == null)
+    {
+      throw new UnauthorizedException();
+    }
+    
+    code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+    var result = await _userManager.ConfirmEmailAsync(user, code);
+    if (!result.Succeeded)
+    {
+      throw new ApplicationException($"Error confirming email for user with ID '{userId}':");
+    }
+  }
 
   public void HandleCreateResult(IdentityResult result)
   {
