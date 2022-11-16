@@ -4,14 +4,8 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
-using Kerbero.Infrastructure.Common.Context;
 using Kerbero.WebApi;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Kerbero.Integration.Tests.NukiAuthentication;
 
@@ -36,11 +30,11 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 	[Fact]
 	public async Task Program_RedirectForCode_Success_Test()
 	{
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 
 		var clientId = "CLIENT_ID";
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
-		var redirect = await client.GetAsync($"/nuki/auth/start?clientId={clientId}");
+		var redirect = await client.GetAsync($"api/nuki/auth/start?clientId=1");
 		redirect.StatusCode.Should().Be(HttpStatusCode.Found);
 	}
 
@@ -56,13 +50,13 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 			refresh_token = "REFRESH_TOKEN"
 		}); 
 		
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 
 		var clientId = "CLIENT_ID";
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		var response =
 			await client.GetAsync(
-				$"/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
+				$"api/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 					+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
 		_httpTest.ShouldHaveMadeACall();
 		var presentationDto = await response.Content.ReadFromJsonAsync<NukiAccountPresentationResponse>();
@@ -78,14 +72,14 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 			error_description = "Invalid client credentials.",
 			error = "invalid_client"
 		})); 
-		
-		var client = _application.CreateClient();
+
+		var client = await _application.GetLoggedClient();
 
 		var clientId = "CLIENT_ID";
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		var response =
 			await client.GetAsync(
-				$"/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
+				$"api/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 				+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
 		response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
@@ -98,13 +92,13 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 	{
 		_httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout, body: System.Text.Json.JsonSerializer.Serialize(new { })); 
 		
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 
 		var clientId = "CLIENT_ID";
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		var response =
 			await client.GetAsync(
-				$"/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
+				$"api/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 				+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
 		response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
@@ -121,14 +115,13 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 			error_description = "Invalid client credentials.",
 			error = "invalid_client"
 		})); 
-		
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 
 		var clientId = "CLIENT_ID";
 		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		var response =
 			await client.GetAsync(
-				$"/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
+				$"api/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 				+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
 		response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();

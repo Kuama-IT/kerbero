@@ -3,12 +3,14 @@ using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.WebApi.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kerbero.WebApi.Controllers;
 
 [ApiController]
-[Route("nuki/auth")]
+[Authorize]
+[Route("api/nuki/auth")]
 public class NukiAuthenticationController: ControllerBase
 {
 	private readonly Interactor<NukiRedirectPresentationRequest, NukiRedirectPresentationResponse> _provideRedirectUrlInteractor;
@@ -20,13 +22,13 @@ public class NukiAuthenticationController: ControllerBase
 		_provideRedirectUrlInteractor = provideRedirectUrlInteractor;
 		_createAccountInteractor = createAccountInteractor;
 	}
-
+	
 	/// <summary>
 	/// Index method controller
 	/// </summary>
 	/// <param name="clientId"></param>
 	[HttpGet("start")]
-	public ActionResult RedirectByClientId(string clientId)
+	public ActionResult RedirectByClientId([FromQuery] string clientId)
 	{
 		var interactorResponse = _provideRedirectUrlInteractor.Handle(new NukiRedirectPresentationRequest(clientId));
 		if (interactorResponse.IsSuccess)

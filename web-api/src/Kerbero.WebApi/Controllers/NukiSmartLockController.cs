@@ -4,11 +4,13 @@ using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kerbero.WebApi.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/smartlocks")]
 public class NukiSmartLockController : ControllerBase
 {
@@ -57,7 +59,6 @@ public class NukiSmartLockController : ControllerBase
 		return Ok(interactorResponse.Value);
 	}
 	
-	
 	[HttpPost("import/nuki/")]
 	public async Task<ActionResult> CreateNukiSmartLockById(CreateNukiSmartLockRequest createNukiSmartLockRequest)
 	{
@@ -82,7 +83,7 @@ public class NukiSmartLockController : ControllerBase
 
 		return Ok(interactorResponse.Value);
 	}
-
+	
 	[HttpPut("unlock")]
 	public async Task<ActionResult> OpenNukiSmartLockById(OpenNukiSmartLockRequest openNukiSmartLockRequest)
 	{
