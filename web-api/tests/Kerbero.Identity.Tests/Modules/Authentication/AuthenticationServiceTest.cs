@@ -45,8 +45,10 @@ public class AuthenticationServiceTest
       .ReturnsAsync(SignInResult.Success);
 
     var actual = await _authenticationService.Login(tLoginDto);
-
-    actual.ClaimIdentity.Claims.First().Value.Should().Be(tGuid.ToString());
+    actual.Email.Should().BeEquivalentTo(tUser.Email);
+    actual.Id.Should().Be(tUser.Id);
+    actual.EmailConfirmed.Should().BeTrue();
+    actual.UserName.Should().BeEquivalentTo(tUser.UserName);
 
     _userManagerMock.Verify(e => e.FindByEmail(tLoginDto.Email));
     _authenticationManagerMock.Verify(e => e.SignInWithPassword(tUser, tLoginDto.Password));

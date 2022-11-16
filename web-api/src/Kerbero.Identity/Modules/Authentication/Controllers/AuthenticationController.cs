@@ -1,7 +1,6 @@
-﻿using System.Security.Claims;
-using Kerbero.Identity.Library.Modules.Authentication.Dtos;
+﻿using Kerbero.Identity.Library.Modules.Authentication.Dtos;
+using Kerbero.Identity.Library.Modules.Users.Dtos;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IAuthenticationService = Kerbero.Identity.Modules.Authentication.Services.IAuthenticationService;
@@ -21,13 +20,9 @@ public class AuthenticationController : ControllerBase
 
   [HttpPost("login")]
   [AllowAnonymous]
-  public async Task<ActionResult> Login(LoginDto loginDto)
+  public async Task<ActionResult<UserReadDto>> Login(LoginDto loginDto)
   {
-    var authenticatedDto = await _authenticationService.Login(loginDto);
-    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-      new ClaimsPrincipal(authenticatedDto.ClaimIdentity), authenticatedDto.Properties);
-
-    return new OkResult();
+    return await _authenticationService.Login(loginDto);
   }
 
   [HttpPost("logout")]
@@ -37,6 +32,6 @@ public class AuthenticationController : ControllerBase
     await _authenticationService.Logout();
     await HttpContext.SignOutAsync();
 
-    return new OkResult();
+    return Ok();
   }
 }
