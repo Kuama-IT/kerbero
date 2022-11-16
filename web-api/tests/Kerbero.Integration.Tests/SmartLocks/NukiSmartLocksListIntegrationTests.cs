@@ -11,7 +11,6 @@ namespace Kerbero.Integration.Tests.SmartLocks;
 public class NukiSmartLocksListIntegrationTests: IDisposable
 {
 	private readonly HttpTest _httpTest;
-	private readonly HttpClient _client;
 	private readonly KerberoWebApplicationFactory<Program> _application;
 	private readonly object _nukiJsonSmartLockResponse;
 
@@ -20,7 +19,6 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 		_application = new KerberoWebApplicationFactory<Program>();
 		_application.Server.PreserveExecutionContext = true; // fixture for Flurl
 		_httpTest = new HttpTest();
-		_client = _application.CreateClient();
 		var json = File.ReadAllText("JsonData/get-nuki-smartlock-response.json");
 		_nukiJsonSmartLockResponse = JsonSerializer.Deserialize<dynamic>(json) ?? throw new InvalidOperationException();
 	}
@@ -34,6 +32,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_Success()
 	{
 		// Arrange
+		var client = await _application.GetLoggedClient();
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWithJson(
 			new[]
@@ -41,7 +40,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 				_nukiJsonSmartLockResponse
 			});
 		
-		var response = await _client.GetAsync("api/smartlocks?accountId=1");
+		var response = await client.GetAsync("api/smartlocks?accountId=1");
 
 		var content = await response.Content.ReadAsStringAsync();
 		response.EnsureSuccessStatusCode();
@@ -53,6 +52,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_RefreshToken_AndCannotParseTheResponse_Text()
 	{
+		var client = await _application.GetLoggedClient();
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWithJson(new
 		{
@@ -62,7 +62,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 			refresh_token = "REFRESH_TOKEN"
 		}); // from nuki documentation
 		
-		var response = await _client.GetAsync("api/smartlocks?accountId=1");
+		var response = await client.GetAsync("api/smartlocks?accountId=1");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 	}
@@ -70,6 +70,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_Unauthorized_Test()
 	{
+		var client = await _application.GetLoggedClient();
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new
 		{
@@ -78,7 +79,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 			suppressedExceptions = Array.Empty<object>()
 		})); 
 		
-		var response = await _client.GetAsync("api/smartlocks?accountId=1");
+		var response = await client.GetAsync("api/smartlocks?accountId=1");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		var resJson = await response.Content.ReadFromJsonAsync<JsonObject>();
@@ -89,8 +90,9 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_NoAccount_Test()
 	{
+		var client = await _application.GetLoggedClient();
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
-		var response = await _client.GetAsync("api/smartlocks?accountId=0");
+		var response = await client.GetAsync("api/smartlocks?accountId=0");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -102,10 +104,11 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	[Fact]
 	public async Task GetSmartLocksListByKerberoAccount_TimeoutNuki_Test()
 	{
+		var client = await _application.GetLoggedClient();
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		_httpTest.RespondWith(status: 408); 
 		
-		var response = await _client.GetAsync("api/smartlocks?accountId=1");
+		var response = await client.GetAsync("api/smartlocks?accountId=1");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
 		response.StatusCode.Should().Be(HttpStatusCode.BadGateway);

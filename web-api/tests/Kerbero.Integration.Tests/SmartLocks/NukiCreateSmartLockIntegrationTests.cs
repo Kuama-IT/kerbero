@@ -6,17 +6,12 @@ using Flurl.Http.Testing;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Models.Requests;
-using Microsoft.Extensions.Configuration;
 
 namespace Kerbero.Integration.Tests.SmartLocks;
 
 public class NukiCreateSmartLockIntegrationTests: IDisposable
 {
 	private readonly KerberoWebApplicationFactory<Program> _application;
-	private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-		.AddJsonFile("appsettings.Test.json")
-		.AddEnvironmentVariables()
-		.Build();
 
 	private readonly HttpTest _httpTest;
 	private readonly object _nukiJsonSmartLockResponse;
@@ -42,7 +37,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 
 		_httpTest.RespondWithJson(_nukiJsonSmartLockResponse);
 		
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 		
 		var response = await client.PostAsJsonAsync("api/smartlocks/import/nuki/", new CreateNukiSmartLockRequest(1 ,1));
 
@@ -68,7 +63,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 			error_description = "Invalid client credentials.",
 			error = "invalid_client"
 		})); 
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 
 		// Act
 		var response = await client.PostAsJsonAsync("api/smartlocks/import/nuki/", new CreateNukiSmartLockRequest(1 ,1));

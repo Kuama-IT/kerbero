@@ -30,9 +30,11 @@ public class NukiCloseSmartLockIntegrationTests: IDisposable
 	{
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 		
 		var response = await client.PutAsJsonAsync("api/smartlocks/lock", new CloseNukiSmartLockRequest(1, 1));
+
+		await response.Content.ReadAsStringAsync();
 
 		response.StatusCode.Should().Be(HttpStatusCode.OK);
 	}
@@ -42,7 +44,7 @@ public class NukiCloseSmartLockIntegrationTests: IDisposable
 	{
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
-		var client = _application.CreateClient();
+		var client = await _application.GetLoggedClient();
 		_httpTest.RespondWith(status: 401);
 
 		var response = await client.PutAsJsonAsync("api/smartlocks/lock",

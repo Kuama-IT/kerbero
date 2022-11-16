@@ -2,9 +2,9 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
+using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Models.Requests;
-using Microsoft.Extensions.Configuration;
 
 namespace Kerbero.Integration.Tests.SmartLocks;
 
@@ -12,10 +12,6 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
 {
     private readonly HttpTest _httpTest;
     private readonly KerberoWebApplicationFactory<Program> _application;
-    private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.Test.json")
-        .AddEnvironmentVariables()
-        .Build();
 
     public NukiOpenSmartLockIntegrationTests()
     {
@@ -34,9 +30,9 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
     public async Task OpenSmartLock_Success_Test()
     {
         // Arrange
+        var client = await _application.GetLoggedClient();
         await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
         await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
-        var client = _application.CreateClient();
 
         // Act
         var response = await client.PutAsJsonAsync("api/smartlocks/unlock",
@@ -50,7 +46,8 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
     public async Task OpenSmartLock_NotAuthorized_Test()
     {
         // Arrange
-        var client = _application.CreateClient();
+        _application.ClientOptions.HandleCookies = true;
+        var client = await _application.GetLoggedClient();
 
         // Act
         var response = await client.PutAsJsonAsync("api/smartlocks/unlock",
@@ -64,8 +61,9 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
     public async Task OpenSmartLock_WrongSmartLockId_Test()
     {
         // Arrange
-        var client = _application.CreateClient();
-
+        await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+        var client = await _application.GetLoggedClient();
+        
         // Act
         var response = await client.PutAsJsonAsync("api/smartlocks/unlock",
             new OpenNukiSmartLockRequest(1, 0));

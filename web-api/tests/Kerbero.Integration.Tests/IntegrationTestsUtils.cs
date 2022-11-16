@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Infrastructure.Common.Context;
 
 namespace Kerbero.Integration.Tests;
@@ -29,7 +30,7 @@ public static class IntegrationTestsUtils
 			Favourite = true,
 			Name = "kquarter",
 			Type = 0,
-			NukiAccountId = 0,
+			NukiAccountId = 1,
 			AuthId = 0,
 			ExternalSmartLockId = 0,
 			State = new NukiSmartLockState
@@ -47,4 +48,14 @@ public static class IntegrationTestsUtils
 	}
 
 	#endregion
+
+	public static User GetSeedingUser()
+	{
+		return new User
+		{
+			Email = "test@test.com",
+			EmailConfirmed = true,
+			UserName = "test" ,
+		};
+	}
 }
