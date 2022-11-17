@@ -30,7 +30,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <Content Include="..\JsonData\*.json" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Include="..\JsonData\*.json" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

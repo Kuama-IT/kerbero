@@ -5,18 +5,13 @@ using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Models.Requests;
-using Microsoft.Extensions.Configuration;
 
-namespace Kerbero.Integration.Tests;
+namespace Kerbero.Integration.Tests.SmartLocks;
 
 public class NukiCloseSmartLockIntegrationTests: IDisposable
 {
 	private readonly HttpTest _httpTest;
 	private readonly KerberoWebApplicationFactory<Program> _application;
-	private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-		.AddJsonFile("appsettings.Test.json")
-		.AddEnvironmentVariables()
-		.Build();
 
 	public NukiCloseSmartLockIntegrationTests()
 	{
@@ -38,8 +33,6 @@ public class NukiCloseSmartLockIntegrationTests: IDisposable
 		var client = _application.CreateClient();
 		
 		var response = await client.PutAsJsonAsync("api/smartlocks/lock", new CloseNukiSmartLockRequest(1, 1));
-
-		var content = await response.Content.ReadAsStringAsync();
 
 		response.StatusCode.Should().Be(HttpStatusCode.OK);
 	}

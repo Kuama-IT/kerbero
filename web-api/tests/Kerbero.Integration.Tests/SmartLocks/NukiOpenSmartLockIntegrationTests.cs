@@ -1,14 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using FluentAssertions;
-using Flurl.Http.Content;
 using Flurl.Http.Testing;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Models.Requests;
 using Microsoft.Extensions.Configuration;
 
-namespace Kerbero.Integration.Tests;
+namespace Kerbero.Integration.Tests.SmartLocks;
 
 public class NukiOpenSmartLockIntegrationTests: IDisposable
 {

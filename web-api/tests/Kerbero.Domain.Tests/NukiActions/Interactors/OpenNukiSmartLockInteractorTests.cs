@@ -10,7 +10,7 @@ using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.Interactors.NukiActions;
+namespace Kerbero.Domain.Tests.NukiActions.Interactors;
 
 public class OpenNukiSmartLockInteractorTests
 {

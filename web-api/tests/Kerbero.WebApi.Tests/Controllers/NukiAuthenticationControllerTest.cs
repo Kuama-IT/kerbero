@@ -9,7 +9,7 @@ using Kerbero.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Kerbero.WebApi.Tests;
+namespace Kerbero.WebApi.Tests.Controllers;
 
 public class NukiAuthenticationControllerTest
 {
