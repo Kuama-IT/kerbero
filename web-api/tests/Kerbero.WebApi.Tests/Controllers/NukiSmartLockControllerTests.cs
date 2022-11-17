@@ -1,8 +1,5 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.Common.Models;
-using Kerbero.Domain.NukiActions.Interactors;
 using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
@@ -15,7 +12,7 @@ using Kerbero.WebApi.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Kerbero.WebApi.Tests;
+namespace Kerbero.WebApi.Tests.Controllers;
 
 public class NukiSmartLockControllerTests
 {

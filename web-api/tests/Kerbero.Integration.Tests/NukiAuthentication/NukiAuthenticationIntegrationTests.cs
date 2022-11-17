@@ -5,17 +5,15 @@ using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Infrastructure.Common.Context;
-using Kerbero.Infrastructure.Common.Options;
 using Kerbero.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Kerbero.Integration.Tests;
+namespace Kerbero.Integration.Tests.NukiAuthentication;
 
 public class NukiAuthenticationIntegrationTest: IDisposable
 {

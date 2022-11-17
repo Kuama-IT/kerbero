@@ -4,17 +4,11 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;
-using Kerbero.Infrastructure.Common.Context;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Models.Requests;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
-namespace Kerbero.Integration.Tests;
+namespace Kerbero.Integration.Tests.SmartLocks;
 
 public class NukiCreateSmartLockIntegrationTests: IDisposable
 {
