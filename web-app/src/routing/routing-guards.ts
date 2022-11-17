@@ -29,7 +29,7 @@ export const redirectIfUnauthorized = ({
   router.beforeEach((to, from, next) => {
     // redirect to log-in route when trying to access any route (except log-in) without authentication
     if (!isLoginRoute(to) && !auth.authenticated) {
-      next(getRouteLocation({ forAppRoute: "Login" }));
+      next(getRouteLocation({ forAppRoute: "Authenticate" }));
     } else if (isLoginRoute(to) && auth.authenticated) {
       // do not show login to authenticated users
       next(getRouteLocation({ forAppRoute: "Dashboard" }));

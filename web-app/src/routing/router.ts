@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const DashboardPage = () => import("../dashboard/dashboard.component.vue");
-const LoginPage = () => import("../auth/log-in.component.vue");
+const AuthenticatePage = () =>
+  import("../auth/pages/authenticate.component.vue");
 
 const routes: Readonly<RouteRecordRaw[]> = [
   // TODO improve typings
-  { path: "/login", component: LoginPage, name: "Login" },
+  { path: "/authenticate", component: AuthenticatePage, name: "Authenticate" },
   { path: "/dashboard", component: DashboardPage, name: "Dashboard" },
 ];
 
