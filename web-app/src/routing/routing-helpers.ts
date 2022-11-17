@@ -4,10 +4,10 @@ import { RouteLocationNormalized, RouteLocationRaw, Router } from "vue-router";
  * The aim of this file is to group actions related to navigation, until we get a better handle on how to strong-type routes
  */
 
-export type AppRoute = "Login" | "Dashboard";
+export type AppRoute = "Authenticate" | "Dashboard";
 
 export const isLoginRoute = (route: RouteLocationNormalized) => {
-  return route.name === "Login";
+  return route.name === "Authenticate";
 };
 
 /**
@@ -22,7 +22,7 @@ export const navigateToLogin = async ({
   with: Router;
   replace?: boolean;
 }) => {
-  return await navigate({ to: "Login", with: router, replace });
+  return await navigate({ to: "Authenticate", with: router, replace });
 };
 
 /**
@@ -69,7 +69,8 @@ export const getRouteLocation = ({
 }): RouteLocationRaw => {
   switch (routeName) {
     case "Dashboard":
-    case "Login":
+    case "Authenticate":
+      return { name: routeName };
     default:
       throw new Error(`[DEV] unknown route name ${routeName}`);
   }

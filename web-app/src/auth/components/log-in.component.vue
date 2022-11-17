@@ -1,6 +1,7 @@
 <script setup></script>
 <template>
   <div id="log-in">
-    <code>TODO LOGIN</code>
+    TODO
   </div>
 </template>
+<style lang="scss"></style>

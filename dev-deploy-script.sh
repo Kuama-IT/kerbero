@@ -7,9 +7,9 @@ cd ..
 # .NET module setup
 echo '\033[4;32m.NET module setup\033[0m'
 cd web-api
-# dotnet ef database update -s src/Kerbero.WebApi/Kerbero.WebApi.csproj -p src/Kerbero.Infrastructure/Kerbero.Infrastructure.csproj
-dotnet build
-dotnet run
+dotnet ef database update -s src/Kerbero.WebApi/Kerbero.WebApi.csproj -p src/Kerbero.Infrastructure/Kerbero.Infrastructure.csproj
+dotnet build --project src/Kerbero.WebApi
+dotnet watch --project src/Kerbero.WebApi
 cd ..
 
 # Vue module setup

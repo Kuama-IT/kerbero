@@ -1,8 +1,8 @@
 import { mount } from "cypress/vue";
 import App from "../../src/App.vue";
 import { appRouter } from "../../src/routing/router";
-import { AuthStore, useAuth } from "../../src/auth/auth.store";
 import { createTestingPinia } from "@pinia/testing";
+import { AuthStore, useAuth } from "../../src/auth/stores/auth.store";
 
 // helper methods, probably will be moved to own file if and when they are needed from other tests
 
