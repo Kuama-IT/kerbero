@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using DotNetEnv;
 using Kerbero.Identity.Common;
 using Kerbero.Identity.Extensions;
 using Kerbero.Identity.Extensions.DependencyInjection;
@@ -8,6 +9,8 @@ using Kerbero.WebApi;
 using Kerbero.WebApi.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables(_ => Env.Load());
 
 builder.Host.ConfigureLogging(logging =>
 {
@@ -21,9 +24,9 @@ builder.Services.AddWebApiServices();
 builder.Services.AddKerberoIdentity<ApplicationDbContext>(
 	new KerberoIdentityConfiguration()
 	{
-		AccessTokenExpirationInMinutes = 48 * 60,
-		SendGridKey = builder.Configuration.GetRequiredSection("EmailSenderServiceOptions:SendGridKey").Value ??
-		              throw new DevException("SendGridKey not set")
+		CookieExpirationInTimeSpan = TimeSpan.FromDays(1),
+		SendGridKey = builder.Configuration["SENDGRID_SECRET"] ?? 
+		              throw new DevException("SendGrid secrets keys not set")
 	},
 	new KerberoIdentityServicesOptions()
 	{
@@ -36,7 +39,6 @@ builder.Services.AddKerberoIdentity<ApplicationDbContext>(
 			// keep for reference
 		}
 	});
-
 
 builder.Services.AddControllers();
 
