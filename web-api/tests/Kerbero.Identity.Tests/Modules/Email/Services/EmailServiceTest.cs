@@ -2,14 +2,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Kerbero.Identity.Modules.Email.Options;
 using Kerbero.Identity.Modules.Email.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using SendGrid.Helpers.Mail.Model;
 using Xunit;
 
 namespace Kerbero.Identity.Tests.Modules.Email.Services;
@@ -23,15 +21,12 @@ public class EmailServiceTest
 	{
 		_sendGridClient = new Mock<ISendGridClient>();
 		var logger = new Mock<ILogger<EmailSenderService>>();
-		var options = new Mock<IOptions<EmailSenderServiceOptions>>();
-		options.Setup(optionsMock => optionsMock.Value)
-			.Returns(new EmailSenderServiceOptions()
-			{
-				FromEmail = "kerbero@kerbero.com",
-				SenderName = "kerbero",
-				SendGridKey = "KEY"
-			});
-		_emailSenderService = new EmailSenderService(_sendGridClient.Object, options.Object, logger.Object);
+		var configurationMock = new Mock<IConfiguration>();
+		configurationMock.Setup(conf => conf["SENDGRID_FROM_EMAIL"])
+			.Returns("kerbero@kerbero.com");
+		configurationMock.Setup(conf => conf["SENDGRID_SENDER_NAME"])
+			.Returns("kerbero");
+		_emailSenderService = new EmailSenderService(_sendGridClient.Object, configurationMock.Object, logger.Object);
 	}
 
 	[Fact]
@@ -47,7 +42,6 @@ public class EmailServiceTest
 		{
 			From = new EmailAddress("kerbero@kerbero.com", "kerbero"),
 			Subject = "Email confirmation",
-			PlainTextContent = "Please, confirm you're email",
 			HtmlContent = "Please, confirm you're email"
 		};
 		expectMsg.AddTo(new EmailAddress("email@email.com"));
