@@ -13,11 +13,20 @@ jobs:
         shell: bash
         working-directory: ./web-app
     steps:
-      - uses: actions/checkout@v3
-      - run: |
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build, lint and test
+        run: |
           npm pkg delete scripts.prepare
           npm ci
           npm run build
           npm run lint
-          npm run test
+          npm run test:coverage
           npm run cypress:ci
+
+      - name: Generate coverage
+        uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          lcov-file: "./web-app/coverage/lcov.info"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
