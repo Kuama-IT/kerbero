@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
-const DashboardPage = () => import("../dashboard/dashboard.component.vue");
+const DashboardPage = () =>
+  import("../dashboard/pages/dashboard-page.component.vue");
 const AuthenticatePage = () =>
-  import("../auth/pages/authenticate.component.vue");
+  import("../auth/pages/authenticate-page.component.vue");
 
 const routes: Readonly<RouteRecordRaw[]> = [
   // TODO improve typings
