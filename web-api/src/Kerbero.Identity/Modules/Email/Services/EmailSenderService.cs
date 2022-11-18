@@ -1,6 +1,5 @@
-using Kerbero.Identity.Modules.Email.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -9,27 +8,29 @@ namespace Kerbero.Identity.Modules.Email.Services;
 public class EmailSenderService: IEmailSenderService
 {
 	private readonly ISendGridClient _sendGridClient;
-	private readonly EmailSenderServiceOptions _options;
+	private readonly IConfiguration _configuration;
 	private readonly ILogger _logger;
 
-	public EmailSenderService(ISendGridClient sendGridClient, IOptions<EmailSenderServiceOptions> options,
+	public EmailSenderService(ISendGridClient sendGridClient, IConfiguration configuration,
 		ILogger<EmailSenderService> logger)
 	{
 		_sendGridClient = sendGridClient;
-		_options = options.Value;
+		_configuration = configuration;
 		_logger = logger;
 	}
 
 	public async Task SendEmailAsSystem(string toEmail, string subject, string message)
 	{
-		if (string.IsNullOrWhiteSpace(_options.FromEmail) || string.IsNullOrWhiteSpace(_options.SenderName))
+		var fromEmail = _configuration["SENDGRID_FROM_EMAIL"];
+		var senderName = _configuration["SENDGRID_SENDER_NAME"];
+		if (string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(senderName))
 		{
 			throw new Exception("From email or password not specified");
 		}
 		
 		var msg = new SendGridMessage()
 		{
-			From = new EmailAddress(_options.FromEmail, _options.SenderName),
+			From = new EmailAddress(fromEmail, senderName),
 			Subject = subject,
 			HtmlContent = message
 		};
