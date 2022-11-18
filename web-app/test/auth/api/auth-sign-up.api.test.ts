@@ -74,6 +74,10 @@ describe("Auth Sign-up API", () => {
         userName: "username",
       }),
       method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   });
 });

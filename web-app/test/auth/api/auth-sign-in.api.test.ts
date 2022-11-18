@@ -60,6 +60,10 @@ describe("Auth Sign-in API", () => {
           password: "Password123$",
         }),
         method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
   });

@@ -3,6 +3,7 @@ import {
   SignInRequestScheme,
   SignUpRequest,
   SignUpRequestScheme,
+  UserResponse,
   UserResponseScheme,
 } from "./auth.schemas";
 import { httpClient } from "../../shared/http-client/http-client";
@@ -15,7 +16,9 @@ export const signUpAction = async (request: SignUpRequest) => {
 
   return UserResponseScheme.parse(json);
 };
-export const signInAction = async (request: SignInRequest) => {
+export const signInAction = async (
+  request: SignInRequest
+): Promise<UserResponse> => {
   // ensure data is valid
   SignInRequestScheme.parse(request);
 

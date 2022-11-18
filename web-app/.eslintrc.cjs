@@ -9,10 +9,10 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "prettier"],
   extends: [
-    "plugin:vue/strongly-recommended",
+    "plugin:vue/vue3-strongly-recommended",
     "eslint:recommended",
-    "@vue/typescript/recommended",
-    "prettier",
+    "@vue/eslint-config-typescript",
+    "@vue/eslint-config-prettier",
   ],
   rules: {
     // override/add rules settings here, such as:

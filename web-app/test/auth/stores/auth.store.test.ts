@@ -18,8 +18,18 @@ describe("Auth store", () => {
     const auth = useAuth();
 
     expect(auth.authenticated).toBe(false);
-    auth.setUser({});
-    expect(auth.user).toEqual({});
+    auth.setUser({
+      id: "",
+      email: "",
+      userName: "",
+      emailConfirmed: true,
+    });
+    expect(auth.user).toEqual({
+      id: "",
+      email: "",
+      userName: "",
+      emailConfirmed: true,
+    });
     expect(auth.authenticated).toBe(true);
   });
 });
