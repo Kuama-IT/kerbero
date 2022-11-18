@@ -1,8 +1,12 @@
 const call = async (endpoint: string, request?: RequestInit) => {
-  const raw = await fetch(
-    import.meta.env.VITE_WEB_API_ENDPOINT + endpoint,
-    request
-  );
+  const raw = await fetch(import.meta.env.VITE_WEB_API_ENDPOINT + endpoint, {
+    ...request,
+    headers: {
+      ...(request?.headers ?? {}),
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
 
   return await raw.json();
 };

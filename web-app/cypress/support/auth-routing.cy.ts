@@ -24,7 +24,12 @@ const fakeAuthenticate = async () => {
   const auth = await new Promise<AuthStore>((resolve) => {
     cy.get<AuthStore>("@auth").then(resolve);
   });
-  auth.setUser({});
+  auth.setUser({
+    id: "",
+    email: "",
+    userName: "",
+    emailConfirmed: true,
+  });
 };
 
 describe("Auth routing", () => {

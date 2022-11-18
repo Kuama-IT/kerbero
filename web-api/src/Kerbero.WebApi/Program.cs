@@ -45,6 +45,19 @@ builder.Services.AddKerberoIdentity<ApplicationDbContext>(
     }
   });
 
+builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("Kerbero", policyBuilder =>
+	{
+		policyBuilder
+			.AllowCredentials()
+			.AllowAnyHeader()
+			.AllowAnyMethod()
+			.AllowAnyOrigin()
+			.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173, https://127.0.0.1:5173", "https://localhost:5173"); /* TODO ADD PROD DOMAIN */
+	});
+});
 
 builder.Services.AddControllers(options =>
 {
@@ -75,6 +88,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCors("Kerbero");
 app.Run();
 
 namespace Kerbero.WebApi
