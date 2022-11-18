@@ -6,9 +6,8 @@ using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Infrastructure.Common.Helpers;
-using Kerbero.Domain.NukiAuthentication.Entities;
-using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiActions.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -25,13 +24,15 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
     {
         // Arrange
         var helper = new NukiSafeHttpCallHelper(new Mock<ILogger<NukiSafeHttpCallHelper>>().Object);
-        _nukiSmartLockClient = new NukiSmartLockExternalRepository(Options.Create(new NukiExternalOptions()
-        {
-            Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
-            RedirectUriForCode = "/nuki/code",
-            MainDomain = "https://test.com",
-            BaseUrl = "https://api.nuki.io"
-        }), helper);
+        var configurationMock = new Mock<IConfiguration>();
+        configurationMock.Setup(m => m["ALIAS_DOMAIN"]).Returns("https://test.com");
+        configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns("/nuki/auth/token");
+        configurationMock.Setup(m => m["NUKI_SCOPES"]).Returns(
+	        "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log");
+        configurationMock.Setup(m => m["NUKI_DOMAIN"]).Returns("test.com");
+        configurationMock.Setup(m => m["NUKI_CLIENT_SECRET"]).Returns("CLIENT_SECRET");
+        
+        _nukiSmartLockClient = new NukiSmartLockExternalRepository(configurationMock.Object, helper);
         _httpTest = new HttpTest();
         
         var json = File.ReadAllText("JsonData/get-nuki-smartlock-response.json");
@@ -192,7 +193,7 @@ public class NukiSmartLockExternalRepositoryTests: IDisposable
 
 	    // Assert
 	    response.IsSuccess.Should().BeTrue();
-	    _httpTest.ShouldHaveCalled("https://api.nuki.io/smartlock/0/action/unlock");
+	    _httpTest.ShouldHaveCalled("https://test.com/smartlock/0/action/unlock");
     }
     
     [Fact]

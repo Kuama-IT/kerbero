@@ -7,21 +7,20 @@ using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
-using Kerbero.Infrastructure.Common.Options;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace Kerbero.Infrastructure.NukiAuthentication.Repositories;
 
 public class NukiAccountExternalRepository: INukiAccountExternalRepository
 {
-	private readonly NukiExternalOptions _options;
+	private readonly IConfiguration _configuration;
 	private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
 
-	public NukiAccountExternalRepository(IOptions<NukiExternalOptions> options,
+	public NukiAccountExternalRepository(IConfiguration configuration,
 		NukiSafeHttpCallHelper nukiSafeHttpCallHelper)
 	{
-		_options = options.Value;
+		_configuration = configuration;
 		_nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
 	}
 
@@ -35,17 +34,17 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 		if (string.IsNullOrEmpty(redirectExternalRequest.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
 		try
 		{
-			var redirectUriClientId = $"{_options.MainDomain}"
-				.AppendPathSegment(_options.RedirectUriForCode)
+			var redirectUriClientId = _configuration["ALIAS_DOMAIN"]
+				.AppendPathSegment(_configuration["NUKI_REDIRECT_FOR_TOKEN"])
 				.AppendPathSegment(redirectExternalRequest.ClientId);
-			return Result.Ok(new NukiRedirectPresentationResponse($"{_options.BaseUrl}"
+			return Result.Ok(new NukiRedirectPresentationResponse(_configuration["NUKI_DOMAIN"]
 				.AppendPathSegments("oauth", "authorize")
 				.SetQueryParams(new
 				{
 					response_type = "code",
 					client_id = redirectExternalRequest.ClientId,
 					redirect_uri = redirectUriClientId.ToString(),
-					scope = _options.Scopes
+					scope = _configuration["NUKI_SCOPES"]
 				})
 				.ToUri()));
 		}
@@ -70,8 +69,8 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 		Url redirectUriClientId;
 		try
 		{
-			redirectUriClientId = $"{_options.MainDomain}"
-				.AppendPathSegment(_options.RedirectUriForCode)
+			redirectUriClientId = _configuration["ALIAS_DOMAIN"]
+				.AppendPathSegment(_configuration["NUKI_REDIRECT_FOR_TOKEN"])
 				.AppendPathSegment(accountExternalRequest.ClientId);
 		}
 		catch (ArgumentNullException)
@@ -82,7 +81,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 		var result = await AuthRequest(accountExternalRequest.ClientId, new
 		{
 			client_id = accountExternalRequest.ClientId,
-			client_secret = _options.ClientSecret,
+			client_secret = _configuration["NUKI_CLIENT_SECRET"],
 			grant_type = "authorization_code",
 			code = accountExternalRequest.Code,
 			redirect_uri = redirectUriClientId.ToString()
@@ -102,17 +101,17 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 		return await AuthRequest(accountExternalRequest.ClientId, new
 		{
 			client_id = accountExternalRequest.ClientId,
-			client_secret = _options.ClientSecret,
+			client_secret = _configuration["NUKI_CLIENT_SECRET"],
 			grant_type = "refresh_token",
 			refresh_token = accountExternalRequest.RefreshToken,
-			scope = _options.Scopes
+			scope = _configuration["NUKI_SCOPES"]
 		});
 	}
 
 	private async Task<Result<NukiAccountExternalResponse>> AuthRequest(string clientId, object postBody)
 	{
 		var response = await _nukiSafeHttpCallHelper.Handle(
-			async () => await $"{_options.BaseUrl}"
+			async () => await _configuration["ALIAS_DOMAIN"]
 					.AppendPathSegment("oauth")
 					.AppendPathSegment("token")
 					.PostUrlEncodedAsync(postBody)

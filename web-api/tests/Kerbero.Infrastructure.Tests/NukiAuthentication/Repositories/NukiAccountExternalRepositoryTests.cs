@@ -7,8 +7,8 @@ using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Infrastructure.Common.Helpers;
-using Kerbero.Infrastructure.Common.Options;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -18,20 +18,21 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 {
 	private readonly NukiAccountExternalRepository _nukiAccountExternalRepository;
 	private readonly HttpTest _httpTest;
-	private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
+	private readonly Mock<IConfiguration> _configurationMock;
 
 	public NukiAccountExternalRepositoryTests()
 	{
 		// Arrange
 		var logger = new Mock<ILogger<NukiSafeHttpCallHelper>>();
-		 _nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(logger.Object);
-		_nukiAccountExternalRepository = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions
-		{
-			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
-			RedirectUriForCode = "/nuki/code",
-			MainDomain = "https://test.com",
-			BaseUrl = "http://api.nuki.io"
-		}), _nukiSafeHttpCallHelper);
+		 var nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(logger.Object);
+		 _configurationMock = new Mock<IConfiguration>();
+		 _configurationMock.Setup(m => m["ALIAS_DOMAIN"]).Returns("https://test.com");
+		 _configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns("/nuki/auth/token");
+		 _configurationMock.Setup(m => m["NUKI_SCOPES"]).Returns(
+			 "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log");
+		 _configurationMock.Setup(m => m["NUKI_DOMAIN"]).Returns("https://api.nuki.io");
+		 _configurationMock.Setup(m => m["NUKI_CLIENT_SECRET"]).Returns("CLIENT_SECRET");
+		_nukiAccountExternalRepository = new NukiAccountExternalRepository(_configurationMock.Object, nukiSafeHttpCallHelper);
 		_httpTest = new HttpTest();
 	}
 	
@@ -49,9 +50,9 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		var redirect = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest("v7kn_NX7vQ7VjQdXFGK43g"));
 
 		// Assert
-		var equalUri = new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
+		var equalUri = new Uri("https://api.nuki.io/oauth/authorize?response_type=code" +
 		                       "&client_id=v7kn_NX7vQ7VjQdXFGK43g" +
-		                       "&redirect_uri=https%3A%2F%2Ftest.com%2Fnuki%2Fcode%2Fv7kn_NX7vQ7VjQdXFGK43g" +
+		                       "&redirect_uri=https%3A%2F%2Ftest.com%2Fnuki%2Fauth%2Ftoken%2Fv7kn_NX7vQ7VjQdXFGK43g" +
 		                       "&scope=account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log");
 		redirect.Should().BeOfType<Result<NukiRedirectPresentationResponse>>();
 		redirect.Value.RedirectUri.Should().BeEquivalentTo(equalUri);
@@ -70,19 +71,14 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void BuildUriForCode_ArgumentNullException_Test()
 	{
 		// Arrange
-		var errorClient = new NukiAccountExternalRepository(Microsoft.Extensions.Options.Options.Create(new NukiExternalOptions
-		{
-			Scopes = "account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log",
-			RedirectUriForCode = null!,
-			MainDomain = "https://test.com",
-			BaseUrl = "http://api.nuki.io"
-		}), _nukiSafeHttpCallHelper);
-		
+		_configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns<string>(null);
+
 		// Act
-		var exCode = errorClient.BuildUriForCode(new NukiRedirectExternalRequest("INVALID_CLIENT_ID"));
+		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest("INVALID_CLIENT_ID"));
 		// Assert
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
+		_configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns("/nuki/auth/token");
 	}	
 	
 	[Fact]

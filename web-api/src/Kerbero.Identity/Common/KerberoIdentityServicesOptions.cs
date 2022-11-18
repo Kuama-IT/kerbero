@@ -7,5 +7,4 @@ public class KerberoIdentityServicesOptions
 {
   public List<Claim>? Claims { get; init; }
   public Action<AuthorizationOptions>? AuthorizationOptionsConfigure { get; init; }
-  public bool IsCookieService { get; set; } = false;
 }

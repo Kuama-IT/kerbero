@@ -5,25 +5,24 @@ using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
-using Kerbero.Infrastructure.Common.Options;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace Kerbero.Infrastructure.NukiActions.Repositories;
 
 public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 {
 	private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
-	private readonly NukiExternalOptions _options;
+	private readonly string _domainAlias;
 
-	public NukiSmartLockExternalRepository(IOptions<NukiExternalOptions> options, NukiSafeHttpCallHelper nukiSafeHttpCallHelper)
+	public NukiSmartLockExternalRepository(IConfiguration configuration, NukiSafeHttpCallHelper nukiSafeHttpCallHelper)
 	{
+		_domainAlias = configuration["ALIAS_DOMAIN"] ?? throw new ArgumentNullException(configuration["ALIAS_DOMAIN"]);	
 		_nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
-		_options = options.Value;
 	}
 
 	public async Task<Result<List<NukiSmartLockExternalResponse>>> GetNukiSmartLocks(string accessToken)
 	{
-		var apiResponse = await _nukiSafeHttpCallHelper.Handle( () => _options.BaseUrl
+		var apiResponse = await _nukiSafeHttpCallHelper.Handle( () => _domainAlias
 			.AppendPathSegments("smartlock")
 			.WithOAuthBearerToken(accessToken)
 			.GetJsonAsync<List<NukiSmartLockExternalResponse>>());
@@ -32,7 +31,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 	}
 	public async Task<Result<NukiSmartLockExternalResponse>> GetNukiSmartLock(NukiSmartLockExternalRequest request)
 	{
-		return await _nukiSafeHttpCallHelper.Handle( () =>  _options.BaseUrl
+		return await _nukiSafeHttpCallHelper.Handle( () =>  _domainAlias
 			.AppendPathSegment("smartlock")
 			.AppendPathSegment(request.ExternalId)
 			.WithOAuthBearerToken(request.AccessToken)
@@ -41,7 +40,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 
 	public async Task<Result> OpenNukiSmartLock(NukiSmartLockExternalRequest request)
 	{
-		var response = await _nukiSafeHttpCallHelper.Handle(() => $"{_options.BaseUrl}"
+		var response = await _nukiSafeHttpCallHelper.Handle(() => _domainAlias
 			.AppendPathSegments("smartlock", 
 				$"{request.ExternalId}", 
 				"action", 
@@ -54,7 +53,7 @@ public class NukiSmartLockExternalRepository: INukiSmartLockExternalRepository
 	
 	public async Task<Result> CloseNukiSmartLock(NukiSmartLockExternalRequest request)
 	{
-		var response = await _nukiSafeHttpCallHelper.Handle( () => _options.BaseUrl
+		var response = await _nukiSafeHttpCallHelper.Handle( () => _domainAlias
 			.AppendPathSegments("smartlock", 
 				request.ExternalId, 
 				"action", 

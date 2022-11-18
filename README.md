@@ -20,7 +20,8 @@ The projects depend on the following tools and languages:
 
 It is provided a script to setup the project. In order to run the packages download run:
 `./kerbero-setup.sh`.
-After the setup you need to run the script `./dev-deploy-script.sh` to launch the environment. The script run kerbero in a in development environment, as such it needs docker engine to be running.
+The web-api must be configured in a .env file. There is a file inside the web-api/src/Kerbero.WebApi/ folder named .env-example, which can be renamed and completed.
+After the setup, you need to run the script `./dev-deploy-script.sh` to launch the environment. The script run kerbero in a in development environment, as such it needs docker engine to be running.
 
 ### Note
 
