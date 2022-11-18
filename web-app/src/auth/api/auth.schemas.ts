@@ -6,11 +6,7 @@ const emailRegex =
 
 // TODO we should be able to set localized & custom error messages
 // WARN: these rules follow Kerbero.Identity validators, and should be kept in-sync whenever the validations changes on server side
-const SignUpRequestScheme = z.object({
-  userName: z
-    .string()
-    .trim()
-    .refine((val) => val.length > 2),
+const SignInRequestScheme = z.object({
   email: z.string().trim().regex(emailRegex),
   password: z
     .string()
@@ -26,21 +22,31 @@ const SignUpRequestScheme = z.object({
     }),
 });
 
+const SignUpRequestScheme = SignInRequestScheme.extend({
+  userName: z
+    .string()
+    .trim()
+    .refine((val) => val.length > 2),
+});
+
+export type SignInRequest = z.infer<typeof SignInRequestScheme>;
+export const signInRequestParseOrThrow = (request: unknown): SignInRequest => {
+  return SignInRequestScheme.parse(request);
+};
+
 export type SignUpRequest = z.infer<typeof SignUpRequestScheme>;
 export const signUpRequestParseOrThrow = (request: unknown): SignUpRequest => {
   return SignUpRequestScheme.parse(request);
 };
 
-const SignUpResponseScheme = z.object({
+const UserResponseScheme = z.object({
   id: z.string(),
   userName: z.string(),
   email: z.string(),
   emailConfirmed: z.boolean(),
 });
 
-export type SignUpResponse = z.infer<typeof SignUpResponseScheme>;
-export const signUpResponseParseOrThrow = (
-  response: unknown
-): SignUpResponse => {
-  return SignUpResponseScheme.parse(response);
+export type UserResponse = z.infer<typeof UserResponseScheme>;
+export const userResponseParseOrThrow = (response: unknown): UserResponse => {
+  return UserResponseScheme.parse(response);
 };
