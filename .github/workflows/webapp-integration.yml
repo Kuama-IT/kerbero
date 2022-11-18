@@ -1,0 +1,23 @@
+name: CI - Build frontend and test
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths: ./web-app/**/*.*
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./web-app
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          npm pkg delete scripts.prepare
+          npm ci
+          npm run build
+          npm run lint
+          npm run test
+          npm run cypress:ci
