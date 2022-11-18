@@ -1,14 +1,15 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
+import { UserResponse } from "../api/auth.schemas";
 
 type AuthGetters = {
   authenticated: (auth: AuthState) => boolean;
 };
 type AuthSetters = {
-  setUser: (user: any) => void;
+  setUser: (user: UserResponse) => void;
 };
 
 type AuthState = {
-  user: undefined | any;
+  user: undefined | UserResponse;
 };
 
 const AuthId = "auth";
@@ -28,7 +29,7 @@ export const useAuth = defineStore<
     },
   },
   actions: {
-    setUser(user: any) {
+    setUser(user: UserResponse) {
       this.user = user;
     },
   },

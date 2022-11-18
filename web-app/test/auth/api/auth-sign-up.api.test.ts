@@ -1,4 +1,4 @@
-import { signUpAction } from "../../../src/auth/api/auth.api";
+import { signUpAction } from "../../../src/auth/api/auth-actions";
 import { ZodError } from "zod";
 import { fetchMock } from "../../setup/fetch-mock";
 
