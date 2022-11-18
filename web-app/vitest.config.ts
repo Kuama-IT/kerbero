@@ -9,5 +9,8 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./test/setup/fetch-mock.ts"],
+    coverage: {
+      reporter: ["lcov", "html"],
+    },
   },
 });
