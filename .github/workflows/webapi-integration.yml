@@ -3,7 +3,7 @@ name: CI - Build backend and test
 on:
   pull_request:
     branches: [ "master" ]
-    paths: ./web-api/**/*.*
+    paths: [ 'web-api/**' ]
 
 jobs:
   backend:
