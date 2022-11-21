@@ -21,10 +21,7 @@ public class CreateSmartLockKeyInteractor
 	public async Task<Result<CreateSmartLockKeyPresentationResponse>> Handle(CreateSmartLockKeyPresentationRequest presentationRequest)
 	{
 		var generatedKeyResult = _smartLockKeyGeneratorManager.GenerateSmartLockKey(presentationRequest.SmartLockId, presentationRequest.ExpiryDate);
-		if (generatedKeyResult.IsFailed)
-		{
-			return generatedKeyResult.ToResult();
-		}
+
 		var createResult = await _smartLockKeyPersistentRepository.Create(generatedKeyResult.Value);
 		if (createResult.IsFailed)
 		{

@@ -3,7 +3,6 @@ using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.SmartLockKeys.Entities;
-using Kerbero.Domain.SmartLockKeys.Errors;
 using Kerbero.Domain.SmartLockKeys.Interactors;
 using Kerbero.Domain.SmartLockKeys.Managers;
 using Kerbero.Domain.SmartLockKeys.Models.PresentationRequests;
@@ -72,17 +71,6 @@ public class CreateSmartLockKeyInteractorTest
 		result.Value.Should().BeEquivalentTo(keyPresentation);
 	}
 
-	[Fact]
-	public async Task CreateKey_GenerateKeyError()
-	{
-		var expiryDate = DateTime.Now.AddDays(7);
-		var presentationRequest = new CreateSmartLockKeyPresentationRequest(SmartLockId: 1, ExpiryDate: expiryDate);
-		_smartLockKeyGeneratorManager.Setup(help => help.GenerateSmartLockKey(1, expiryDate))
-			.Returns(Result.Fail(new UnableToGenerateKeyError()));
-		var result = await _createSmartLockKeyInteractor.Handle(presentationRequest);
-		result.Errors.Single().Should().BeEquivalentTo(new UnableToGenerateKeyError());
-	}
-	
 	[Fact]
 	public async Task CreateKey_PersistentResourceNotReachable()
 	{
