@@ -1,45 +1,51 @@
 using FluentResults;
-using Kerbero.Domain.Common.Interfaces;
+using Kerbero.Domain.NukiAuthentication.Dtos;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Mappers;
-using Kerbero.Domain.NukiAuthentication.Models;
-using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
-using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
-using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 
 namespace Kerbero.Domain.NukiAuthentication.Interactors;
 
-public class CreateNukiAccountInteractor: ICreateNukiAccountInteractor
+public class CreateNukiAccountInteractor : ICreateNukiAccountInteractor
 {
-	private readonly INukiAccountPersistentRepository _nukiAccountPersistentRepository;
-	private readonly INukiAccountExternalRepository _nukiAccountExternalRepository;
+  private readonly INukiCredentialRepository _nukiCredentialRepository;
+  private readonly INukiOAuthRepository _nukiOAuthRepository;
+  private readonly INukiCredentialDraftRepository _nukiCredentialDraftRepository;
 
-	public CreateNukiAccountInteractor(INukiAccountPersistentRepository nukiAccountPersistentRepository, 
-		INukiAccountExternalRepository nukiAccountExternalRepository)
-	{
-		_nukiAccountExternalRepository = nukiAccountExternalRepository;
-		_nukiAccountPersistentRepository = nukiAccountPersistentRepository;
-	}
+  public CreateNukiAccountInteractor(INukiCredentialRepository nukiCredentialRepository,
+    INukiOAuthRepository nukiOAuthRepository,
+    INukiCredentialDraftRepository nukiCredentialDraftRepository)
+  {
+    _nukiOAuthRepository = nukiOAuthRepository;
+    _nukiCredentialDraftRepository = nukiCredentialDraftRepository;
+    _nukiCredentialRepository = nukiCredentialRepository;
+  }
 
-	public async Task<Result<NukiAccountPresentationResponse>> Handle(NukiAccountPresentationRequest externalRequestDto)
-	{
-		var extRes = await _nukiAccountExternalRepository.GetNukiAccount(new NukiAccountExternalRequest
-		{
-			Code = externalRequestDto.Code,
-			ClientId = externalRequestDto.ClientId,
-			RefreshToken = externalRequestDto.RefreshToken
-		});
+  public async Task<Result<NukiCredentialDto>> Handle(CreateNukiCredentialParams request)
+  {
+    var nukiAccountDraftResult = await _nukiCredentialDraftRepository.GetByClientId(clientId: request.ClientId);
 
-		if (!extRes.IsSuccess)
-		{
-			return Result.Fail(extRes.Errors);
-		}
-		var nukiAccount = NukiAccountMapper.MapToEntity(extRes.Value);
-		var persistentResult = await _nukiAccountPersistentRepository.Create(nukiAccount);
+    if (nukiAccountDraftResult.IsFailed)
+    {
+      return Result.Fail(nukiAccountDraftResult.Errors);
+    }
 
-		return persistentResult.IsSuccess ? // isSuccess
-			Result.Ok(NukiAccountMapper.MapToPresentation(persistentResult.Value)) : Result.Fail(persistentResult.Errors);
+    await _nukiCredentialDraftRepository.DeleteByClientId(clientId: request.ClientId);
 
-	}
+    var nukiCredentialResult = await _nukiOAuthRepository.Authenticate(request.ClientId, request.Code);
+
+    if (nukiCredentialResult.IsFailed)
+    {
+      return Result.Fail(nukiCredentialResult.Errors);
+    }
+
+    var createNukiAccountResult = await _nukiCredentialRepository.Create(nukiCredentialResult.Value);
+
+    if (createNukiAccountResult.IsFailed)
+    {
+      return Result.Fail(createNukiAccountResult.Errors);
+    }
+
+    return NukiCredentialMapper.Map(createNukiAccountResult.Value);
+  }
 }

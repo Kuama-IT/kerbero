@@ -31,7 +31,7 @@ public class OpenNukiSmartLockInteractorTests
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLockEntity
             {
                 ExternalSmartLockId = 0
             })));
@@ -70,7 +70,7 @@ public class OpenNukiSmartLockInteractorTests
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLockEntity
             {
                 ExternalSmartLockId = 0
             })));

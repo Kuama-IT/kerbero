@@ -28,7 +28,7 @@ public class NukiCloseSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CloseNukiSmartLock_Success()
 	{
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
 		var client = await _application.GetLoggedClient();
 		
@@ -42,7 +42,7 @@ public class NukiCloseSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CloseNukiSmartLock_Error()
 	{
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
 		var client = await _application.GetLoggedClient();
 		_httpTest.RespondWith(status: 401);

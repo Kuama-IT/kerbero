@@ -33,7 +33,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	{
 		// Arrange
 		var client = await _application.GetLoggedClient();
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		_httpTest.RespondWithJson(
 			new[]
 			{
@@ -53,7 +53,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_RefreshToken_AndCannotParseTheResponse_Text()
 	{
 		var client = await _application.GetLoggedClient();
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		_httpTest.RespondWithJson(new
 		{
 			access_token ="ACCESS_TOKEN", 
@@ -71,7 +71,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_Unauthorized_Test()
 	{
 		var client = await _application.GetLoggedClient();
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		_httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new
 		{
 			detailMessage = "Your access token is not authorized",
@@ -91,7 +91,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_NoAccount_Test()
 	{
 		var client = await _application.GetLoggedClient();
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		var response = await client.GetAsync("api/smartlocks?accountId=0");
 
 		response.IsSuccessStatusCode.Should().BeFalse();
@@ -105,7 +105,7 @@ public class NukiSmartLocksListIntegrationTests: IDisposable
 	public async Task GetSmartLocksListByKerberoAccount_TimeoutNuki_Test()
 	{
 		var client = await _application.GetLoggedClient();
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 		_httpTest.RespondWith(status: 408); 
 		
 		var response = await client.GetAsync("api/smartlocks?accountId=1");

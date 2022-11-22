@@ -52,8 +52,8 @@ public class CreateNukiSmartLockInteractorTest
         // Arrange
         _smartLockClient.Setup(c => c.GetNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(_clientResponse);
-        _smartLockPersistent.Setup(c => c.Create(It.IsAny<NukiSmartLock>()))
-            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
+        _smartLockPersistent.Setup(c => c.Create(It.IsAny<NukiSmartLockEntity>()))
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLockEntity
             {
                 Favourite = true,
                 Name = "kquarter",
@@ -61,7 +61,7 @@ public class CreateNukiSmartLockInteractorTest
                 AuthId = 0,
                 ExternalSmartLockId = 0,
                 NukiAccountId = 0,
-                State = new NukiSmartLockState
+                State = new NukiSmartLockStateEntity
                 {
                     Mode = 4,
                     State = 255,
@@ -81,7 +81,7 @@ public class CreateNukiSmartLockInteractorTest
         _smartLockClient.Verify(c =>
             c.GetNukiSmartLock(It.Is<NukiSmartLockExternalRequest>(req =>
                 req.ExternalId == 0 && req.AccessToken == "ACCESS_TOKEN")));
-        _smartLockPersistent.Verify(c => c.Create(It.Is<NukiSmartLock>(req => req.Favourite == true &&
+        _smartLockPersistent.Verify(c => c.Create(It.Is<NukiSmartLockEntity>(req => req.Favourite == true &&
                                                                 req.Name == "kquarter" && 
                                                                 req.Type == 0 &&
                                                                 req.NukiAccountId == 0 &&
@@ -114,7 +114,7 @@ public class CreateNukiSmartLockInteractorTest
         // Arrange
         _smartLockClient.Setup(c => c.GetNukiSmartLock(It.IsAny<NukiSmartLockExternalRequest>()))
             .Returns(_clientResponse);
-        _smartLockPersistent.Setup(c => c.Create(It.IsAny<NukiSmartLock>()))
+        _smartLockPersistent.Setup(c => c.Create(It.IsAny<NukiSmartLockEntity>()))
             .Returns(async () => await Task.FromResult(Result.Fail(new PersistentResourceNotAvailableError())));
         
         // Act
