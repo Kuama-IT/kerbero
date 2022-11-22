@@ -13,20 +13,14 @@ namespace Kerbero.Infrastructure;
 
 public static class ConfigureService
 {
-	public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
-	{
-		services.AddDbContext<ApplicationDbContext>(
-			options => options.UseNpgsql(configuration["POSTGRESQL_CONNECTION_STRING"]!, 
-			x => x.MigrationsAssembly("Kerbero.Infrastructure")));
-		
-		services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-		services.AddScoped<INukiAccountPersistentRepository, NukiAccountPersistentRepository>();
-		services.AddScoped<INukiAccountExternalRepository, NukiAccountExternalRepository>();
-		services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
-		services.AddScoped<INukiSmartLockPersistentRepository, NukiSmartLockPersistentRepository>();
-		
-		services.AddScoped<NukiSafeHttpCallHelper>();
-		
-		return services;
-	}
+  public static void AddInfrastructureServices(this IServiceCollection services)
+  {
+    services.AddScoped<INukiCredentialRepository, NukiCredentialRepository>();
+    services.AddScoped<INukiOAuthRepository, NukiOAuthRepository>();
+    services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
+    services.AddScoped<INukiSmartLockPersistentRepository, NukiSmartLockPersistentRepository>();
+    services.AddScoped<INukiCredentialDraftRepository, NukiCredentialDraftRepository>();
+
+    services.AddScoped<NukiSafeHttpCallHelper>();
+  }
 }

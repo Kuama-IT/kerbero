@@ -14,13 +14,13 @@ namespace Kerbero.Infrastructure.Tests.NukiActions.Repositories;
 public class NukiSmartLockPersistentRepositoryTests
 {
     private readonly NukiSmartLockPersistentRepository _persistent;
-    private readonly NukiSmartLock _data;
+    private readonly NukiSmartLockEntity _data;
     private readonly ApplicationDbContext _appDbContext;
 
     public NukiSmartLockPersistentRepositoryTests()
     {        
         var logger = new Mock<ILogger<NukiSmartLockPersistentRepository>>();
-        _data = new NukiSmartLock
+        _data = new NukiSmartLockEntity
         {
             Favourite = true,
             Name = "kquarter",
@@ -28,7 +28,7 @@ public class NukiSmartLockPersistentRepositoryTests
             NukiAccountId = 0,
             AuthId = 0,
             ExternalSmartLockId = 0,
-            State = new NukiSmartLockState
+            State = new NukiSmartLockStateEntity
             {
                 Mode = 4,
                 State = 255,
@@ -65,7 +65,7 @@ public class NukiSmartLockPersistentRepositoryTests
     public async Task Read_Success_Test()
     {
         // Arrange
-        var ent = _appDbContext.NukiSmartLocks.Add(new NukiSmartLock
+        var ent = _appDbContext.NukiSmartLocks.Add(new NukiSmartLockEntity
         {
             NukiAccountId = 1,
             Favourite = true,

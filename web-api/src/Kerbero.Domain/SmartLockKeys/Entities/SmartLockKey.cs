@@ -18,5 +18,5 @@ public class SmartLockKey
 	
 	public int NukiSmartLockId { get; set; }
 	
-	public NukiSmartLock NukiSmartLock { get; set; } = null!;
+	public NukiSmartLockEntity NukiSmartLockEntity { get; set; } = null!;
 }

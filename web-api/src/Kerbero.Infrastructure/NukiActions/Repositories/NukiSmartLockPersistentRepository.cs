@@ -22,11 +22,11 @@ public class NukiSmartLockPersistentRepository: INukiSmartLockPersistentReposito
         _applicationDbContext = applicationDbContext;
     }
 
-    public async Task<Result<NukiSmartLock>> Create(NukiSmartLock nukiSmartLock)
+    public async Task<Result<NukiSmartLockEntity>> Create(NukiSmartLockEntity nukiSmartLockEntity)
     {
         try
         {
-            var response = _applicationDbContext.NukiSmartLocks.Add(nukiSmartLock);
+            var response = _applicationDbContext.NukiSmartLocks.Add(nukiSmartLockEntity);
             await _applicationDbContext.SaveChangesAsync();
             return Result.Ok(response.Entity);
         }
@@ -53,7 +53,7 @@ public class NukiSmartLockPersistentRepository: INukiSmartLockPersistentReposito
         }
     }
     
-    public async Task<Result<NukiSmartLock>> GetById(int smartLockId)
+    public async Task<Result<NukiSmartLockEntity>> GetById(int smartLockId)
     {
         try
         {

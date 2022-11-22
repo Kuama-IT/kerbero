@@ -31,7 +31,7 @@ public class CloseNukiSmartLockInteractorTest
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLockEntity
             {
                 ExternalSmartLockId = 1,
                 // other things
@@ -66,7 +66,7 @@ public class CloseNukiSmartLockInteractorTest
     public async Task Handle_ErrorOnOpening()
     {
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(Task.FromResult(Result.Ok(new NukiSmartLock
+            .Returns(Task.FromResult(Result.Ok(new NukiSmartLockEntity
             {
                 ExternalSmartLockId = 1,
                 // other things

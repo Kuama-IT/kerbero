@@ -33,7 +33,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CreateNukiSmartLocks_Success_Test()
 	{
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 
 		_httpTest.RespondWithJson(_nukiJsonSmartLockResponse);
 		
@@ -56,7 +56,7 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CreateNukiSmartLocks_Error_Test()
 	{
-		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+		await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
 
 		_httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new 
 		{

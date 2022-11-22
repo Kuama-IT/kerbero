@@ -20,7 +20,7 @@ public static class NukiSmartLockMapper
     
     // entity -> presentation
     public static KerberoSmartLockPresentationResponse MapToPresentation(
-        NukiSmartLock entity)
+        NukiSmartLockEntity entity)
     {
         return new KerberoSmartLockPresentationResponse
         {
@@ -33,9 +33,9 @@ public static class NukiSmartLockMapper
     }
 
     // external -> entity
-    public static NukiSmartLock MapToEntity(NukiSmartLockExternalResponse externalResponseDto, int accountId)
+    public static NukiSmartLockEntity MapToEntity(NukiSmartLockExternalResponse externalResponseDto, int accountId)
     {
-        return new NukiSmartLock
+        return new NukiSmartLockEntity
         {
             Favourite = externalResponseDto.Favourite,
             Name = externalResponseDto.Name,
@@ -48,9 +48,9 @@ public static class NukiSmartLockMapper
     }
 
     // external -> entity
-    private static NukiSmartLockState MapToEntity(NukiSmartLockStateExternalResponse externalDto)
+    private static NukiSmartLockStateEntity MapToEntity(NukiSmartLockStateExternalResponse externalDto)
     {
-        return new NukiSmartLockState
+        return new NukiSmartLockStateEntity
         {
             Mode = externalDto.Mode,
             State = externalDto.State,

@@ -1,7 +1,7 @@
 using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
+using Kerbero.Domain.NukiAuthentication.Dtos;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -14,19 +14,19 @@ namespace Kerbero.WebApi.Controllers;
 [Route("api/smartlocks")]
 public class NukiSmartLockController : ControllerBase
 {
-	private readonly IAuthenticateNukiAccountInteractor _authenticateNukiAccountInteractor;
+	private readonly IGetNukiAccountInteractor _getNukiAccountInteractor;
 	private readonly IOpenNukiSmartLockInteractor _openNukiSmartLockInteractor;
 	private readonly IGetNukiSmartLocksInteractor _getNukiSmartLocksInteractor;
 	private readonly ICreateNukiSmartLockInteractor _createNukiSmartLockInteractor;
 	private readonly ICloseNukiSmartLockInteractor _closeNukiSmartLockInteractor;
 
-	public NukiSmartLockController(IAuthenticateNukiAccountInteractor authenticateNukiAccountInteractor,
+	public NukiSmartLockController(IGetNukiAccountInteractor getNukiAccountInteractor,
 		IGetNukiSmartLocksInteractor getNukiSmartLocksInteractor,
 		ICreateNukiSmartLockInteractor createNukiSmartLockInteractor,
 		IOpenNukiSmartLockInteractor openNukiSmartLockInteractor,
 		ICloseNukiSmartLockInteractor closeNukiSmartLockInteractor)
 	{
-		_authenticateNukiAccountInteractor = authenticateNukiAccountInteractor;
+		_getNukiAccountInteractor = getNukiAccountInteractor;
 		_openNukiSmartLockInteractor = openNukiSmartLockInteractor;
 		_getNukiSmartLocksInteractor = getNukiSmartLocksInteractor;
 		_createNukiSmartLockInteractor = createNukiSmartLockInteractor;
@@ -37,7 +37,7 @@ public class NukiSmartLockController : ControllerBase
 	[HttpGet]
 	public async Task<ActionResult> GetSmartLocksByKerberoAccount(int accountId)
 	{
-		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
+		var authenticationResponse = await _getNukiAccountInteractor.Handle(new GetNukiAccountParams
 		{
 			NukiAccountId = accountId
 		});
@@ -62,7 +62,7 @@ public class NukiSmartLockController : ControllerBase
 	[HttpPost("import/nuki/")]
 	public async Task<ActionResult> CreateNukiSmartLockById(CreateNukiSmartLockRequest createNukiSmartLockRequest)
 	{
-		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
+		var authenticationResponse = await _getNukiAccountInteractor.Handle(new GetNukiAccountParams
 		{
 			NukiAccountId = createNukiSmartLockRequest.AccountId
 		});
@@ -87,7 +87,7 @@ public class NukiSmartLockController : ControllerBase
 	[HttpPut("unlock")]
 	public async Task<ActionResult> OpenNukiSmartLockById(OpenNukiSmartLockRequest openNukiSmartLockRequest)
 	{
-		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(new AuthenticateRepositoryPresentationRequest
+		var authenticationResponse = await _getNukiAccountInteractor.Handle(new GetNukiAccountParams
 		{
 			NukiAccountId = openNukiSmartLockRequest.AccountId
 		});
@@ -114,8 +114,8 @@ public class NukiSmartLockController : ControllerBase
 	[HttpPut("lock")]
 	public async Task<ActionResult> CloseSmartLockById(CloseNukiSmartLockRequest closeNukiSmartLockRequest)
 	{
-		var authenticationResponse = await _authenticateNukiAccountInteractor.Handle(
-			new AuthenticateRepositoryPresentationRequest
+		var authenticationResponse = await _getNukiAccountInteractor.Handle(
+			new GetNukiAccountParams
 		{
 			NukiAccountId = closeNukiSmartLockRequest.AccountId
 		});

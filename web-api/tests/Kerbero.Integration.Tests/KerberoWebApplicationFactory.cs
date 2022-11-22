@@ -2,7 +2,7 @@ using DotNetEnv;
 using System.Net.Http.Json;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiActions.Repositories;
-using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 using Kerbero.Identity.Modules.Users.Entities;
@@ -75,18 +75,18 @@ public class KerberoWebApplicationFactory<TStartup>
 		return client;
 	}
 	
-	public async Task CreateNukiAccount(NukiAccount account)
+	public async Task CreateNukiAccount(NukiCredential model)
 	{
 		using var scope = Services.CreateScope();
-		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiAccountPersistentRepository>();
-		await accountPersistentRepository.Create(account);
+		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiCredentialRepository>();
+		await accountPersistentRepository.Create(model);
 	}
 
-	public async Task CreateNukiSmartLock(NukiSmartLock smartLock)
+	public async Task CreateNukiSmartLock(NukiSmartLockEntity smartLockEntity)
 	{
 		using var scope = Services.CreateScope();
 		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiSmartLockPersistentRepository>();
-		await accountPersistentRepository.Create(smartLock);
+		await accountPersistentRepository.Create(smartLockEntity);
 	}
 
 	private async Task CreateUser(User user)

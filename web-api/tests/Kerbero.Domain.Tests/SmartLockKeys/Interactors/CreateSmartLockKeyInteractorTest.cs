@@ -39,7 +39,7 @@ public class CreateSmartLockKeyInteractorTest
 			IsDisabled = false,
 			UsageCounter = 0,
 			NukiSmartLockId = 1,
-			NukiSmartLock = new NukiSmartLock() { Id = 1 }
+			NukiSmartLockEntity = new NukiSmartLockEntity() { Id = 1 }
 		};
 		var keyPresentation = new CreateSmartLockKeyPresentationResponse()
 		{
@@ -85,7 +85,7 @@ public class CreateSmartLockKeyInteractorTest
 			IsDisabled = false,
 			UsageCounter = 0,
 			NukiSmartLockId = 1,
-			NukiSmartLock = new NukiSmartLock() { Id = 1 }
+			NukiSmartLockEntity = new NukiSmartLockEntity() { Id = 1 }
 		};
 		var presentationRequest = new CreateSmartLockKeyPresentationRequest(SmartLockId: 1, ExpiryDate: expiryDate);
 		_smartLockKeyPersistentRepository.Setup(repo => repo.Create(It.IsAny<SmartLockKey>()))

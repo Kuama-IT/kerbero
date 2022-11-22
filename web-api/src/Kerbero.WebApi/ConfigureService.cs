@@ -10,14 +10,13 @@ public static
 {
 	public static IServiceCollection AddWebApiServices(this IServiceCollection services)
 	{
-		services.AddScoped<ICreateNukiAccountAndRedirectToNukiInteractor, CreateNukiAccountAndRedirectToNukiInteractor>();
+		services.AddScoped<ICreateNukiAccountDraftInteractor, CreateNukiAccountDraftInteractor>();
 		services.AddScoped<ICreateNukiAccountInteractor, CreateNukiAccountInteractor>();
-		services.AddScoped<IAuthenticateNukiAccountInteractor, AuthenticateNukiAccountInteractor>();
+		services.AddScoped<IGetNukiAccountInteractor, GetNukiAccountInteractor>();
 		services.AddScoped<IGetNukiSmartLocksInteractor, GetNukiSmartLocksInteractor>();
 		services.AddScoped<ICloseNukiSmartLockInteractor, CloseNukiSmartLockInteractor>();
 		services.AddScoped<ICreateNukiSmartLockInteractor, CreateNukiSmartLockInteractor>();
 		services.AddScoped<IOpenNukiSmartLockInteractor, OpenNukiSmartLockInteractor>();
-		
 
 		return services;
 	}

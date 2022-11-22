@@ -31,7 +31,7 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
     {
         // Arrange
         var client = await _application.GetLoggedClient();
-        await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+        await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
         await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
 
         // Act
@@ -61,7 +61,7 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
     public async Task OpenSmartLock_WrongSmartLockId_Test()
     {
         // Arrange
-        await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
+        await _application.CreateNukiAccount(IntegrationTestsUtils.GetNukiCredential());
         var client = await _application.GetLoggedClient();
         
         // Act
