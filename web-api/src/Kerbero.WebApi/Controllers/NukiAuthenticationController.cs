@@ -14,13 +14,13 @@ namespace Kerbero.WebApi.Controllers;
 public class NukiAuthenticationController: ControllerBase
 {
 	private readonly ICreateNukiAccountAndRedirectToNukiInteractor _createRedirectToNukiInteractor;
-	private readonly InteractorAsync<NukiAccountPresentationRequest, NukiAccountPresentationResponse> _createAccountInteractor;
+	private readonly IUpdateNukiAccountWithToken _updateNukiAccountWithTokenAndUpdateAccount;
 
 	public NukiAuthenticationController(ICreateNukiAccountAndRedirectToNukiInteractor createRedirectToNukiInteractor,
-		ICreateNukiAccountInteractor createAccountInteractor)
+		IUpdateNukiAccountWithToken updateNukiAccountWithTokenAndUpdateAccount)
 	{
 		_createRedirectToNukiInteractor = createRedirectToNukiInteractor;
-		_createAccountInteractor = createAccountInteractor;
+		_updateNukiAccountWithTokenAndUpdateAccount = updateNukiAccountWithTokenAndUpdateAccount;
 	}
 	
 	/// <summary>
@@ -45,10 +45,11 @@ public class NukiAuthenticationController: ControllerBase
 	/// clientId must be specified in redirect url inserted in Nuki Web Api by the user
 	/// <param name="code"></param>
 	/// <returns></returns>
+	[AllowAnonymous]
 	[HttpGet("token/{clientId}")]
-	public async Task<ActionResult<NukiAccountPresentationResponse>> RetrieveTokenByCode(string clientId, string code)
+	public async Task<ActionResult<UpdateNukiAccountPresentationResponse>> RetrieveTokenAndUpdateNukiAccountByCode(string clientId, string code)
 	{
-		var interactorResponse = await _createAccountInteractor.Handle(new NukiAccountPresentationRequest
+		var interactorResponse = await _updateNukiAccountWithTokenAndUpdateAccount.Handle(new UpdateNukiAccountPresentationRequest
 		{
 			Code = code,
 			ClientId = clientId

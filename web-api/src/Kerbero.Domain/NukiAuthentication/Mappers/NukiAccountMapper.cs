@@ -20,9 +20,9 @@ public static class NukiAccountMapper
 			ExpiryDate =  DateTime.Now.ToUniversalTime().AddSeconds(nukiAccountExternalResponse.TokenExpiresIn)
 		};
 	}
-	public static NukiAccountPresentationResponse MapToPresentation(NukiAccount nukiAccount)
+	public static UpdateNukiAccountPresentationResponse MapToPresentation(NukiAccount nukiAccount)
 	{
-		return new NukiAccountPresentationResponse
+		return new UpdateNukiAccountPresentationResponse
 		{
 			Id = nukiAccount.Id,
 			ClientId = nukiAccount.ClientId

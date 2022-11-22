@@ -28,19 +28,13 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 	}
 
 	[Fact]
-	public async Task Program_RedirectForCode_Success_Test()
+	public async Task Program_CreateAccountRedirectRetrieveTokenAndUpdate_Success()
 	{
 		var client = await _application.GetLoggedClient();
 
 		var clientId = "CLIENT_ID";
-		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
-		var redirect = await client.GetAsync($"api/nuki/auth/start?clientId=1");
+		var redirect = await client.GetAsync($"api/nuki/auth/start?clientId={clientId}");
 		redirect.StatusCode.Should().Be(HttpStatusCode.Found);
-	}
-
-	[Fact]
-	public async Task Program_RetrieveToken_Success_Test()
-	{
 		//Arrange
 		_httpTest.RespondWithJson(new
 		{
@@ -50,16 +44,15 @@ public class NukiAuthenticationIntegrationTest: IDisposable
 			refresh_token = "REFRESH_TOKEN"
 		}); 
 		
-		var client = await _application.GetLoggedClient();
+		var nukiSideClient = _application.CreateClient();
 
-		var clientId = "CLIENT_ID";
-		if (clientId == null) Assert.True(false, "Test cannot find client id value from settings");
 		var response =
-			await client.GetAsync(
+			await nukiSideClient.GetAsync(
 				$"api/nuki/auth/token/{clientId}?code=eVHvIIXYhytBRA145Bs6GrPXYI4OMPSdN8lS7VeapV4.9EuR0U43Bu" 
 					+ $"avL4YAszKxEbGJF1L-OKMLarNwDA8IflU");
 		_httpTest.ShouldHaveMadeACall();
-		var presentationDto = await response.Content.ReadFromJsonAsync<NukiAccountPresentationResponse>();
+		response.IsSuccessStatusCode.Should().BeTrue();
+		var presentationDto = await response.Content.ReadFromJsonAsync<UpdateNukiAccountPresentationResponse>();
 		presentationDto.Should().NotBeNull();
 		presentationDto?.ClientId.Should().Be(clientId);
 	}

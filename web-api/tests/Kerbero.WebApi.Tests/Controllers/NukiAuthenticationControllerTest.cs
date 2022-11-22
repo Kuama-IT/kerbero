@@ -14,12 +14,12 @@ namespace Kerbero.WebApi.Tests.Controllers;
 public class NukiAuthenticationControllerTest
 {
 	private readonly NukiAuthenticationController _controller;
-	private readonly Mock<ICreateNukiAccountInteractor> _interactorToken;
+	private readonly Mock<IUpdateNukiAccountWithToken> _interactorToken;
 	private readonly Mock<ICreateNukiAccountAndRedirectToNukiInteractor> _interactorCode;
 
 	public NukiAuthenticationControllerTest()
 	{
-		_interactorToken = new Mock<ICreateNukiAccountInteractor>();
+		_interactorToken = new Mock<IUpdateNukiAccountWithToken>();
 		_interactorCode = new Mock<ICreateNukiAccountAndRedirectToNukiInteractor>();
 		_controller = new NukiAuthenticationController(_interactorCode.Object, _interactorToken.Object);
 	}
@@ -63,21 +63,21 @@ public class NukiAuthenticationControllerTest
 	public async Task RetrieveToken_Success_Test()
 	{
 		// Arrange
-		var shouldResponseDto = new NukiAccountPresentationResponse
+		var shouldResponseDto = new UpdateNukiAccountPresentationResponse
 		{
 			Id = 1,
 			ClientId = "VALID_CLIENT_ID"
 		};
-		_interactorToken.Setup(c => c.Handle(It.IsAny<NukiAccountPresentationRequest>()))
+		_interactorToken.Setup(c => c.Handle(It.IsAny<UpdateNukiAccountPresentationRequest>()))
 			.Returns(async () => await Task.FromResult(Result.Ok(shouldResponseDto)));
 
 		// Act
-		var result = await _controller.RetrieveTokenByCode("VALID_CLIENT_ID", "VALID_CODE");
+		var result = await _controller.RetrieveTokenAndUpdateNukiAccountByCode("VALID_CLIENT_ID", "VALID_CODE");
 		var response = result.Result as ObjectResult;
 		// Assert
 		_interactorToken.Verify(c => 
-			c.Handle(It.Is<NukiAccountPresentationRequest>( p => p.Code!.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
-		response?.Value.Should().BeOfType<NukiAccountPresentationResponse>();
+			c.Handle(It.Is<UpdateNukiAccountPresentationRequest>( p => p.Code!.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
+		response?.Value.Should().BeOfType<UpdateNukiAccountPresentationResponse>();
 		response?.Value.Should().BeEquivalentTo(shouldResponseDto);
 	}
 	
@@ -99,13 +99,13 @@ public class NukiAuthenticationControllerTest
 	public async Task RetrieveToken_KerberoError_Test(KerberoError error)
 	{
 		// Arrange
-		_interactorToken.Setup(c => c.Handle(It.IsAny<NukiAccountPresentationRequest>()))
+		_interactorToken.Setup(c => c.Handle(It.IsAny<UpdateNukiAccountPresentationRequest>()))
 			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 		
 		// Act
 	
 		// Assert
-		var action = (await _controller.RetrieveTokenByCode("VALID_CLIENT_ID", "VALID_CODE")).Result as ObjectResult;
+		var action = (await _controller.RetrieveTokenAndUpdateNukiAccountByCode("VALID_CLIENT_ID", "VALID_CODE")).Result as ObjectResult;
 		action?.Value.Should().NotBeNull().And.BeEquivalentTo(error);
 		switch (error)
 		{

@@ -5,7 +5,7 @@ using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 
 namespace Kerbero.Domain.NukiAuthentication.Interfaces;
 
-public interface ICreateNukiAccountInteractor: InteractorAsync<NukiAccountPresentationRequest, NukiAccountPresentationResponse>
+public interface IUpdateNukiAccountWithToken: InteractorAsync<UpdateNukiAccountPresentationRequest, UpdateNukiAccountPresentationResponse>
 {
     
 }

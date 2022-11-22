@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Interactors;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 using Kerbero.Domain.NukiAuthentication.Models.ExternalResponses;
@@ -12,17 +13,17 @@ using Moq;
 
 namespace Kerbero.Domain.Tests.NukiAuthentication.Interactors;
 
-public class CreateNukiAccountInteractorTests
+public class UpdateNukiAccountWithTokenTests
 {
 	private readonly Mock<INukiAccountPersistentRepository> _repository;
-	private readonly CreateNukiAccountInteractor _interactor;
+	private readonly UpdateNukiAccountWithToken _interactor;
 	private readonly Mock<INukiAccountExternalRepository> _nukiClient;
 
-	public CreateNukiAccountInteractorTests()
+	public UpdateNukiAccountWithTokenTests()
 	{
 		_nukiClient = new Mock<INukiAccountExternalRepository>();
 		_repository = new Mock<INukiAccountPersistentRepository>();
-		_interactor = new CreateNukiAccountInteractor(_repository.Object, _nukiClient.Object);
+		_interactor = new UpdateNukiAccountWithToken(_repository.Object, _nukiClient.Object);
 	}
 
 	// Handle should create an entity from an input DTO and upload it into the DB.
@@ -50,11 +51,11 @@ public class CreateNukiAccountInteractorTests
 			It.IsAny<NukiAccountExternalRequest>()))
 			.Returns(() => Task.FromResult(Result.Ok(nukiAccountDto)));
 		_repository.Setup(c => 
-			c.Create(It.IsAny<NukiAccount>())).Returns(
+			c.Update(It.IsAny<NukiAccount>())).Returns(
 			async () => { nukiAccountEntity.Id = 1; return await Task.FromResult(Result.Ok(nukiAccountEntity)); });
 		
 		// Act
-		var nukiAccountPresentationDto = await _interactor.Handle(new NukiAccountPresentationRequest
+		var nukiAccountPresentationDto = await _interactor.Handle(new UpdateNukiAccountPresentationRequest
 			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE"});
 		
 		// Assert
@@ -63,14 +64,14 @@ public class CreateNukiAccountInteractorTests
 				s.ClientId.Contains("VALID_CLIENT_ID") &&
 				s.Code!.Contains("VALID_CODE"))));
 		_repository.Verify(c => c
-			.Create(It.Is<NukiAccount>(account => 
+			.Update(It.Is<NukiAccount>(account => 
 				account.Token == nukiAccountEntity.Token &&
 				account.RefreshToken == nukiAccountEntity.RefreshToken &&
 				account.TokenExpiringTimeInSeconds == nukiAccountEntity.TokenExpiringTimeInSeconds &&
 				account.TokenType == nukiAccountEntity.TokenType &&
 				account.ClientId == nukiAccountEntity.ClientId)));
-		nukiAccountPresentationDto.Should().BeOfType<Result<NukiAccountPresentationResponse>>();
-		nukiAccountPresentationDto.Value.Should().BeEquivalentTo(new NukiAccountPresentationResponse
+		nukiAccountPresentationDto.Should().BeOfType<Result<UpdateNukiAccountPresentationResponse>>();
+		nukiAccountPresentationDto.Value.Should().BeEquivalentTo(new UpdateNukiAccountPresentationResponse
 		{
 			Id = 1,
 			ClientId = "VALID_CLIENT_ID"
@@ -88,7 +89,7 @@ public class CreateNukiAccountInteractorTests
 			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 
 		// Act 
-		var ex = await _interactor.Handle(new NukiAccountPresentationRequest
+		var ex = await _interactor.Handle(new UpdateNukiAccountPresentationRequest
 			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE" });
 		// Assert
 		ex.IsFailed.Should().BeTrue();
@@ -120,11 +121,11 @@ public class CreateNukiAccountInteractorTests
 		_nukiClient.Setup(c => c.GetNukiAccount(
 				It.IsAny<NukiAccountExternalRequest>()))
 			.Returns(async () => await Task.FromResult(Result.Ok(nukiAccountDto)));
-		_repository.Setup(c => c.Create(It.IsAny<NukiAccount>()))
+		_repository.Setup(c => c.Update(It.IsAny<NukiAccount>()))
 			.Returns(async () => await Task.FromResult(Result.Fail(error)));
 
 		// Act 
-		var ex = await _interactor.Handle(new NukiAccountPresentationRequest
+		var ex = await _interactor.Handle(new UpdateNukiAccountPresentationRequest
 			{ ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE" });
 		// Assert
 		ex.IsFailed.Should().BeTrue();
@@ -133,6 +134,7 @@ public class CreateNukiAccountInteractorTests
 	public static IEnumerable<object[]> PersistentErrorToTest =>
 		new List<object[]>
 		{
+			new object[] { new NukiAccountNotFoundError()},
 			new object[] { new DuplicateEntryError("Nuki account")},
 			new object[] { new PersistentResourceNotAvailableError()}
 		};

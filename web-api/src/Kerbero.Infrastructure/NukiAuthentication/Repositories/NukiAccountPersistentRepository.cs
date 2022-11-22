@@ -76,14 +76,51 @@ public class NukiAccountPersistentRepository: INukiAccountPersistentRepository
 		}
 	}
 
+	private async Task<Result<NukiAccount>> GetByExternalClientId(string externalClientId)
+	{
+		try
+		{
+			var res = await _dbContext.NukiAccounts.SingleOrDefaultAsync(nukiAccount =>
+				nukiAccount.ClientId == externalClientId);
+			return res is null ? Result.Fail(new NukiAccountNotFoundError()) : Result.Ok(res);
+		}
+		catch (NotSupportedException exception)
+		{
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
+			return Result.Fail(new PersistentResourceNotAvailableError());
+		}
+		catch(InvalidOperationException exception)
+		{
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
+			return Result.Fail(new UnauthorizedAccessError());
+		}
+		catch(Exception exception)
+		{
+			_logger.LogError(exception, "Error while adding a NukiAccount to the database");
+			return Result.Fail(new KerberoError());
+		}
+	}
+
 	public async Task<Result<NukiAccount>> Update(NukiAccount nukiAccount)
 	{
 		try
 		{
-			var res = await GetById(nukiAccount.Id);
+			Result<NukiAccount> res;
+			if (nukiAccount.Id != 0)
+			{
+				res = await GetById(nukiAccount.Id);
+			}
+			else if(!string.IsNullOrWhiteSpace(nukiAccount.ClientId))
+			{
+				res = await GetByExternalClientId(nukiAccount.ClientId);
+			}
+			else
+			{
+				return Result.Fail(new InvalidParametersError(nameof(nukiAccount.ClientId)));
+			}
 			if (res.IsFailed)
 			{
-				return Result.Fail(new UnauthorizedAccessError());
+				return res.ToResult();
 			}
 
 			var account = res.Value;

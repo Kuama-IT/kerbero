@@ -1,6 +1,6 @@
 namespace Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 
-public class NukiAccountPresentationRequest
+public class UpdateNukiAccountPresentationRequest
 {
     public string ClientId { get; init; } = null!;
 	

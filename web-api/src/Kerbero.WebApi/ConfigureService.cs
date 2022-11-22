@@ -11,7 +11,7 @@ public static
 	public static IServiceCollection AddWebApiServices(this IServiceCollection services)
 	{
 		services.AddScoped<ICreateNukiAccountAndRedirectToNukiInteractor, CreateNukiAccountAndRedirectToNukiInteractor>();
-		services.AddScoped<ICreateNukiAccountInteractor, CreateNukiAccountInteractor>();
+		services.AddScoped<IUpdateNukiAccountWithToken, UpdateNukiAccountWithToken>();
 		services.AddScoped<IAuthenticateNukiAccountInteractor, AuthenticateNukiAccountInteractor>();
 		services.AddScoped<IGetNukiSmartLocksInteractor, GetNukiSmartLocksInteractor>();
 		services.AddScoped<ICloseNukiSmartLockInteractor, CloseNukiSmartLockInteractor>();

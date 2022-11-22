@@ -111,7 +111,7 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 	private async Task<Result<NukiAccountExternalResponse>> AuthRequest(string clientId, object postBody)
 	{
 		var response = await _nukiSafeHttpCallHelper.Handle(
-			async () => await _configuration["ALIAS_DOMAIN"]
+			async () => await _configuration["NUKI_DOMAIN"]
 					.AppendPathSegment("oauth")
 					.AppendPathSegment("token")
 					.PostUrlEncodedAsync(postBody)
