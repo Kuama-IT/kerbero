@@ -1,6 +1,7 @@
 using System.Reflection;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiAuthentication.Entities;
+using Kerbero.Domain.SmartLockKeys.Entities;
 using Kerbero.Identity.Common;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ public class ApplicationDbContext: KerberoIdentityDbContext, IApplicationDbConte
 	public DbSet<NukiSmartLock> NukiSmartLocks => Set<NukiSmartLock>();
 	
 	public DbSet<NukiSmartLockState> NukiSmartLockStates => Set<NukiSmartLockState>();
+
+	public DbSet<SmartLockKey> SmartLockKeys => Set<SmartLockKey>();
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
