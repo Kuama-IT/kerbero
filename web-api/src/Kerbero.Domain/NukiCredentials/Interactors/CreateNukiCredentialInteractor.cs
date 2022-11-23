@@ -5,7 +5,6 @@ using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
-using Kerbero.Domain.SmartLocks.Repositories;
 
 namespace Kerbero.Domain.NukiCredentials.Interactors;
 

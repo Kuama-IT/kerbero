@@ -34,6 +34,7 @@ public static class ModelStateDictionaryExtension
       case SmartLockNotReachableError:
         return HttpStatusCode.BadGateway;
       case UnauthorizedAccessError:
+      case NukiCredentialNotFoundError:
         return HttpStatusCode.Unauthorized;
       case InvalidParametersError:
       case DuplicateEntryError:

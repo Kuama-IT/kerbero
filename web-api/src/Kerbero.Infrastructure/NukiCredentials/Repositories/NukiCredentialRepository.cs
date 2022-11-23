@@ -9,7 +9,6 @@ using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.Infrastructure.NukiCredentials.Entities;
 using Kerbero.Infrastructure.NukiCredentials.Mappers;
-using Kerbero.Infrastructure.SmartLocks.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

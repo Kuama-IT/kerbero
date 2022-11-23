@@ -1,6 +1,6 @@
-namespace Kerbero.Domain.SmartLockKeys.Models.PresentationResponses;
+namespace Kerbero.Domain.SmartLockKeys.Dtos;
 
-public record CreateSmartLockKeyPresentationResponse
+public record SmartLockKeyDto
 {
 	public Guid Id { get; set; }
 	public DateTime CreationDate { get; set; }

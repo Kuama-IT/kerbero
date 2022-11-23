@@ -6,8 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Kerbero.Infrastructure.Migrations
 {
+    /// <inheritdoc />
     public partial class Init : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -67,23 +69,21 @@ namespace Kerbero.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NukiSmartLockStates",
+                name: "SmartLockKeys",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Mode = table.Column<int>(type: "integer", nullable: false),
-                    State = table.Column<int>(type: "integer", nullable: false),
-                    LastAction = table.Column<int>(type: "integer", nullable: false),
-                    BatteryCritical = table.Column<bool>(type: "boolean", nullable: false),
-                    BatteryCharging = table.Column<bool>(type: "boolean", nullable: false),
-                    BatteryCharge = table.Column<int>(type: "integer", nullable: false),
-                    DoorState = table.Column<int>(type: "integer", nullable: false),
-                    OperationId = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    UsageCounter = table.Column<int>(type: "integer", nullable: false),
+                    SmartLockId = table.Column<string>(type: "text", nullable: false),
+                    CredentialId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NukiSmartLockStates", x => x.Id);
+                    table.PrimaryKey("PK_SmartLockKeys", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,30 +218,6 @@ namespace Kerbero.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "NukiSmartLocks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ExternalSmartLockId = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    AuthId = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Favourite = table.Column<bool>(type: "boolean", nullable: false),
-                    NukiAccountId = table.Column<int>(type: "integer", nullable: false),
-                    StateId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NukiSmartLocks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_NukiSmartLocks_NukiSmartLockStates_StateId",
-                        column: x => x.StateId,
-                        principalTable: "NukiSmartLockStates",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -280,11 +256,6 @@ namespace Kerbero.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NukiSmartLocks_StateId",
-                table: "NukiSmartLocks",
-                column: "StateId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserNukiCredentials_NukiCredentialId",
                 table: "UserNukiCredentials",
                 column: "NukiCredentialId");
@@ -296,6 +267,7 @@ namespace Kerbero.Infrastructure.Migrations
                 unique: true);
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -314,16 +286,13 @@ namespace Kerbero.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "NukiSmartLocks");
+                name: "SmartLockKeys");
 
             migrationBuilder.DropTable(
                 name: "UserNukiCredentials");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "NukiSmartLockStates");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

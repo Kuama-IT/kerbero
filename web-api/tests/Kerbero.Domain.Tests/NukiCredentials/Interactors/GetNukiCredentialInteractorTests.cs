@@ -6,7 +6,7 @@ using Kerbero.Domain.NukiCredentials.Interactors;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.NukiAuthentication.Interactors;
+namespace Kerbero.Domain.Tests.NukiCredentials.Interactors;
 
 public class GetNukiCredentialInteractorTests
 {

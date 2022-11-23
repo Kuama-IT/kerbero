@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Kerbero.Infrastructure.SmartLocks.Models;
 
 /// <summary>

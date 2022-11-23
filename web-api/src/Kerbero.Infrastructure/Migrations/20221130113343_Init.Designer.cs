@@ -12,90 +12,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kerbero.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221129111418_Init")]
+    [Migration("20221130113343_Init")]
     partial class Init
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "7.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Kerbero.Domain.NukiActions.Entities.NukiSmartLockEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ExternalSmartLockId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Favourite")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("NukiAccountId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("StateId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StateId");
-
-                    b.ToTable("NukiSmartLocks");
-                });
-
-            modelBuilder.Entity("Kerbero.Domain.NukiActions.Entities.NukiSmartLockStateEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BatteryCharge")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("BatteryCharging")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("BatteryCritical")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("DoorState")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LastAction")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Mode")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("OperationId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("State")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NukiSmartLockStates");
-                });
 
             modelBuilder.Entity("Kerbero.Identity.Modules.Roles.Entities.Role", b =>
                 {
@@ -195,7 +123,7 @@ namespace Kerbero.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", b =>
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiCredentials.Entities.NukiCredentialEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +146,7 @@ namespace Kerbero.Infrastructure.Migrations
                     b.ToTable("NukiCredentials");
                 });
 
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.UserNukiCredentialEntity", b =>
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiCredentials.Entities.UserNukiCredentialEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -240,6 +168,40 @@ namespace Kerbero.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("UserNukiCredentials");
+                });
+
+            modelBuilder.Entity("Kerbero.Infrastructure.SmartLockKeys.Entities.SmartLockKeyEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CredentialId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SmartLockId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UsageCounter")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SmartLockKeys");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -345,18 +307,9 @@ namespace Kerbero.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Kerbero.Domain.NukiActions.Entities.NukiSmartLockEntity", b =>
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiCredentials.Entities.UserNukiCredentialEntity", b =>
                 {
-                    b.HasOne("Kerbero.Domain.NukiActions.Entities.NukiSmartLockStateEntity", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId");
-
-                    b.Navigation("State");
-                });
-
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.UserNukiCredentialEntity", b =>
-                {
-                    b.HasOne("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", "NukiCredential")
+                    b.HasOne("Kerbero.Infrastructure.NukiCredentials.Entities.NukiCredentialEntity", "NukiCredential")
                         .WithMany()
                         .HasForeignKey("NukiCredentialId")
                         .OnDelete(DeleteBehavior.Cascade)

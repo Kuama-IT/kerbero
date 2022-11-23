@@ -1,5 +1,7 @@
 using Kerbero.Domain.NukiCredentials.Interactors;
 using Kerbero.Domain.NukiCredentials.Interfaces;
+using Kerbero.Domain.SmartLockKeys.Interactors;
+using Kerbero.Domain.SmartLockKeys.Interfaces;
 using Kerbero.Domain.SmartLocks.Interactors;
 using Kerbero.Domain.SmartLocks.Interfaces;
 
@@ -15,5 +17,6 @@ public static
     services.AddScoped<IGetNukiCredentialsByUserInteractor, GetNukiCredentialsByUserInteractor>();
     services.AddScoped<IGetSmartLocksInteractor, GetSmartLocksInteractor>();
     services.AddScoped<IOpenSmartLockInteractor, OpenSmartLockInteractor>();
+    services.AddScoped<ICreateSmartLockKeyInteractor, CreateSmartLockKeyInteractor>();
   }
 }
