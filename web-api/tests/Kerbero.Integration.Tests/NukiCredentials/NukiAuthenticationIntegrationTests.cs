@@ -24,7 +24,7 @@ public class NukiCredentialsIntegrationTests
     var httpTest = new HttpTest();
     httpTest.RespondWith("everything is good");
 
-    var (client, user) = await _application.CreateUserAndAuthenticateClient();
+    var (client, _) = await _application.CreateUserAndAuthenticateClient();
 
     var tExpectedDto = new NukiCredentialDto
     {
@@ -34,7 +34,7 @@ public class NukiCredentialsIntegrationTests
 
     var response =
       await client.PostAsJsonAsync(
-        "/api/nuki-credentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
+        "/api/nuki-credentials/", new CreateNukiCredentialRequest() { Token = "VALID_TOKEN" });
     response.StatusCode.Should().Be(HttpStatusCode.OK);
     var readNukiCredentialDto = await response.Content.ReadFromJsonAsync<NukiCredentialDto>();
     readNukiCredentialDto.Should().NotBeNull();
@@ -47,17 +47,11 @@ public class NukiCredentialsIntegrationTests
     var httpTest = new HttpTest();
     httpTest.RespondWith("everything is bad", 500);
 
-    var (client, user) = await _application.CreateUserAndAuthenticateClient();
-
-    var tExpectedDto = new NukiCredentialDto
-    {
-      Id = 1,
-      Token = "VALID_TOKEN"
-    };
+    var (client, _) = await _application.CreateUserAndAuthenticateClient();
 
     var response =
       await client.PostAsJsonAsync(
-        "/api/nuki-credentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
+        "/api/nuki-credentials/", new CreateNukiCredentialRequest() { Token = "VALID_TOKEN" });
     response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
   }
 }

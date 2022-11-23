@@ -1,5 +1,6 @@
 using DotNetEnv;
 using System.Net.Http.Json;
+using FluentResults;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;

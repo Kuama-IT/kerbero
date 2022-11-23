@@ -1,13 +1,13 @@
-using Kerbero.Domain.SmartLockKeys.Entities;
-using Kerbero.Domain.SmartLockKeys.Models.PresentationResponses;
+using Kerbero.Domain.SmartLockKeys.Dtos;
+using Kerbero.Domain.SmartLockKeys.Models;
 
 namespace Kerbero.Domain.SmartLockKeys.Mappers;
 
 public static class SmartLockKeyMapper
 {
-	public static CreateSmartLockKeyPresentationResponse Map(SmartLockKey result)
+	public static SmartLockKeyDto Map(SmartLockKeyModel result)
 	{
-		return new CreateSmartLockKeyPresentationResponse()
+		return new SmartLockKeyDto()
 		{
 			Id = result.Id,
 			Token = result.Token,

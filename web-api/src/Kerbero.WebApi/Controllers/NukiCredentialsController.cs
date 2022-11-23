@@ -25,11 +25,11 @@ public class NukiCredentialsController : ControllerBase
   /// <summary>
   /// This endpoint is called from Nuki Apis with a valid OAuth2 code after the user grants US access to his Nuki Account
   /// </summary>
-  /// <param name="apiToken"></param>
+  /// <param name="request"></param>
   /// <returns></returns>
   [HttpPost]
   public async Task<ActionResult<NukiCredentialDto>> CreateNukiCredentialsWithToken(
-    [FromBody] CreateNukiSmartLockCredentialRequest request)
+    [FromBody] CreateNukiCredentialRequest request)
   {
     var interactorResponse = await _createNukiCredential.Handle(
       new CreateNukiCredentialParams

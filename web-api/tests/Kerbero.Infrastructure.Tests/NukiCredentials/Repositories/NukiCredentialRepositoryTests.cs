@@ -1,12 +1,10 @@
 using FluentAssertions;
 using FluentResults;
-using Flurl.Http.Testing;
 using Kerbero.Domain.NukiCredentials.Errors;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.NukiCredentials.Entities;
-using Kerbero.Infrastructure.NukiCredentials.Mappers;
 using Kerbero.Infrastructure.NukiCredentials.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
