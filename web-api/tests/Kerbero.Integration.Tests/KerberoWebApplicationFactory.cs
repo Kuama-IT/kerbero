@@ -1,5 +1,6 @@
 using DotNetEnv;
 using System.Net.Http.Json;
+using FluentResults;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Entities;
@@ -9,6 +10,7 @@ using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
 using Kerbero.Infrastructure.Common.Context;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,8 @@ public class KerberoWebApplicationFactory<TStartup>
 		.Build();
 
 	private readonly SqliteConnection _connection;
+	
+	public Guid TestUserId { get; set; }
 
 	public KerberoWebApplicationFactory()
 	{
@@ -65,7 +69,8 @@ public class KerberoWebApplicationFactory<TStartup>
 		ClientOptions.BaseAddress = new Uri("https://localhost");
 		var client = CreateClient();
 
-		await CreateUser(IntegrationTestsUtils.GetSeedingUser());
+		var user = await CreateUser(IntegrationTestsUtils.GetSeedingUser());
+		TestUserId = Guid.Parse(user);
 
 		await client.PostAsJsonAsync("api/authentication/login", new LoginDto
 		{
@@ -79,6 +84,7 @@ public class KerberoWebApplicationFactory<TStartup>
 	{
 		using var scope = Services.CreateScope();
 		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiAccountPersistentRepository>();
+		account.UserId = TestUserId;
 		await accountPersistentRepository.Create(account);
 	}
 
@@ -89,10 +95,11 @@ public class KerberoWebApplicationFactory<TStartup>
 		await accountPersistentRepository.Create(smartLock);
 	}
 
-	private async Task CreateUser(User user)
+	private async Task<string> CreateUser(User user)
 	{
 		using var scope = Services.CreateScope();
 		var userManager = scope.ServiceProvider.GetRequiredService<IUserManager>();
 		await userManager.Create(user, "Test.0");
+		return await userManager.GetUserIdAsync(user);
 	}
 }

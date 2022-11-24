@@ -1,4 +1,6 @@
 using System.Net;
+using System.Security.Claims;
+using System.Security.Principal;
 using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
@@ -6,6 +8,7 @@ using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 using Kerbero.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -16,12 +19,30 @@ public class NukiAuthenticationControllerTest
 	private readonly NukiAuthenticationController _controller;
 	private readonly Mock<IUpdateNukiAccountWithToken> _interactorToken;
 	private readonly Mock<ICreateNukiAccountAndRedirectToNukiInteractor> _interactorCode;
+	private readonly Guid _userId;
 
 	public NukiAuthenticationControllerTest()
 	{
 		_interactorToken = new Mock<IUpdateNukiAccountWithToken>();
 		_interactorCode = new Mock<ICreateNukiAccountAndRedirectToNukiInteractor>();
-		_controller = new NukiAuthenticationController(_interactorCode.Object, _interactorToken.Object);
+		_userId = Guid.NewGuid();
+		
+		IIdentity identity = new ClaimsIdentity(new Claim[] { new (ClaimTypes.NameIdentifier, _userId.ToString())});
+		var contextUser = new ClaimsPrincipal(identity); //add claims as needed
+
+		var httpContext = new DefaultHttpContext() {
+			User = contextUser
+		};
+
+		//Controller needs a controller context to access HttpContext
+		var controllerContext = new ControllerContext() {
+			HttpContext = httpContext,
+		};
+		
+		_controller = new NukiAuthenticationController(_interactorCode.Object, _interactorToken.Object)
+			{
+				ControllerContext = controllerContext
+			};
 	}
 	
 	[Fact]
@@ -34,12 +55,14 @@ public class NukiAuthenticationControllerTest
 			                           "&redirect_uri=https://test.com/nuki/code/v7kn_NX7vQ7VjQdXFGK43g" + 
 			                           "&scope=account notification smartlock smartlock.readOnly smartlock.action" +
 			                           " smartlock.auth smartlock.config smartlock.log"))));
-		
+
 		// Act
 		var redirect = await _controller.CreateNukiAccountAndRedirectByClientId("VALID_CLIENT_ID");
 
 		// Assert
-		_interactorCode.Verify(c => c.Handle(It.Is<CreateNukiAccountRedirectPresentationRequest>(s => s.ClientId.Contains("VALID_CLIENT_ID"))));
+		_interactorCode.Verify(c =>
+			c.Handle(It.Is<CreateNukiAccountRedirectPresentationRequest>(s =>
+				s.ClientId == "VALID_CLIENT_ID" && s.UserId == _userId)));
 		redirect.Should().BeOfType<RedirectResult>();
 	}
 	
@@ -51,9 +74,10 @@ public class NukiAuthenticationControllerTest
 			.ReturnsAsync(Result.Fail(new InvalidParametersError("client_id")));
 		
 		// Act
+		var res = await _controller.CreateNukiAccountAndRedirectByClientId("VALID_CLIENT_ID");
 	
 		// Assert
-		var ex = (await _controller.CreateNukiAccountAndRedirectByClientId("VALID_CLIENT_ID")) as ObjectResult;
+		var ex = res as ObjectResult;
 		ex.Should().NotBeNull();
 		ex?.StatusCode.Should().Be(400);
 		ex?.Value.Should().BeOfType<InvalidParametersError>();

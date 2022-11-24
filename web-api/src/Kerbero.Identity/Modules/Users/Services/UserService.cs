@@ -109,7 +109,7 @@ public class UserService : IUserService
     {
       Host = serviceDomain.Host,
       Scheme = "https",
-      Path = "/api/users/confirm",
+      Path = "/api/users/confirm-email",
       Query = $"userId={userId}&code={code}" 
     };
     

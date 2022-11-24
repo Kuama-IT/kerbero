@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Models.PresentationRequests;
@@ -30,7 +31,18 @@ public class NukiAuthenticationController: ControllerBase
 	[HttpGet("start")]
 	public async Task<ActionResult> CreateNukiAccountAndRedirectByClientId([FromQuery] string clientId)
 	{
-		var interactorResponse = await _createRedirectToNukiInteractor.Handle(new CreateNukiAccountRedirectPresentationRequest(clientId));
+		// Get UserId from Context
+		var nameIdentifierClaim = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+		if (nameIdentifierClaim is null)
+		{
+			return new BadRequestResult();
+		}
+
+		var userId = Guid.Parse(nameIdentifierClaim.Value);
+		
+		var interactorResponse =
+			await _createRedirectToNukiInteractor.Handle(
+				new CreateNukiAccountRedirectPresentationRequest(clientId, userId));
 		if (interactorResponse.IsSuccess)
 			return Redirect(interactorResponse.Value.RedirectUri.ToString());
 		

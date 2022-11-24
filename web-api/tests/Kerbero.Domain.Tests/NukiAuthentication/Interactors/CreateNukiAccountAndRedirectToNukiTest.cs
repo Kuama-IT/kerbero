@@ -53,7 +53,7 @@ public class CreateNukiAccountAndRedirectToNukiTest
 		// Act
 		var redirectUri = await 
 			_createNukiAccountAndRedirectToNukiInteractor.Handle(
-				new CreateNukiAccountRedirectPresentationRequest(clientId));
+				new CreateNukiAccountRedirectPresentationRequest(clientId, Guid.NewGuid()));
 
 		// Assert
 		_nukiPersistentRepository.Verify(c =>
@@ -79,7 +79,7 @@ public class CreateNukiAccountAndRedirectToNukiTest
 			.ReturnsAsync(Result.Fail(error));
 		
 		var result = await _createNukiAccountAndRedirectToNukiInteractor.Handle( 
-			new CreateNukiAccountRedirectPresentationRequest(clientId));
+			new CreateNukiAccountRedirectPresentationRequest(clientId, Guid.NewGuid()));
 
 		result.IsFailed.Should().BeTrue();
 		result.Errors.Single(e => e.Equals(error)).Should().NotBeNull().And.BeEquivalentTo(error);

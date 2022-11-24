@@ -61,8 +61,9 @@ public class NukiOpenSmartLockIntegrationTests: IDisposable
     public async Task OpenSmartLock_WrongSmartLockId_Test()
     {
         // Arrange
-        await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
         var client = await _application.GetLoggedClient();
+
+        await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
         
         // Act
         var response = await client.PutAsJsonAsync("api/smartlocks/unlock",

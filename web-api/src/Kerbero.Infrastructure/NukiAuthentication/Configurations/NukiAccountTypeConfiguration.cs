@@ -1,12 +1,12 @@
 using Kerbero.Domain.NukiAuthentication.Entities;
-using Microsoft.EntityFrameworkCore;
+using Kerbero.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Kerbero.Infrastructure.NukiAuthentication.Configurations;
 
-public class NukiAccountTypeConfiguration: IEntityTypeConfiguration<NukiAccount>
+public class NukiAccountTypeConfiguration: KerberoIdentityTypeConfiguration<NukiAccount>
 {
-	public void Configure(EntityTypeBuilder<NukiAccount> builder)
+	public new void Configure(EntityTypeBuilder<NukiAccount> builder)
 	{
 		builder
 			.HasIndex(a => a.ClientId)

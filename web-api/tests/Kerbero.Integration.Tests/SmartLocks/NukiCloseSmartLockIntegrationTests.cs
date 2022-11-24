@@ -28,9 +28,10 @@ public class NukiCloseSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CloseNukiSmartLock_Success()
 	{
+		var client = await _application.GetLoggedClient();
+
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 		await _application.CreateNukiSmartLock(IntegrationTestsUtils.GetSeedingNukiSmartLock());
-		var client = await _application.GetLoggedClient();
 		
 		var response = await client.PutAsJsonAsync("api/smartlocks/lock", new CloseNukiSmartLockRequest(1, 1));
 

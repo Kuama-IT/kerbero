@@ -33,11 +33,11 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CreateNukiSmartLocks_Success_Test()
 	{
+		var client = await _application.GetLoggedClient();
+
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 
 		_httpTest.RespondWithJson(_nukiJsonSmartLockResponse);
-		
-		var client = await _application.GetLoggedClient();
 		
 		var response = await client.PostAsJsonAsync("api/smartlocks/import/nuki/", new CreateNukiSmartLockRequest(1 ,1));
 
@@ -56,6 +56,8 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 	[Fact]
 	public async Task CreateNukiSmartLocks_Error_Test()
 	{
+		var client = await _application.GetLoggedClient();
+
 		await _application.CreateNukiAccount(IntegrationTestsUtils.GetSeedingNukiAccount());
 
 		_httpTest.RespondWith(status: 401, body: JsonSerializer.Serialize(new 
@@ -63,7 +65,6 @@ public class NukiCreateSmartLockIntegrationTests: IDisposable
 			error_description = "Invalid client credentials.",
 			error = "invalid_client"
 		})); 
-		var client = await _application.GetLoggedClient();
 
 		// Act
 		var response = await client.PostAsJsonAsync("api/smartlocks/import/nuki/", new CreateNukiSmartLockRequest(1 ,1));

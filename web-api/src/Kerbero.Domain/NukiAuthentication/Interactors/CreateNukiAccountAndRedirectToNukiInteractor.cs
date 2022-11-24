@@ -24,7 +24,10 @@ public class CreateNukiAccountAndRedirectToNukiInteractor: ICreateNukiAccountAnd
 		CreateNukiAccountRedirectPresentationRequest createNukiAccountRedirectPresentationRequest)
 	{
 		var createResult = await _nukiAccountPersistentRepository.Create(new NukiAccount
-			{ ClientId = createNukiAccountRedirectPresentationRequest.ClientId });
+		{
+			ClientId = createNukiAccountRedirectPresentationRequest.ClientId,
+			UserId = createNukiAccountRedirectPresentationRequest.UserId
+		});
 		if(createResult.IsFailed)
 			 return createResult.ToResult();
 		var redirectResult = _nukiAccountExternalRepository.BuildUriForCode(
