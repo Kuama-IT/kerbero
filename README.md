@@ -11,7 +11,7 @@ More information can be found in the GitHub [wiki](https://github.com/Kuama-IT/k
 The projects depend on the following tools and languages:
 
 - dotnet cli
-- .NET 6.0+
+- .NET 7.0+
 - C#11
 - Vue3.0+
 - node and npm
