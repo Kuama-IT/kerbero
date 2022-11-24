@@ -13,13 +13,13 @@ namespace Kerbero.WebApi.Controllers;
 [Route("api/nuki/auth")]
 public class NukiAuthenticationController: ControllerBase
 {
-	private readonly Interactor<NukiRedirectPresentationRequest, NukiRedirectPresentationResponse> _provideRedirectUrlInteractor;
+	private readonly ICreateNukiAccountAndRedirectToNukiInteractor _createRedirectToNukiInteractor;
 	private readonly InteractorAsync<NukiAccountPresentationRequest, NukiAccountPresentationResponse> _createAccountInteractor;
 
-	public NukiAuthenticationController(IProvideNukiAuthRedirectUrlInteractor provideRedirectUrlInteractor,
+	public NukiAuthenticationController(ICreateNukiAccountAndRedirectToNukiInteractor createRedirectToNukiInteractor,
 		ICreateNukiAccountInteractor createAccountInteractor)
 	{
-		_provideRedirectUrlInteractor = provideRedirectUrlInteractor;
+		_createRedirectToNukiInteractor = createRedirectToNukiInteractor;
 		_createAccountInteractor = createAccountInteractor;
 	}
 	
@@ -28,9 +28,9 @@ public class NukiAuthenticationController: ControllerBase
 	/// </summary>
 	/// <param name="clientId"></param>
 	[HttpGet("start")]
-	public ActionResult RedirectByClientId([FromQuery] string clientId)
+	public async Task<ActionResult> CreateNukiAccountAndRedirectByClientId([FromQuery] string clientId)
 	{
-		var interactorResponse = _provideRedirectUrlInteractor.Handle(new NukiRedirectPresentationRequest(clientId));
+		var interactorResponse = await _createRedirectToNukiInteractor.Handle(new CreateNukiAccountRedirectPresentationRequest(clientId));
 		if (interactorResponse.IsSuccess)
 			return Redirect(interactorResponse.Value.RedirectUri.ToString());
 		

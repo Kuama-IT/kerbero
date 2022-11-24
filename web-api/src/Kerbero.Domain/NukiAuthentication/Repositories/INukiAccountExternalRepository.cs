@@ -8,7 +8,7 @@ namespace Kerbero.Domain.NukiAuthentication.Repositories;
 
 public interface INukiAccountExternalRepository
 {
-	public Result<NukiRedirectPresentationResponse> BuildUriForCode(NukiRedirectExternalRequest redirectExternalRequest);
+	public Result<NukiAccountBuildUriForCodeExternalResponse> BuildUriForCode(NukiAccountBuildUriForCodeExternalRequest accountBuildUriForCodeExternalRequest);
 
 	public Task<Result<NukiAccountExternalResponse>> GetNukiAccount(NukiAccountExternalRequest accountExternalRequest);
 	

@@ -27,22 +27,22 @@ public class NukiAccountExternalRepository: INukiAccountExternalRepository
 	/// <summary>
 	/// Builds a Uri where the user who wants to authenticate should be redirected
 	/// </summary>
-	/// <param name="redirectExternalRequest"></param>
+	/// <param name="accountBuildUriForCodeExternalRequest"></param>
 	/// <returns />
-	public Result<NukiRedirectPresentationResponse> BuildUriForCode(NukiRedirectExternalRequest redirectExternalRequest)
+	public Result<NukiAccountBuildUriForCodeExternalResponse> BuildUriForCode(NukiAccountBuildUriForCodeExternalRequest accountBuildUriForCodeExternalRequest)
 	{
-		if (string.IsNullOrEmpty(redirectExternalRequest.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
+		if (string.IsNullOrEmpty(accountBuildUriForCodeExternalRequest.ClientId)) return Result.Fail(new InvalidParametersError("client_id"));
 		try
 		{
 			var redirectUriClientId = _configuration["ALIAS_DOMAIN"]
 				.AppendPathSegment(_configuration["NUKI_REDIRECT_FOR_TOKEN"])
-				.AppendPathSegment(redirectExternalRequest.ClientId);
-			return Result.Ok(new NukiRedirectPresentationResponse(_configuration["NUKI_DOMAIN"]
+				.AppendPathSegment(accountBuildUriForCodeExternalRequest.ClientId);
+			return Result.Ok(new NukiAccountBuildUriForCodeExternalResponse(_configuration["NUKI_DOMAIN"]
 				.AppendPathSegments("oauth", "authorize")
 				.SetQueryParams(new
 				{
 					response_type = "code",
-					client_id = redirectExternalRequest.ClientId,
+					client_id = accountBuildUriForCodeExternalRequest.ClientId,
 					redirect_uri = redirectUriClientId.ToString(),
 					scope = _configuration["NUKI_SCOPES"]
 				})

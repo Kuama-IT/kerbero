@@ -5,7 +5,7 @@ using Kerbero.Domain.NukiAuthentication.Models.PresentationResponses;
 
 namespace Kerbero.Domain.NukiAuthentication.Interfaces;
 
-public interface IProvideNukiAuthRedirectUrlInteractor: Interactor<NukiRedirectPresentationRequest, NukiRedirectPresentationResponse>
+public interface ICreateNukiAccountAndRedirectToNukiInteractor: InteractorAsync<CreateNukiAccountRedirectPresentationRequest, CreateNukiAccountAndRedirectPresentationResponse>
 {
     
 }
