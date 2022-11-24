@@ -47,14 +47,14 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void BuildUriForCode_UriForRedirect_Success_Test()
 	{
 		// Act
-		var redirect = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest("v7kn_NX7vQ7VjQdXFGK43g"));
+		var redirect = _nukiAccountExternalRepository.BuildUriForCode(new NukiAccountBuildUriForCodeExternalRequest("v7kn_NX7vQ7VjQdXFGK43g"));
 
 		// Assert
 		var equalUri = new Uri("https://api.nuki.io/oauth/authorize?response_type=code" +
 		                       "&client_id=v7kn_NX7vQ7VjQdXFGK43g" +
 		                       "&redirect_uri=https%3A%2F%2Ftest.com%2Fnuki%2Fauth%2Ftoken%2Fv7kn_NX7vQ7VjQdXFGK43g" +
 		                       "&scope=account notification smartlock smartlock.readOnly smartlock.action smartlock.auth smartlock.config smartlock.log");
-		redirect.Should().BeOfType<Result<NukiRedirectPresentationResponse>>();
+		redirect.Should().BeOfType<Result<NukiAccountBuildUriForCodeExternalResponse>>();
 		redirect.Value.RedirectUri.Should().BeEquivalentTo(equalUri);
 	}
 	
@@ -62,7 +62,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 	public void BuildUriForCode_ButClientIdIsEmpty_Test()
 	{
 		// Act
-		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest(""));
+		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiAccountBuildUriForCodeExternalRequest(""));
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
 	}	
@@ -74,7 +74,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		_configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns<string>(null);
 
 		// Act
-		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest("INVALID_CLIENT_ID"));
+		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiAccountBuildUriForCodeExternalRequest("INVALID_CLIENT_ID"));
 		// Assert
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();
@@ -87,7 +87,7 @@ public class NukiAccountExternalRepositoryTests: IDisposable
 		// Arrange
 		_httpTest.SimulateException(new Exception());
 		// Act
-		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiRedirectExternalRequest(""));
+		var exCode = _nukiAccountExternalRepository.BuildUriForCode(new NukiAccountBuildUriForCodeExternalRequest(""));
 		// Assert
 		exCode.IsFailed.Should().BeTrue();
 		exCode.Errors.FirstOrDefault().Should().BeOfType<InvalidParametersError>();

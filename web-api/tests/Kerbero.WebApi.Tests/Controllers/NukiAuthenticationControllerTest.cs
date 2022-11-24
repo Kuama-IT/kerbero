@@ -15,49 +15,48 @@ public class NukiAuthenticationControllerTest
 {
 	private readonly NukiAuthenticationController _controller;
 	private readonly Mock<ICreateNukiAccountInteractor> _interactorToken;
-	private readonly Mock<IProvideNukiAuthRedirectUrlInteractor> _interactorCode;
+	private readonly Mock<ICreateNukiAccountAndRedirectToNukiInteractor> _interactorCode;
 
 	public NukiAuthenticationControllerTest()
 	{
 		_interactorToken = new Mock<ICreateNukiAccountInteractor>();
-		_interactorCode = new Mock<IProvideNukiAuthRedirectUrlInteractor>();
+		_interactorCode = new Mock<ICreateNukiAccountAndRedirectToNukiInteractor>();
 		_controller = new NukiAuthenticationController(_interactorCode.Object, _interactorToken.Object);
 	}
 	
 	[Fact]
-	public void RedirectForCode_AndRedirect_Test()
+	public async Task CreateNukiAccountAndRedirectByClientId_Success()
 	{
 		// Arrange
-		_interactorCode.Setup(c => c.Handle(It.IsAny<NukiRedirectPresentationRequest>()))
-			.Returns(Result.Ok(new NukiRedirectPresentationResponse(new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
+		_interactorCode.Setup(c => c.Handle(It.IsAny<CreateNukiAccountRedirectPresentationRequest>()))
+			.ReturnsAsync(Result.Ok(new CreateNukiAccountAndRedirectPresentationResponse(new Uri("http://api.nuki.io/oauth/authorize?response_type=code" +
 			                           "&client_id=v7kn_NX7vQ7VjQdXFGK43g" +
 			                           "&redirect_uri=https://test.com/nuki/code/v7kn_NX7vQ7VjQdXFGK43g" + 
 			                           "&scope=account notification smartlock smartlock.readOnly smartlock.action" +
 			                           " smartlock.auth smartlock.config smartlock.log"))));
 		
 		// Act
-		var redirect = _controller.RedirectByClientId("VALID_CLIENT_ID");
+		var redirect = await _controller.CreateNukiAccountAndRedirectByClientId("VALID_CLIENT_ID");
 
 		// Assert
-		_interactorCode.Verify(c => c.Handle(It.Is<NukiRedirectPresentationRequest>(s => s.ClientId.Contains("VALID_CLIENT_ID"))));
+		_interactorCode.Verify(c => c.Handle(It.Is<CreateNukiAccountRedirectPresentationRequest>(s => s.ClientId.Contains("VALID_CLIENT_ID"))));
 		redirect.Should().BeOfType<RedirectResult>();
 	}
 	
 	[Fact]
-	public Task RedirectForCode_ReturnInvalidParameters_Test()
+	public async Task CreateNukiAccountAndRedirectByClientId_ReturnInvalidParameters()
 	{
 		// Arrange
-		_interactorCode.Setup(c => c.Handle(It.IsAny<NukiRedirectPresentationRequest>()))
-			.Returns(Result.Fail(new InvalidParametersError("client_id")));
+		_interactorCode.Setup(c => c.Handle(It.IsAny<CreateNukiAccountRedirectPresentationRequest>()))
+			.ReturnsAsync(Result.Fail(new InvalidParametersError("client_id")));
 		
 		// Act
 	
 		// Assert
-		var ex = _controller.RedirectByClientId("VALID_CLIENT_ID") as ObjectResult;
+		var ex = (await _controller.CreateNukiAccountAndRedirectByClientId("VALID_CLIENT_ID")) as ObjectResult;
 		ex.Should().NotBeNull();
 		ex?.StatusCode.Should().Be(400);
 		ex?.Value.Should().BeOfType<InvalidParametersError>();
-		return Task.CompletedTask;
 	}
 	
 	[Fact]

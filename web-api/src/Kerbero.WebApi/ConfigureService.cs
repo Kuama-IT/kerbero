@@ -10,7 +10,7 @@ public static
 {
 	public static IServiceCollection AddWebApiServices(this IServiceCollection services)
 	{
-		services.AddScoped<IProvideNukiAuthRedirectUrlInteractor, ProvideNukiAuthRedirectUrlInteractor>();
+		services.AddScoped<ICreateNukiAccountAndRedirectToNukiInteractor, CreateNukiAccountAndRedirectToNukiInteractor>();
 		services.AddScoped<ICreateNukiAccountInteractor, CreateNukiAccountInteractor>();
 		services.AddScoped<IAuthenticateNukiAccountInteractor, AuthenticateNukiAccountInteractor>();
 		services.AddScoped<IGetNukiSmartLocksInteractor, GetNukiSmartLocksInteractor>();

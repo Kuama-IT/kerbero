@@ -1,10 +1,10 @@
 namespace Kerbero.Domain.NukiAuthentication.Models.ExternalRequests;
 
-public class NukiRedirectExternalRequest
+public class NukiAccountBuildUriForCodeExternalRequest
 {
 	public string ClientId { get; }
 
-	public NukiRedirectExternalRequest(string clientId)
+	public NukiAccountBuildUriForCodeExternalRequest(string clientId)
 	{
 		ClientId = clientId;
 	}
