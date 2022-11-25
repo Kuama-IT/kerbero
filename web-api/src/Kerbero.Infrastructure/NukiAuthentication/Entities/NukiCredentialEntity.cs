@@ -1,4 +1,6 @@
 using Kerbero.Domain.NukiActions.Entities;
+using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Identity.Modules.Users.Entities;
 
 namespace Kerbero.Infrastructure.NukiAuthentication.Entities;
 
@@ -13,3 +15,4 @@ public class NukiCredentialEntity
   public string TokenType { get; set; } = null!;
   public string ClientId { get; set; } = null!;
 }
+

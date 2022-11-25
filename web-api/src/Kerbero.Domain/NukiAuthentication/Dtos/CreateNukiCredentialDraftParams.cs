@@ -1,11 +1,11 @@
 namespace Kerbero.Domain.NukiAuthentication.Dtos;
 
-public class CreateNukiAccountDraftParams
+public class CreateNukiCredentialDraftParams
 {
     public string ClientId { get; }
     public Guid UserId { get; }
 
-    public CreateNukiAccountDraftParams(string clientId, Guid userId)
+    public CreateNukiCredentialDraftParams(string clientId, Guid userId)
     {
         ClientId = clientId;
         UserId = userId;

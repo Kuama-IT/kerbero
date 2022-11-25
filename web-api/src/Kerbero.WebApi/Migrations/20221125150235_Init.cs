@@ -196,7 +196,7 @@ namespace Kerbero.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NukiAccountDrafts",
+                name: "NukiCredentialDrafts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -207,11 +207,34 @@ namespace Kerbero.WebApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NukiAccountDrafts", x => x.Id);
+                    table.PrimaryKey("PK_NukiCredentialDrafts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NukiAccountDrafts_AspNetUsers_UserId",
+                        name: "FK_NukiCredentialDrafts_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserNukiCredentials",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NukiCredentialId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.ForeignKey(
+                        name: "FK_UserNukiCredentials_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserNukiCredentials_NukiCredentials_NukiCredentialId",
+                        column: x => x.NukiCredentialId,
+                        principalTable: "NukiCredentials",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -228,17 +251,11 @@ namespace Kerbero.WebApi.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Favourite = table.Column<bool>(type: "boolean", nullable: false),
                     NukiAccountId = table.Column<int>(type: "integer", nullable: false),
-                    StateId = table.Column<int>(type: "integer", nullable: true),
-                    NukiCredentialEntityId = table.Column<int>(type: "integer", nullable: true)
+                    StateId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NukiSmartLocks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_NukiSmartLocks_NukiCredentials_NukiCredentialEntityId",
-                        column: x => x.NukiCredentialEntityId,
-                        principalTable: "NukiCredentials",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_NukiSmartLocks_NukiSmartLockStates_StateId",
                         column: x => x.StateId,
@@ -284,19 +301,25 @@ namespace Kerbero.WebApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NukiAccountDrafts_UserId",
-                table: "NukiAccountDrafts",
+                name: "IX_NukiCredentialDrafts_UserId",
+                table: "NukiCredentialDrafts",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_NukiSmartLocks_NukiCredentialEntityId",
-                table: "NukiSmartLocks",
-                column: "NukiCredentialEntityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NukiSmartLocks_StateId",
                 table: "NukiSmartLocks",
                 column: "StateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNukiCredentials_NukiCredentialId",
+                table: "UserNukiCredentials",
+                column: "NukiCredentialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNukiCredentials_UserId_NukiCredentialId",
+                table: "UserNukiCredentials",
+                columns: new[] { "UserId", "NukiCredentialId" },
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -317,22 +340,25 @@ namespace Kerbero.WebApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "NukiAccountDrafts");
+                name: "NukiCredentialDrafts");
 
             migrationBuilder.DropTable(
                 name: "NukiSmartLocks");
 
             migrationBuilder.DropTable(
+                name: "UserNukiCredentials");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "NukiSmartLockStates");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "NukiCredentials");
-
-            migrationBuilder.DropTable(
-                name: "NukiSmartLockStates");
         }
     }
 }

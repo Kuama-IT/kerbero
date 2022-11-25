@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Kerbero.Domain.Common.Interfaces;
 using Kerbero.Domain.NukiAuthentication.Dtos;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
+using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,18 @@ namespace Kerbero.WebApi.Controllers;
 [Route("api/[controller]")]
 public class NukiCredentialsController : ControllerBase
 {
-  private readonly ICreateNukiAccountDraftInteractor _createNukiAccountDraft;
-  private readonly ICreateNukiAccountInteractor _createNukiAccount;
+  private readonly ICreateNukiCredentialDraftInteractor _createNukiCredentialDraft;
+  private readonly ICreateNukiCredentialInteractor _createNukiCredential;
   private readonly IConfiguration _configuration;
 
-  public NukiCredentialsController(ICreateNukiAccountDraftInteractor createNukiAccountDraft,
-    ICreateNukiAccountInteractor createNukiAccount, IConfiguration configuration)
+  public NukiCredentialsController(
+    ICreateNukiCredentialDraftInteractor createNukiCredentialDraft,
+    ICreateNukiCredentialInteractor createNukiCredential,
+    IConfiguration configuration
+  )
   {
-    _createNukiAccountDraft = createNukiAccountDraft;
-    _createNukiAccount = createNukiAccount;
+    _createNukiCredentialDraft = createNukiCredentialDraft;
+    _createNukiCredential = createNukiCredential;
     _configuration = configuration;
   }
 
@@ -31,20 +35,13 @@ public class NukiCredentialsController : ControllerBase
   /// </summary>
   /// <param name="clientId"></param>
   [HttpPost("draft")]
-  public async Task<ActionResult<NukiAccountDraftDto>> CreateDraft([FromQuery] string clientId)
+  public async Task<ActionResult<NukiCredentialDraftDto>> CreateDraft([FromQuery] string clientId)
     // TODO move to body payload (create type)
   {
-    // TODO move to extension method
-    var nameIdentifierClaim = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-    if (nameIdentifierClaim is null)
-    {
-      return BadRequest();
-    }
-
-    var userId = Guid.Parse(nameIdentifierClaim.Value);
+    var userId = HttpContext.GetAuthenticatedUserId();
 
     var interactorResponse =
-      await _createNukiAccountDraft.Handle(new CreateNukiAccountDraftParams(clientId, userId));
+      await _createNukiCredentialDraft.Handle(new CreateNukiCredentialDraftParams(clientId, userId));
 
     if (interactorResponse.IsFailed)
     {
@@ -66,11 +63,11 @@ public class NukiCredentialsController : ControllerBase
   [HttpGet("confirm-draft-hook/{clientId}")]
   public async Task<ActionResult<NukiCredentialDto>> ConfirmDraft(string clientId, string code)
   {
-    var interactorResponse = await _createNukiAccount.Handle(
+    var interactorResponse = await _createNukiCredential.Handle(
       new CreateNukiCredentialParams
       {
         Code = code,
-        ClientId = clientId
+        ClientId = clientId,
       });
 
     var redirectUrl = _configuration["WEB_APP_URL"] + "?nuki-credential-registered=";

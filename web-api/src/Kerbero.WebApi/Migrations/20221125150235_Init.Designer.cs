@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kerbero.WebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221125114250_Init")]
+    [Migration("20221125150235_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,9 +47,6 @@ namespace Kerbero.WebApi.Migrations
                     b.Property<int>("NukiAccountId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("NukiCredentialEntityId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("StateId")
                         .HasColumnType("integer");
 
@@ -57,8 +54,6 @@ namespace Kerbero.WebApi.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NukiCredentialEntityId");
 
                     b.HasIndex("StateId");
 
@@ -200,7 +195,7 @@ namespace Kerbero.WebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiAccountDraftEntity", b =>
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialDraftEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -223,7 +218,7 @@ namespace Kerbero.WebApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NukiAccountDrafts");
+                    b.ToTable("NukiCredentialDrafts");
                 });
 
             modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", b =>
@@ -259,6 +254,22 @@ namespace Kerbero.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NukiCredentials");
+                });
+
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.UserNukiCredentialEntity", b =>
+                {
+                    b.Property<int>("NukiCredentialId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("NukiCredentialId");
+
+                    b.HasIndex("UserId", "NukiCredentialId")
+                        .IsUnique();
+
+                    b.ToTable("UserNukiCredentials");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -366,10 +377,6 @@ namespace Kerbero.WebApi.Migrations
 
             modelBuilder.Entity("Kerbero.Domain.NukiActions.Entities.NukiSmartLockEntity", b =>
                 {
-                    b.HasOne("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", null)
-                        .WithMany("NukiSmartLocks")
-                        .HasForeignKey("NukiCredentialEntityId");
-
                     b.HasOne("Kerbero.Domain.NukiActions.Entities.NukiSmartLockStateEntity", "State")
                         .WithMany()
                         .HasForeignKey("StateId");
@@ -377,13 +384,32 @@ namespace Kerbero.WebApi.Migrations
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiAccountDraftEntity", b =>
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialDraftEntity", b =>
                 {
                     b.HasOne("Kerbero.Identity.Modules.Users.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.UserNukiCredentialEntity", b =>
+                {
+                    b.HasOne("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", "NukiCredential")
+                        .WithMany()
+                        .HasForeignKey("NukiCredentialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kerbero.Identity.Modules.Users.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NukiCredential");
 
                     b.Navigation("User");
                 });
@@ -437,11 +463,6 @@ namespace Kerbero.WebApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", b =>
-                {
-                    b.Navigation("NukiSmartLocks");
                 });
 #pragma warning restore 612, 618
         }

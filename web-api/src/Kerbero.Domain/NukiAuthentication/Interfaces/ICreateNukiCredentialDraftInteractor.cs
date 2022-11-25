@@ -4,6 +4,7 @@ using Kerbero.Domain.NukiAuthentication.Models;
 
 namespace Kerbero.Domain.NukiAuthentication.Interfaces;
 
-public interface IGetNukiAccountInteractor : InteractorAsync<GetNukiAccountParams, NukiCredentialDto>
+public interface ICreateNukiCredentialDraftInteractor: InteractorAsync<CreateNukiCredentialDraftParams, NukiCredentialDraftDto>
 {
+    
 }
