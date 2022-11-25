@@ -6,44 +6,57 @@ using Kerbero.Domain.NukiAuthentication.Dtos;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace Kerbero.WebApi.Tests.Controllers;
 
-public class NukiAccountsControllerTests
+public class NukiCredentialsControllerTests
 {
   private readonly NukiCredentialsController _controller;
-  private readonly Mock<ICreateNukiAccountInteractor> _interactorToken;
-  private readonly Mock<ICreateNukiAccountDraftInteractor> _interactorCode;
 
-  public NukiAccountsControllerTests()
+  private readonly Mock<ICreateNukiCredentialInteractor> _createNukiCredentialInteractorMock =
+    new Mock<ICreateNukiCredentialInteractor>();
+
+  private readonly Mock<ICreateNukiCredentialDraftInteractor> _createNukiCredentialDraftInteractorMock =
+    new Mock<ICreateNukiCredentialDraftInteractor>();
+
+  private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
+
+  public NukiCredentialsControllerTests()
   {
-    _interactorToken = new Mock<ICreateNukiAccountInteractor>();
-    _interactorCode = new Mock<ICreateNukiAccountDraftInteractor>();
-    _controller = new NukiCredentialsController(_interactorCode.Object, _interactorToken.Object);
+    _controller = new NukiCredentialsController(
+      _createNukiCredentialDraftInteractorMock.Object,
+      _createNukiCredentialInteractorMock.Object,
+      _configurationMock.Object
+    );
   }
 
   [Fact]
   public async Task RetrieveToken_Success_Test()
   {
     // Arrange
-    var shouldResponseDto = new NukiCredentialDto
+    var credentials = new NukiCredentialDto
     {
       Id = 1,
       ClientId = "VALID_CLIENT_ID"
     };
-    _interactorToken.Setup(c => c.Handle(It.IsAny<CreateNukiCredentialParams>()))
-      .Returns(async () => await Task.FromResult(Result.Ok(shouldResponseDto)));
+    
+    _createNukiCredentialInteractorMock
+      .Setup(c => c.Handle(It.IsAny<CreateNukiCredentialParams>()))
+      .Returns(async () => await Task.FromResult(Result.Ok(credentials)));
 
     // Act
     var result = await _controller.ConfirmDraft("VALID_CLIENT_ID", "VALID_CODE");
     var response = result.Result as ObjectResult;
+    
     // Assert
-    _interactorToken.Verify(c =>
+    _createNukiCredentialInteractorMock.Verify(c =>
       c.Handle(It.Is<CreateNukiCredentialParams>(p =>
-        p.Code!.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
+        p.Code.Equals("VALID_CODE") && p.ClientId.Equals("VALID_CLIENT_ID"))));
+    
     response?.Value.Should().BeOfType<NukiCredentialDto>();
-    response?.Value.Should().BeEquivalentTo(shouldResponseDto);
+    response?.Value.Should().BeEquivalentTo(credentials);
   }
 
 
@@ -64,7 +77,7 @@ public class NukiAccountsControllerTests
   public async Task RetrieveToken_KerberoError_Test(KerberoError error)
   {
     // Arrange
-    _interactorToken.Setup(c => c.Handle(It.IsAny<CreateNukiCredentialParams>()))
+    _createNukiCredentialInteractorMock.Setup(c => c.Handle(It.IsAny<CreateNukiCredentialParams>()))
       .Returns(async () => await Task.FromResult(Result.Fail(error)));
 
     // Act

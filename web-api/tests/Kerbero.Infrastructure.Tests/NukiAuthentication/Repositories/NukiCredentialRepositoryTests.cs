@@ -5,6 +5,7 @@ using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
+using Kerbero.Infrastructure.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,12 +13,12 @@ using Moq;
 
 namespace Kerbero.Infrastructure.Tests.NukiAuthentication.Repositories;
 
-public class NukiAccountPersistentRepositoryTest: IDisposable
+public class NukiCredentialRepositoryTests: IDisposable
 {
 	private readonly NukiCredentialRepository _repository;
 	private readonly ApplicationDbContext _dbContext;
 
-	public NukiAccountPersistentRepositoryTest()
+	public NukiCredentialRepositoryTests()
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "AppDbContext")
@@ -38,7 +39,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 	public async Task CreateNukiAccount_Success_Test()
 	{
 		// Arrange
-		var nukiAccount = new NukiAccount
+		var nukiCredentials = new NukiCredential()
 		{
 			Token = "VALID_TOKEN",
 			RefreshToken = "VALID_REFRESH_TOKEN",
@@ -47,19 +48,19 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 			TokenType = "bearer",
 		};
 		
-		var res = await CreateHelper(nukiAccount);
+		var res = await CreateHelper(nukiCredentials);
 		
 		// Assert
-		nukiAccount.Id = 1;
-		res.Value.Should().BeEquivalentTo(nukiAccount);
+		nukiCredentials.Id = 1;
+		res.Value.Should().BeEquivalentTo(nukiCredentials);
 	}
 
-	private async Task<Result<NukiAccount>> CreateHelper(NukiAccount nukiAccount)
+	private async Task<Result<NukiCredential>> CreateHelper(NukiCredential nukiCredential)
 	{
 		_repository.Should().BeAssignableTo<INukiCredentialRepository>();
 
 		// Act
-		return await _repository.Create(nukiAccount);
+		return await _repository.Create(nukiCredential);
 	}
 	#endregion
 
@@ -71,7 +72,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 		// Arrange
 		for (var i = 1; i < 3; i++)
 		{
-			var nukiAccount = new NukiAccount
+			var nukiCredential = new NukiCredentialEntity()
 			{
 				Token = "VALID_TOKEN" + i,
 				RefreshToken = "VALID_REFRESH_TOKEN",
@@ -79,7 +80,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 				ClientId = "VALID_CLIENT_ID" + i,
 				TokenType = "bearer",
 			};
-			_dbContext.NukiCredentials.Add(nukiAccount);
+			_dbContext.NukiCredentials.Add(nukiCredential);
 		}
 
 		await _dbContext.SaveChangesAsync();
@@ -90,7 +91,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 		var res = await _repository.GetById(1);
 		
 		// Assert
-		res.Value.Should().BeEquivalentTo(new NukiAccount
+		res.Value.Should().BeEquivalentTo(new NukiCredentialEntity()
 		{
 			Id = 1,
 			Token = "VALID_TOKEN1",
@@ -123,7 +124,7 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 	{
 		// Arrange
 		_repository.Should().BeAssignableTo<INukiCredentialRepository>();
-		var nukiAccount = new NukiAccount
+		var nukiCredential = new NukiCredential()
 		{
 			Token = "VALID_TOKEN",
 			RefreshToken = "VALID_REFRESH_TOKEN",
@@ -131,14 +132,14 @@ public class NukiAccountPersistentRepositoryTest: IDisposable
 			ClientId = "VALID_CLIENT_ID",
 			TokenType = "bearer",
 		};
-		await CreateHelper(nukiAccount);
+		await CreateHelper(nukiCredential);
 
 		// Act
-		var res = await _repository.Update(nukiAccount);
+		var res = await _repository.Update(nukiCredential);
 		
 		// Assert
-		nukiAccount.Id = 1;
-		res.Value.Should().BeEquivalentTo(nukiAccount);
+		nukiCredential.Id = 1;
+		res.Value.Should().BeEquivalentTo(nukiCredential);
 	}
 
 	#endregion

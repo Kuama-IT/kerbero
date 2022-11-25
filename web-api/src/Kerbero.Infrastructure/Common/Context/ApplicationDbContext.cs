@@ -5,6 +5,7 @@ using Kerbero.Identity.Common;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.Infrastructure.NukiAuthentication.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Kerbero.Infrastructure.Common.Context;
 
@@ -19,4 +20,6 @@ public class ApplicationDbContext : KerberoIdentityDbContext, IApplicationDbCont
   public DbSet<NukiSmartLockEntity> NukiSmartLocks => Set<NukiSmartLockEntity>();
   
   public DbSet<NukiSmartLockStateEntity> NukiSmartLockStates => Set<NukiSmartLockStateEntity>();
+
+  public DbSet<UserNukiCredentialEntity> UserNukiCredentials => Set<UserNukiCredentialEntity>();
 }

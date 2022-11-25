@@ -9,13 +9,13 @@ using Kerbero.Domain.NukiAuthentication.Repositories;
 
 namespace Kerbero.Domain.NukiAuthentication.Interactors;
 
-public class GetNukiAccountInteractor: IGetNukiAccountInteractor
+public class GetNukiCredentialInteractor: IGetNukiCredentialInteractor
 {
 
     private readonly INukiCredentialRepository _nukiCredentialRepository;
     private readonly INukiOAuthRepository _nukiOAuthRepository;
 
-    public GetNukiAccountInteractor(INukiCredentialRepository nukiCredentialRepository,
+    public GetNukiCredentialInteractor(INukiCredentialRepository nukiCredentialRepository,
         INukiOAuthRepository nukiOAuthRepository)
     {
         _nukiOAuthRepository = nukiOAuthRepository;
@@ -32,9 +32,9 @@ public class GetNukiAccountInteractor: IGetNukiAccountInteractor
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<Result<NukiCredentialDto>> Handle(GetNukiAccountParams request)
+    public async Task<Result<NukiCredentialDto>> Handle(GetNukiCredentialParams request)
     {
-        var accountResult = await _nukiCredentialRepository.GetById(request.NukiAccountId);
+        var accountResult = await _nukiCredentialRepository.GetById(request.NukiCredentialId);
         
         if (accountResult.IsFailed)
         {

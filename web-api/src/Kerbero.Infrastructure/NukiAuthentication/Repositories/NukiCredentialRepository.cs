@@ -6,6 +6,7 @@ using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.Infrastructure.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.NukiAuthentication.Mappers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -23,13 +24,22 @@ public class NukiCredentialRepository : INukiCredentialRepository
     _dbContext = dbContext;
   }
 
-  public async Task<Result<NukiCredential>> Create(NukiCredential model)
+  public async Task<Result<NukiCredential>> Create(NukiCredential model, Guid userId)
   {
     try
     {
       var entity = NukiCredentialMapper.Map(model);
 
       _dbContext.NukiCredentials.Add(entity);
+
+      var pivotEntity = new UserNukiCredentialEntity
+      {
+        NukiCredential = entity,
+        UserId = userId,
+      };
+
+      _dbContext.UserNukiCredentials.Add(pivotEntity);
+
       await _dbContext.SaveChangesAsync();
 
       return NukiCredentialMapper.Map(entity);
@@ -126,5 +136,32 @@ public class NukiCredentialRepository : INukiCredentialRepository
       _logger.LogError(exception, "Error while adding a NukiCredential to the database");
       return Result.Fail(new KerberoError());
     }
+  }
+
+  public async Task<Result<List<NukiCredential>>> GetAllByUserId(Guid userId)
+  {
+    var entities = await _dbContext.UserNukiCredentials
+      .AsNoTracking()
+      .Where(e => e.UserId == userId)
+      .Include(e => e.NukiCredential)
+      .Select(e => e.NukiCredential!)
+      .ToListAsync();
+
+    return NukiCredentialMapper.Map(entities);
+  }
+
+  public async Task<Result> LinkToUser(int nukiCredentialId, Guid userId)
+  {
+    var entity = new UserNukiCredentialEntity
+    {
+      NukiCredentialId = nukiCredentialId,
+      UserId = userId,
+    };
+
+    _dbContext.UserNukiCredentials.Add(entity);
+
+    await _dbContext.SaveChangesAsync();
+
+    return Result.Ok();
   }
 }

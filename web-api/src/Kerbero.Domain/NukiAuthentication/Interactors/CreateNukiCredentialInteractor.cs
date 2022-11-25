@@ -6,13 +6,13 @@ using Kerbero.Domain.NukiAuthentication.Repositories;
 
 namespace Kerbero.Domain.NukiAuthentication.Interactors;
 
-public class CreateNukiAccountInteractor : ICreateNukiAccountInteractor
+public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
 {
   private readonly INukiCredentialRepository _nukiCredentialRepository;
   private readonly INukiOAuthRepository _nukiOAuthRepository;
   private readonly INukiCredentialDraftRepository _nukiCredentialDraftRepository;
 
-  public CreateNukiAccountInteractor(INukiCredentialRepository nukiCredentialRepository,
+  public CreateNukiCredentialInteractor(INukiCredentialRepository nukiCredentialRepository,
     INukiOAuthRepository nukiOAuthRepository,
     INukiCredentialDraftRepository nukiCredentialDraftRepository)
   {
@@ -23,14 +23,12 @@ public class CreateNukiAccountInteractor : ICreateNukiAccountInteractor
 
   public async Task<Result<NukiCredentialDto>> Handle(CreateNukiCredentialParams request)
   {
-    var nukiAccountDraftResult = await _nukiCredentialDraftRepository.GetByClientId(clientId: request.ClientId);
+    var nukiCredentialDraftResult = await _nukiCredentialDraftRepository.GetByClientId(clientId: request.ClientId);
 
-    if (nukiAccountDraftResult.IsFailed)
+    if (nukiCredentialDraftResult.IsFailed)
     {
-      return Result.Fail(nukiAccountDraftResult.Errors);
+      return Result.Fail(nukiCredentialDraftResult.Errors);
     }
-
-    await _nukiCredentialDraftRepository.DeleteByClientId(clientId: request.ClientId);
 
     var nukiCredentialResult = await _nukiOAuthRepository.Authenticate(request.ClientId, request.Code);
 
@@ -39,13 +37,16 @@ public class CreateNukiAccountInteractor : ICreateNukiAccountInteractor
       return Result.Fail(nukiCredentialResult.Errors);
     }
 
-    var createNukiAccountResult = await _nukiCredentialRepository.Create(nukiCredentialResult.Value);
+    var userId = nukiCredentialDraftResult.Value.UserId;
+    var createNukiCredentialResult = await _nukiCredentialRepository.Create(nukiCredentialResult.Value, userId);
 
-    if (createNukiAccountResult.IsFailed)
+    if (createNukiCredentialResult.IsFailed)
     {
-      return Result.Fail(createNukiAccountResult.Errors);
+      return Result.Fail(createNukiCredentialResult.Errors);
     }
 
-    return NukiCredentialMapper.Map(createNukiAccountResult.Value);
+    await _nukiCredentialDraftRepository.DeleteByClientId(clientId: request.ClientId);
+
+    return NukiCredentialMapper.Map(createNukiCredentialResult.Value);
   }
 }

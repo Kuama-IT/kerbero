@@ -1,3 +1,4 @@
+using Kerbero.Domain.NukiAuthentication.Dtos;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Infrastructure.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.NukiAuthentication.Models;
@@ -18,6 +19,12 @@ public static class NukiCredentialMapper
       TokenExpiringTimeInSeconds = entity.TokenExpiringTimeInSeconds, // TODO can be extension / computed?
       TokenType = entity.TokenType,
     };
+  }
+
+
+  public static List<NukiCredential> Map(List<NukiCredentialEntity> entities)
+  {
+    return entities.ConvertAll(Map);
   }
 
   public static NukiCredentialEntity Map(NukiCredential model)

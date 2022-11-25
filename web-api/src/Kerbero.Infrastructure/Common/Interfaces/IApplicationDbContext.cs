@@ -11,7 +11,7 @@ public interface IApplicationDbContext
 
   DbSet<NukiSmartLockEntity> NukiSmartLocks { get; }
   DbSet<NukiSmartLockStateEntity> NukiSmartLockStates { get; }
-
+  DbSet<UserNukiCredentialEntity> UserNukiCredentials { get; }
 
   Task<int> SaveChangesAsync(CancellationToken cancellationToken = default); // with or without CancellationToken
 }
