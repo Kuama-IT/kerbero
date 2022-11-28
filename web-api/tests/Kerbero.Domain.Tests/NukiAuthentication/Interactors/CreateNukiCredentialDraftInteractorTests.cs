@@ -14,11 +14,9 @@ public class CreateNukiCredentialDraftInteractorTests
 {
   private readonly CreateNukiCredentialDraftInteractor _createNukiCredentialDraftInteractor;
 
-  private readonly Mock<INukiOAuthRepository> _nukiOAuthRepositoryMock =
-    new Mock<INukiOAuthRepository>();
+  private readonly Mock<INukiOAuthRepository> _nukiOAuthRepositoryMock = new();
 
-  private readonly Mock<INukiCredentialDraftRepository> _nukiAccountDraftRepositoryMock =
-    new Mock<INukiCredentialDraftRepository>();
+  private readonly Mock<INukiCredentialDraftRepository> _nukiAccountDraftRepositoryMock = new();
 
   public CreateNukiCredentialDraftInteractorTests()
   {

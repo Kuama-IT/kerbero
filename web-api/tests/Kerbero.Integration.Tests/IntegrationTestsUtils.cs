@@ -23,33 +23,8 @@ public static class IntegrationTestsUtils
       CreatedAt = DateTime.Now,
     };
   }
-
-  public static NukiSmartLockEntity GetSeedingNukiSmartLock()
-  {
-    return new NukiSmartLockEntity
-    {
-      Favourite = true,
-      Name = "kquarter",
-      Type = 0,
-      NukiAccountId = 1,
-      AuthId = 0,
-      ExternalSmartLockId = 0,
-      State = new NukiSmartLockStateEntity
-      {
-        Mode = 4,
-        State = 255,
-        LastAction = 5,
-        BatteryCritical = true,
-        BatteryCharging = true,
-        BatteryCharge = 100,
-        DoorState = 255,
-        OperationId = "string"
-      }
-    };
-  }
-
   #endregion
-
+  
   public static User GetSeedingUser()
   {
     return new User

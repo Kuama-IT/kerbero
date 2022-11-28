@@ -1,11 +1,11 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.NukiAuthentication.Entities;
+using Kerbero.Infrastructure.NukiAuthentication.Mappers;
 using Kerbero.Infrastructure.NukiAuthentication.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,136 +13,137 @@ using Moq;
 
 namespace Kerbero.Infrastructure.Tests.NukiAuthentication.Repositories;
 
-public class NukiCredentialRepositoryTests: IDisposable
+public class NukiCredentialRepositoryTests
 {
-	private readonly NukiCredentialRepository _repository;
-	private readonly ApplicationDbContext _dbContext;
+  private readonly Mock<ILogger<NukiCredentialRepository>> _loggerMock = new();
 
-	public NukiCredentialRepositoryTests()
-	{
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "AppDbContext")
-			.Options;
-		var logger = new Mock<ILogger<NukiCredentialRepository>>();
-		_dbContext = new ApplicationDbContext(options);
-		_repository = new NukiCredentialRepository(_dbContext, logger.Object);
-	}
-	
-	public void Dispose()
-	{
-		_dbContext.Dispose();
-	}
+  [Fact]
+  public async Task Create_ValidInput_ReturnCorrectResult()
+  {
+    // Arrange
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+      .UseInMemoryDatabase(databaseName: "NukiCredentials_Create")
+      .Options;
+    await using var dbContext = new ApplicationDbContext(options);
+    var repository = new NukiCredentialRepository(dbContext, _loggerMock.Object);
 
-	#region CreateNukiAccount
-	
-	[Fact]
-	public async Task CreateNukiAccount_Success_Test()
-	{
-		// Arrange
-		var nukiCredentials = new NukiCredential()
-		{
-			Token = "VALID_TOKEN",
-			RefreshToken = "VALID_REFRESH_TOKEN",
-			TokenExpiringTimeInSeconds = 2592000,
-			ClientId = "VALID_CLIENT_ID",
-			TokenType = "bearer",
-		};
-		
-		var res = await CreateHelper(nukiCredentials);
-		
-		// Assert
-		nukiCredentials.Id = 1;
-		res.Value.Should().BeEquivalentTo(nukiCredentials);
-	}
+    var tNukiCredential = new NukiCredential()
+    {
+      Token = "VALID_TOKEN",
+      RefreshToken = "VALID_REFRESH_TOKEN",
+      TokenExpiringTimeInSeconds = 2592000,
+      ClientId = "VALID_CLIENT_ID",
+      TokenType = "bearer",
+    };
 
-	private async Task<Result<NukiCredential>> CreateHelper(NukiCredential nukiCredential)
-	{
-		_repository.Should().BeAssignableTo<INukiCredentialRepository>();
+    var tUserId = Guid.NewGuid();
 
-		// Act
-		return await _repository.Create(nukiCredential);
-	}
-	#endregion
+    // Act
+    var actual = await repository.Create(tNukiCredential, tUserId);
 
-	#region GetNukiAccount
+    var expected = new NukiCredential()
+    {
+      Id = 1,
+      Token = "VALID_TOKEN",
+      RefreshToken = "VALID_REFRESH_TOKEN",
+      TokenExpiringTimeInSeconds = 2592000,
+      ClientId = "VALID_CLIENT_ID",
+      TokenType = "bearer",
+    };
 
-	[Fact]
-	public async Task GetNukiAccount_Success_Test()
-	{
-		// Arrange
-		for (var i = 1; i < 3; i++)
-		{
-			var nukiCredential = new NukiCredentialEntity()
-			{
-				Token = "VALID_TOKEN" + i,
-				RefreshToken = "VALID_REFRESH_TOKEN",
-				TokenExpiringTimeInSeconds = 2592000,
-				ClientId = "VALID_CLIENT_ID" + i,
-				TokenType = "bearer",
-			};
-			_dbContext.NukiCredentials.Add(nukiCredential);
-		}
-
-		await _dbContext.SaveChangesAsync();
-		
-		_repository.Should().BeAssignableTo<INukiCredentialRepository>();
-
-		// Act
-		var res = await _repository.GetById(1);
-		
-		// Assert
-		res.Value.Should().BeEquivalentTo(new NukiCredentialEntity()
-		{
-			Id = 1,
-			Token = "VALID_TOKEN1",
-			RefreshToken = "VALID_REFRESH_TOKEN",
-			TokenExpiringTimeInSeconds = 2592000,
-			ClientId = "VALID_CLIENT_ID1",
-			TokenType = "bearer",
-		});
-	}
-
-	[Fact]
-	public async Task GetNukiAccount_NotValidProviderAccountFoundError_Test()
-	{
-		// Arrange
-
-		// Act
-		var res = await _repository.GetById(0);
-	
-		// Assert
-		res.IsFailed.Should().BeTrue();
-		res.Errors.First().Should().BeEquivalentTo(new NukiAccountNotFoundError());
-	}
-
-	#endregion
-	
-	#region UpdateNukiAccount
-	
-	[Fact]
-	public async Task Update_Success_Test()
-	{
-		// Arrange
-		_repository.Should().BeAssignableTo<INukiCredentialRepository>();
-		var nukiCredential = new NukiCredential()
-		{
-			Token = "VALID_TOKEN",
-			RefreshToken = "VALID_REFRESH_TOKEN",
-			TokenExpiringTimeInSeconds = 2592000,
-			ClientId = "VALID_CLIENT_ID",
-			TokenType = "bearer",
-		};
-		await CreateHelper(nukiCredential);
-
-		// Act
-		var res = await _repository.Update(nukiCredential);
-		
-		// Assert
-		nukiCredential.Id = 1;
-		res.Value.Should().BeEquivalentTo(nukiCredential);
-	}
-
-	#endregion
+    // Assert
+    actual.Should().BeEquivalentTo(Result.Ok(expected));
+  }
 
 
+  [Fact]
+  public async Task GetById_ValidInput_ReturnCorrectResult()
+  {
+    // Arrange
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+      .UseInMemoryDatabase(databaseName: "NukiCredentials_GetById")
+      .Options;
+    await using var dbContext = new ApplicationDbContext(options);
+    var repository = new NukiCredentialRepository(dbContext, _loggerMock.Object);
+
+    var tNukiCredentialTable = new NukiCredentialEntity()
+    {
+      Token = "VALID_TOKEN",
+      RefreshToken = "VALID_REFRESH_TOKEN",
+      TokenExpiringTimeInSeconds = 2592000,
+      ClientId = "VALID_CLIENT_ID",
+      TokenType = "bearer",
+    };
+
+    dbContext.NukiCredentials.Add(tNukiCredentialTable);
+    await dbContext.SaveChangesAsync();
+
+
+    // Act
+    var actual = await repository.GetById(1);
+
+    // Assert
+    var expected = Result.Ok(new NukiCredentialEntity()
+    {
+      Id = 1,
+      Token = "VALID_TOKEN",
+      RefreshToken = "VALID_REFRESH_TOKEN",
+      TokenExpiringTimeInSeconds = 2592000,
+      ClientId = "VALID_CLIENT_ID",
+      TokenType = "bearer",
+    });
+
+    actual.Should().BeEquivalentTo(expected);
+  }
+
+  [Fact]
+  public async Task GetById_InvalidId_ReturnNukiCredentialNotFound()
+  {
+    // Arrange
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+      .UseInMemoryDatabase(databaseName: "NukiCredentials_GetById_InvalidId")
+      .Options;
+    await using var dbContext = new ApplicationDbContext(options);
+    var repository = new NukiCredentialRepository(dbContext, _loggerMock.Object);
+
+    // Act
+    var actual = await repository.GetById(1);
+
+    // Assert
+    var expected = Result.Fail(new NukiCredentialNotFoundError());
+
+    actual.IsFailed.Should().BeTrue();
+    actual.Should().BeEquivalentTo(expected);
+  }
+
+  [Fact]
+  public async Task Update_ValidInput_ReturnCorrectResult()
+  {
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+      .UseInMemoryDatabase(databaseName: "NukiCredentials_Update")
+      .Options;
+    await using var dbContext = new ApplicationDbContext(options);
+    var repository = new NukiCredentialRepository(dbContext, _loggerMock.Object);
+
+    // Arrange
+    var tNukiCredentialTable = new NukiCredentialEntity()
+    {
+      Token = "VALID_TOKEN",
+      RefreshToken = "VALID_REFRESH_TOKEN",
+      TokenExpiringTimeInSeconds = 2592000,
+      ClientId = "VALID_CLIENT_ID",
+      TokenType = "bearer",
+    };
+
+    dbContext.NukiCredentials.Add(tNukiCredentialTable);
+    await dbContext.SaveChangesAsync();
+
+    var tNukiCredential = NukiCredentialMapper.Map(tNukiCredentialTable);
+
+    // Act
+    var actual = await repository.Update(tNukiCredential);
+
+    // Assert
+    actual.Should().BeEquivalentTo(Result.Ok(tNukiCredential));
+  }
 }

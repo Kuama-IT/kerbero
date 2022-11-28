@@ -18,81 +18,74 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Kerbero.Integration.Tests;
 
 public class KerberoWebApplicationFactory<TStartup>
-	: WebApplicationFactory<TStartup> where TStartup: class
+  : WebApplicationFactory<TStartup> where TStartup : class
 {
-	private readonly IConfigurationRoot _config = new ConfigurationBuilder()
-		.AddEnvironmentVariables(_ => Env.TraversePath().Load())
-		.Build();
+  private readonly IConfigurationRoot _config = new ConfigurationBuilder()
+    .AddEnvironmentVariables(_ => Env.TraversePath().Load(".env-test"))
+    .Build();
 
-	private readonly SqliteConnection _connection;
+  private readonly SqliteConnection _connection;
 
-	public KerberoWebApplicationFactory()
-	{
-		_connection = new SqliteConnection(_config["SQLITE_CONNECTION_STRING"]);
-		_connection.Open();
-		ClientOptions.AllowAutoRedirect = false;
-	}
+  public KerberoWebApplicationFactory()
+  {
+    _connection = new SqliteConnection(_config["SQLITE_CONNECTION_STRING"]);
+    _connection.Open();
+    ClientOptions.AllowAutoRedirect = false;
+  }
 
-	protected override void ConfigureWebHost(IWebHostBuilder builder)
-	{
-		builder.UseConfiguration(_config);
+  protected override void ConfigureWebHost(IWebHostBuilder builder)
+  {
+    builder.UseConfiguration(_config);
 
-		builder.ConfigureServices(services =>
-		{
-			var descriptor = services.SingleOrDefault(
-				d => d.ServiceType ==
-				     typeof(DbContextOptions<ApplicationDbContext>));
+    builder.ConfigureServices(services =>
+    {
+      var descriptor = services.SingleOrDefault(
+        d => d.ServiceType ==
+             typeof(DbContextOptions<ApplicationDbContext>));
 
-			if (descriptor is not null)
-				services.Remove(descriptor);
-			
-			services.AddDbContext<ApplicationDbContext>(options => 
-				options.UseSqlite(_connection));
+      if (descriptor is not null)
+        services.Remove(descriptor);
 
-			var sp = services.BuildServiceProvider();
+      services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(_connection));
 
-			using var scope = sp.CreateScope();
-			var scopedServices = scope.ServiceProvider;
-			var db = scopedServices.GetRequiredService<ApplicationDbContext>();
+      var sp = services.BuildServiceProvider();
 
-			db.Database.EnsureCreated();
-		});
-	}
+      using var scope = sp.CreateScope();
+      var scopedServices = scope.ServiceProvider;
+      var db = scopedServices.GetRequiredService<ApplicationDbContext>();
 
-	public async Task<HttpClient> GetLoggedClient()
-	{
-		ClientOptions.HandleCookies = true;
-		ClientOptions.BaseAddress = new Uri("https://localhost");
-		var client = CreateClient();
+      db.Database.EnsureCreated();
+    });
+  }
 
-		await CreateUser(IntegrationTestsUtils.GetSeedingUser());
+  public async Task<HttpClient> CreateUserAndAuthenticateClient()
+  {
+    ClientOptions.HandleCookies = true;
+    ClientOptions.BaseAddress = new Uri("https://localhost");
+    var client = CreateClient();
+    
+    await CreateUser(IntegrationTestsUtils.GetSeedingUser());
 
-		await client.PostAsJsonAsync("api/authentication/login", new LoginDto
-		{
-			Email = "test@test.com",
-			Password = "Test.0"
-		});
-		return client;
-	}
-	
-	public async Task CreateNukiAccount(NukiCredential model)
-	{
-		using var scope = Services.CreateScope();
-		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiCredentialRepository>();
-		await accountPersistentRepository.Create(model);
-	}
+    await client.PostAsJsonAsync("api/authentication/login", new LoginDto
+    {
+      Email = "test@test.com",
+      Password = "Test.0"
+    });
+    return client;
+  }
 
-	public async Task CreateNukiSmartLock(NukiSmartLockEntity smartLockEntity)
-	{
-		using var scope = Services.CreateScope();
-		var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiSmartLockPersistentRepository>();
-		await accountPersistentRepository.Create(smartLockEntity);
-	}
+  public async Task CreateNukiCredential(NukiCredential model, Guid userId)
+  {
+    using var scope = Services.CreateScope();
+    var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiCredentialRepository>();
+    await accountPersistentRepository.Create(model, userId);
+  }
 
-	private async Task CreateUser(User user)
-	{
-		using var scope = Services.CreateScope();
-		var userManager = scope.ServiceProvider.GetRequiredService<IUserManager>();
-		await userManager.Create(user, "Test.0");
-	}
+  private async Task CreateUser(User user)
+  {
+    using var scope = Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<IUserManager>();
+    await userManager.Create(user, "Test.0");
+  }
 }
