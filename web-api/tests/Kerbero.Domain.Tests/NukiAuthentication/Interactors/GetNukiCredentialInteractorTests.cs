@@ -14,9 +14,9 @@ public class GetNukiCredentialInteractorTests
   private readonly GetNukiCredentialInteractor _interactor;
 
   private readonly Mock<INukiCredentialRepository>
-    _nukiCredentialRepositoryMock = new Mock<INukiCredentialRepository>();
+    _nukiCredentialRepositoryMock = new();
 
-  private readonly Mock<INukiOAuthRepository> _nukiOAuthRepositoryMock = new Mock<INukiOAuthRepository>();
+  private readonly Mock<INukiOAuthRepository> _nukiOAuthRepositoryMock = new();
 
   public GetNukiCredentialInteractorTests()
   {

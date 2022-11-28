@@ -6,9 +6,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Kerbero.Infrastructure.NukiAuthentication.Entities;
 
 [Index(nameof(UserId), nameof(NukiCredentialId), IsUnique = true)]
-[Keyless]
 public class UserNukiCredentialEntity
 {
+  public int Id { get; set; }
+  
   public Guid UserId { get; set; }
 
   [ForeignKey(nameof(UserId))]

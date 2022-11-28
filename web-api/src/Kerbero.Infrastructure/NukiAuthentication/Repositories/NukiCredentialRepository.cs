@@ -86,7 +86,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
     catch (InvalidOperationException exception)
     {
       _logger.LogError(exception, "Error while adding a NukiCredential to the database");
-      return Result.Fail(new UnauthorizedAccessError());
+      return Result.Fail(new NukiCredentialNotFoundError());
     }
     catch (Exception exception)
     {

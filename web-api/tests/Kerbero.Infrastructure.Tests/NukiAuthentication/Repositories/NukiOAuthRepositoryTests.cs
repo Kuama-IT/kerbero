@@ -17,12 +17,12 @@ public class NukiOAuthRepositoryTests : IDisposable
   private readonly NukiOAuthRepository _nukiOAuthRepository;
   private readonly HttpTest _httpTest;
   private readonly Mock<IConfiguration> _configurationMock;
+  private readonly Mock<ILogger<NukiSafeHttpCallHelper>> _loggerMock = new();
 
   public NukiOAuthRepositoryTests()
   {
     // Arrange
-    var logger = new Mock<ILogger<NukiSafeHttpCallHelper>>();
-    var nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(logger.Object);
+    var nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(_loggerMock.Object);
     _configurationMock = new Mock<IConfiguration>();
     _configurationMock.Setup(m => m["ALIAS_DOMAIN"]).Returns("https://test.com");
     _configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns("/nuki/auth/token");
@@ -42,7 +42,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   #region BuildUriForCode
 
   [Fact]
-  public void BuildUriForCode_UriForRedirect_Success_Test()
+  public void BuildUriForCode_UriForRedirect_Success()
   {
     // Act
     var redirect = _nukiOAuthRepository.GetOAuthRedirectUri("v7kn_NX7vQ7VjQdXFGK43g");
@@ -57,7 +57,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public void BuildUriForCode_ButClientIdIsEmpty_Test()
+  public void BuildUriForCode_ButClientIdIsEmpty()
   {
     // Act
     var exCode = _nukiOAuthRepository.GetOAuthRedirectUri("");
@@ -66,7 +66,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public void BuildUriForCode_ArgumentNullException_Test()
+  public void BuildUriForCode_ArgumentNullException()
   {
     // Arrange
     _configurationMock.Setup(m => m["NUKI_REDIRECT_FOR_TOKEN"]).Returns<string>(null);
@@ -80,7 +80,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public void BuildUriForCode_GenericError_Test()
+  public void BuildUriForCode_InvalidInput_GenericError()
   {
     // Arrange
     _httpTest.SimulateException(new Exception());
@@ -96,7 +96,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   #region Authenticate
 
   [Fact]
-  public async void Authenticate_ReturnSuccess_Test()
+  public async void Authenticate_ValidInput_ReturnSuccess()
   {
     //Arrange
     _httpTest.RespondWithJson(new
@@ -108,23 +108,15 @@ public class NukiOAuthRepositoryTests : IDisposable
     }); // from nuki documentation
 
     // Act
-    var nukiAccount = await _nukiOAuthRepository.Authenticate("clientId", "code");
+    var actual = await _nukiOAuthRepository.Authenticate("clientId", "code");
 
     // Assert
     _httpTest.ShouldHaveMadeACall();
-    nukiAccount.Should().BeOfType<Result<NukiCredential>>();
-    nukiAccount.Value.Should().BeEquivalentTo(new NukiCredential()
-    {
-      Token = "ACCESS_TOKEN",
-      RefreshToken = "REFRESH_TOKEN",
-      ClientId = "clientId",
-      TokenType = "bearer",
-      TokenExpiringTimeInSeconds = 2592000
-    });
+    actual.Should().BeOfType<Result<NukiCredential>>();
   }
 
   [Fact]
-  public async void GetNukiAccount_ButClientIdIsEmpty_Test()
+  public async void Authenticate_ButClientIdIsEmpty_ReturnInvalidParametersError()
   {
     // Act
     var exToken = await _nukiOAuthRepository.Authenticate("", "");
@@ -134,7 +126,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public async void GetNukiAccount_ButNukiReturnsInvalidParameterError_Test()
+  public async void Authenticated_ButNukiReturnsInvalidParameterError()
   {
     //Arrange
     _httpTest.RespondWith(status: 401, body: System.Text.Json.JsonSerializer.Serialize(new
@@ -152,7 +144,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public async void GetNukiAccount_ButNukiReturnsServerOrTimeoutError_Test()
+  public async void Authenticated_ButNukiReturnsServerOrTimeoutError()
   {
     //Arrange
     _httpTest.RespondWith(status: (int)HttpStatusCode.RequestTimeout,
@@ -167,7 +159,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public async void GetAuthenticatedProvider_ButNukiUnknownReturnsError_Test()
+  public async void GetAuthenticatedProvider_ButNukiUnknownReturnsError()
   {
     //Arrange
     _httpTest.RespondWith(status: 435, body: System.Text.Json.JsonSerializer.Serialize(new
@@ -184,7 +176,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   }
 
   [Fact]
-  public async void GetAuthenticatedProvider_ButNukiReturnsNull_Test()
+  public async void GetAuthenticatedProvider_ButNukiReturnsNull()
   {
     //Arrange
     _httpTest.RespondWith(status: 200, body: null);
@@ -201,7 +193,7 @@ public class NukiOAuthRepositoryTests : IDisposable
   #region RefreshToken
 
   [Fact]
-  public async void RefreshToken_ReturnSuccess_Test()
+  public async void RefreshToken_ReturnSuccess()
   {
     //Arrange
     _httpTest.RespondWithJson(new
@@ -213,24 +205,16 @@ public class NukiOAuthRepositoryTests : IDisposable
     }); // from nuki documentation
 
     // Act
-    var nukiAccount = await _nukiOAuthRepository.RefreshNukiOAuth(
+    var nukiCredentialResult = await _nukiOAuthRepository.RefreshNukiOAuth(
       new NukiOAuthRequest { ClientId = "clientId", RefreshToken = "VALID_REFRESH_TOKEN" });
 
     // Assert
     _httpTest.ShouldHaveMadeACall();
-    nukiAccount.Should().BeOfType<Result<NukiCredential>>();
-    nukiAccount.Value.Should().BeEquivalentTo(new NukiCredential()
-    {
-      Token = "ACCESS_TOKEN",
-      RefreshToken = "REFRESH_TOKEN",
-      ClientId = "clientId",
-      TokenType = "bearer",
-      TokenExpiringTimeInSeconds = 2592000
-    });
+    nukiCredentialResult.Should().BeOfType<Result<NukiCredential>>();
   }
 
   [Fact]
-  public async void RefreshToken_ButClientIdIsEmpty_Test()
+  public async void RefreshToken_ButClientIdIsEmpty()
   {
     // Act
     var exToken = await _nukiOAuthRepository.RefreshNukiOAuth(new NukiOAuthRequest() { ClientId = "", Code = "" });

@@ -12,21 +12,16 @@ namespace Kerbero.Domain.Tests.NukiAuthentication.Interactors;
 
 public class CreateNukiCredentialInteractorTests
 {
-  private readonly CreateNukiCredentialInteractor _interactor;
+  private readonly CreateNukiCredentialInteractor _createNukiCredentialInteractor;
 
-  private readonly Mock<INukiOAuthRepository> _nukiOAuthRepositoryMock =
-    new Mock<INukiOAuthRepository>();
-
-  private readonly Mock<INukiCredentialRepository>
-    _nukiCredentialRepositoryMock = new Mock<INukiCredentialRepository>();
-
-  private readonly Mock<INukiCredentialDraftRepository> _nukiCredentialDraftRepositoryMock =
-    new Mock<INukiCredentialDraftRepository>();
+  private readonly Mock<INukiOAuthRepository> _nukiOAuthRepositoryMock = new();
+  private readonly Mock<INukiCredentialRepository> _nukiCredentialRepositoryMock = new();
+  private readonly Mock<INukiCredentialDraftRepository> _nukiCredentialDraftRepositoryMock = new();
 
 
   public CreateNukiCredentialInteractorTests()
   {
-    _interactor = new CreateNukiCredentialInteractor(
+    _createNukiCredentialInteractor = new CreateNukiCredentialInteractor(
       nukiCredentialRepository: _nukiCredentialRepositoryMock.Object,
       nukiOAuthRepository: _nukiOAuthRepositoryMock.Object,
       nukiCredentialDraftRepository: _nukiCredentialDraftRepositoryMock.Object
@@ -39,6 +34,7 @@ public class CreateNukiCredentialInteractorTests
     // Arrange
     var nukiCredentials = new NukiCredential()
     {
+      Id = 1,
       Token = "VALID_TOKEN",
       RefreshToken = "VALID_REFRESH_TOKEN",
       ClientId = "VALID_CLIENT_ID",
@@ -57,19 +53,14 @@ public class CreateNukiCredentialInteractorTests
     _nukiCredentialDraftRepositoryMock.Setup(it => it.DeleteByClientId(It.IsAny<string>()))
       .ReturnsAsync(Result.Ok());
 
-    _nukiOAuthRepositoryMock.Setup(c => c.Authenticate(
-        It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(() => Task.FromResult(Result.Ok(nukiCredentials)));
+    _nukiOAuthRepositoryMock.Setup(c => c.Authenticate(It.IsAny<string>(), It.IsAny<string>()))
+      .ReturnsAsync(() => Result.Ok(nukiCredentials));
 
-    _nukiCredentialRepositoryMock.Setup(c =>
-      c.Create(It.IsAny<NukiCredential>())).ReturnsAsync(() =>
-    {
-      nukiCredentials.Id = 1;
-      return Result.Ok(nukiCredentials);
-    });
+    _nukiCredentialRepositoryMock.Setup(c => c.Create(It.IsAny<NukiCredential>(), It.IsAny<Guid>()))
+      .ReturnsAsync(() => Result.Ok(nukiCredentials));
 
     // Act
-    var nukiCredentialDto = await _interactor.Handle(
+    var nukiCredentialDto = await _createNukiCredentialInteractor.Handle(
       new CreateNukiCredentialParams() { ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE" }
     );
 
@@ -77,42 +68,44 @@ public class CreateNukiCredentialInteractorTests
     _nukiOAuthRepositoryMock.Verify();
     _nukiCredentialRepositoryMock.Verify();
     nukiCredentialDto.Should().BeOfType<Result<NukiCredentialDto>>();
-    nukiCredentialDto.Value.Should().BeEquivalentTo(new NukiCredentialDto()
+    nukiCredentialDto.Should().BeEquivalentTo(Result.Ok(new NukiCredentialDto()
     {
       Id = 1,
       ClientId = "VALID_CLIENT_ID",
       Token = "VALID_TOKEN"
-    });
+    }));
   }
 
   [Fact]
   public async Task It_Handle_Nuki_Auth_Error()
   {
     // Arrange
-    var nukiAccountDraft = new NukiCredentialDraft(
+    var tNukiCredentialsDraft = new NukiCredentialDraft(
       ClientId: "clientId",
       RedirectUrl: "uri.ToString()",
       UserId: new Guid()
     );
 
+    var tError = new ExternalServiceUnreachableError();
+
     _nukiCredentialDraftRepositoryMock.Setup(it => it.GetByClientId(It.IsAny<string>()))
-      .ReturnsAsync(nukiAccountDraft);
+      .ReturnsAsync(tNukiCredentialsDraft);
     _nukiCredentialDraftRepositoryMock.Setup(it => it.DeleteByClientId(It.IsAny<string>()))
       .ReturnsAsync(Result.Ok());
 
-    var error = new ExternalServiceUnreachableError();
 
-    _nukiOAuthRepositoryMock.Setup(
-        c => c.Authenticate(It.IsAny<string>(), It.IsAny<string>())
-      )
-      .Returns(async () => await Task.FromResult(Result.Fail(error)));
+    _nukiOAuthRepositoryMock.Setup(c => c.Authenticate(It.IsAny<string>(), It.IsAny<string>()))
+      .ReturnsAsync(() => Result.Fail(tError));
 
     // Act 
-    var ex = await _interactor.Handle(
+    var actual = await _createNukiCredentialInteractor.Handle(
       new CreateNukiCredentialParams() { ClientId = "VALID_CLIENT_ID", Code = "VALID_CODE" }
     );
+
     // Assert
-    ex.IsFailed.Should().BeTrue();
-    ex.Errors.FirstOrDefault()!.Should().BeEquivalentTo(error);
+    var expected = Result.Fail(new ExternalServiceUnreachableError());
+
+    actual.IsFailed.Should().BeTrue();
+    actual.Should().BeEquivalentTo(expected);
   }
 }
