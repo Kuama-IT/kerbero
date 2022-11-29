@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Identity.Modules.Users.Entities;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Kerbero.Domain.SmartLockKeys.Entities;
 using Kerbero.Domain.SmartLockKeys.Managers;
-using Kerbero.Domain.SmartLockKeys.Models.PresentationRequests;
 
 namespace Kerbero.Domain.Tests.SmartLockKeys.Managers;
 

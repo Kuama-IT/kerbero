@@ -1,9 +1,7 @@
 using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiActions.Interactors;
-using Kerbero.Domain.NukiActions.Models;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;

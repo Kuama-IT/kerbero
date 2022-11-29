@@ -2,7 +2,6 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.NukiAuthentication.Errors;
 using Kerbero.Domain.NukiAuthentication.Models;
-using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.NukiAuthentication.Mappers;
@@ -25,33 +24,25 @@ public class NukiCredentialRepositoryTests
       .UseInMemoryDatabase(databaseName: "NukiCredentials_Create")
       .Options;
     await using var dbContext = new ApplicationDbContext(options);
+
     var repository = new NukiCredentialRepository(dbContext, _loggerMock.Object);
 
-    var tNukiCredential = new NukiCredential()
+    var tNukiCredential = new NukiCredentialModel()
     {
       Token = "VALID_TOKEN",
-      RefreshToken = "VALID_REFRESH_TOKEN",
-      TokenExpiringTimeInSeconds = 2592000,
-      ClientId = "VALID_CLIENT_ID",
-      TokenType = "bearer",
     };
 
-    var tUserId = Guid.NewGuid();
-
     // Act
-    var actual = await repository.Create(tNukiCredential, tUserId);
+    var actual = await repository.Create(tNukiCredential, new Guid());
 
-    var expected = new NukiCredential()
+    var expected = new NukiCredentialModel()
     {
       Id = 1,
       Token = "VALID_TOKEN",
-      RefreshToken = "VALID_REFRESH_TOKEN",
-      TokenExpiringTimeInSeconds = 2592000,
-      ClientId = "VALID_CLIENT_ID",
-      TokenType = "bearer",
     };
 
     // Assert
+    actual.IsSuccess.Should().BeTrue();
     actual.Should().BeEquivalentTo(Result.Ok(expected));
   }
 
@@ -69,10 +60,6 @@ public class NukiCredentialRepositoryTests
     var tNukiCredentialTable = new NukiCredentialEntity()
     {
       Token = "VALID_TOKEN",
-      RefreshToken = "VALID_REFRESH_TOKEN",
-      TokenExpiringTimeInSeconds = 2592000,
-      ClientId = "VALID_CLIENT_ID",
-      TokenType = "bearer",
     };
 
     dbContext.NukiCredentials.Add(tNukiCredentialTable);
@@ -83,14 +70,10 @@ public class NukiCredentialRepositoryTests
     var actual = await repository.GetById(1);
 
     // Assert
-    var expected = Result.Ok(new NukiCredentialEntity()
+    var expected = Result.Ok(new NukiCredentialModel()
     {
       Id = 1,
       Token = "VALID_TOKEN",
-      RefreshToken = "VALID_REFRESH_TOKEN",
-      TokenExpiringTimeInSeconds = 2592000,
-      ClientId = "VALID_CLIENT_ID",
-      TokenType = "bearer",
     });
 
     actual.Should().BeEquivalentTo(expected);
@@ -129,10 +112,6 @@ public class NukiCredentialRepositoryTests
     var tNukiCredentialTable = new NukiCredentialEntity()
     {
       Token = "VALID_TOKEN",
-      RefreshToken = "VALID_REFRESH_TOKEN",
-      TokenExpiringTimeInSeconds = 2592000,
-      ClientId = "VALID_CLIENT_ID",
-      TokenType = "bearer",
     };
 
     dbContext.NukiCredentials.Add(tNukiCredentialTable);

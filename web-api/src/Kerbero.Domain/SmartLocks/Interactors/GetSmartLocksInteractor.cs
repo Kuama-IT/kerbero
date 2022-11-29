@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using FluentResults;
+﻿using FluentResults;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Mappers;
@@ -29,8 +28,7 @@ public class GetSmartLocksInteractor : IGetSmartLocksInteractor
         return Result.Fail(nukiSmartLockResult.Errors);
       }
 
-      Debug.Assert(nukiCredential.Id != null, "nukiCredential.Id != null");
-      var dtos = SmartLockMapper.Map(nukiSmartLockResult.Value, "nuki", nukiCredential.Id.Value);
+      var dtos = SmartLockMapper.Map(nukiSmartLockResult.Value, "nuki", nukiCredential.Id);
       smartLockDtos.AddRange(dtos);
     }
 

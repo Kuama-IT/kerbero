@@ -1,6 +1,4 @@
-using Kerbero.Domain.NukiActions.Entities;
-using Kerbero.Domain.NukiAuthentication.Models;
-using Kerbero.Identity.Modules.Users.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kerbero.Infrastructure.NukiAuthentication.Entities;
 
@@ -8,11 +6,8 @@ public class NukiCredentialEntity
 {
   public int Id { get; set; }
   public string Token { get; set; } = null!;
-  public string RefreshToken { get; set; } = null!;
-  public int TokenExpiringTimeInSeconds { get; set; }
-  public DateTime CreatedAt { get; set; }
-
-  public string TokenType { get; set; } = null!;
-  public string ClientId { get; set; } = null!;
+  public Guid UserId { get; set; }
+  [ForeignKey((nameof(UserId)))]
+  public string? User { get; set; }
 }
 

@@ -22,12 +22,12 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
     _nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
   }
 
-  public async Task<Result<List<SmartLock>>> GetAll(NukiCredential nukiCredential)
+  public async Task<Result<List<SmartLock>>> GetAll(NukiCredentialModel nukiCredentialModel)
   {
     var result = await _nukiSafeHttpCallHelper.Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("smartlock")
-        .WithOAuthBearerToken(nukiCredential.Token)
+        .WithOAuthBearerToken(nukiCredentialModel.Token)
         .GetJsonAsync<List<NukiSmartLockResponse>>()
     );
 

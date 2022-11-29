@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Repositories;

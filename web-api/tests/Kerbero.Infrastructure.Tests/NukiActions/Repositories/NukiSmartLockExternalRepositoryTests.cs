@@ -9,7 +9,6 @@ using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.NukiActions.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Kerbero.Infrastructure.Tests.NukiActions.Repositories;

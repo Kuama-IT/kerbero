@@ -1,5 +1,3 @@
-using Kerbero.Domain.NukiAuthentication.Models;
-
 namespace Kerbero.Domain.NukiActions.Entities;
 
 // TODO FIX ME

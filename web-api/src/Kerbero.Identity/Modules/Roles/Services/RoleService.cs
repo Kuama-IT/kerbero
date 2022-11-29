@@ -8,15 +8,10 @@ using Kerbero.Identity.Modules.Notifier.Events;
 using Kerbero.Identity.Modules.Notifier.Services;
 using Kerbero.Identity.Modules.Roles.Mappings;
 using Kerbero.Identity.Modules.Users.Services;
-using Kerbero.Identity.Extensions;
-using Kerbero.Identity.Modules.Roles.Entities;
-using Kerbero.Identity.Modules.Users.Entities;
-using Kerbero.Identity.Modules.Users.Mappings;
 using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Roles.Dtos;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kerbero.Identity.Modules.Roles.Services;
 

@@ -1,6 +1,5 @@
 using FluentResults;
 using Kerbero.Domain.SmartLockKeys.Entities;
-using Kerbero.Domain.SmartLockKeys.Models.PresentationRequests;
 
 namespace Kerbero.Domain.SmartLockKeys.Managers;
 

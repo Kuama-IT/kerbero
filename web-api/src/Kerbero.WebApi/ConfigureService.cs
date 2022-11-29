@@ -12,7 +12,6 @@ public static
 {
   public static void AddWebApiServices(this IServiceCollection services)
   {
-    services.AddScoped<ICreateNukiCredentialDraftInteractor, CreateNukiCredentialDraftInteractor>();
     services.AddScoped<ICreateNukiCredentialInteractor, CreateNukiCredentialInteractor>();
     services.AddScoped<IGetNukiCredentialInteractor, GetNukiCredentialInteractor>();
     services.AddScoped<ICloseNukiSmartLockInteractor, CloseNukiSmartLockInteractor>();

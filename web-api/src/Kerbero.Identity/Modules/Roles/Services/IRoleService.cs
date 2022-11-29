@@ -1,7 +1,6 @@
 ﻿using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Roles.Dtos;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Kerbero.Identity.Modules.Roles.Services;
 

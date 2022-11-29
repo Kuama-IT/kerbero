@@ -1,5 +1,4 @@
 using Kerbero.Domain.NukiActions.Entities;
-using Kerbero.Domain.NukiActions.Models;
 using Kerbero.Domain.NukiActions.Models.ExternalResponses;
 using Kerbero.Domain.NukiActions.Models.PresentationResponse;
 

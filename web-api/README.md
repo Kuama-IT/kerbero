@@ -22,6 +22,6 @@ The solution is divided in multiple projects and in order to divide responsibili
 in a different projects, with the respect to the main project (WebApi). As result, the commands are quiet different
 from the base ones.
 
-- **Add Migration** `dotnet ef migrations add <MigrationName> -s src/Kerbero.WebApi/Kerbero.WebApi.csproj -p src/Kerbero.Infrastructure/Kerbero.Infrastructure.cspro`
+- **Add Migration** `dotnet ef migrations add <MigrationName> -s src/Kerbero.WebApi/Kerbero.WebApi.csproj -p src/Kerbero.Infrastructure/Kerbero.Infrastructure.csproj`
 - **Remove Migration** `dotnet ef migrations remove`
 - **DB update** `dotnet ef database update -s src/Kerbero.WebApi/Kerbero.WebApi.csproj -p src/Kerbero.Infrastructure/Kerbero.Infrastructure.csproj`. \
