@@ -1,7 +1,5 @@
 using DotNetEnv;
 using System.Net.Http.Json;
-using Kerbero.Domain.NukiActions.Entities;
-using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiAuthentication.Models;
 using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
@@ -75,7 +73,7 @@ public class KerberoWebApplicationFactory<TStartup>
     return client;
   }
 
-  public async Task CreateNukiCredential(NukiCredential model, Guid userId)
+  public async Task CreateNukiCredential(NukiCredentialModel model, Guid userId)
   {
     using var scope = Services.CreateScope();
     var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiCredentialRepository>();

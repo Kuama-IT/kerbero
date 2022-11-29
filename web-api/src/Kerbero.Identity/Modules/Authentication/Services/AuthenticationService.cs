@@ -1,13 +1,8 @@
-﻿using System.Security.Claims;
-using Kerbero.Identity.Common.Exceptions;
+﻿using Kerbero.Identity.Common.Exceptions;
 using Kerbero.Identity.Modules.Users.Services;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
-using Kerbero.Identity.Modules.Authentication.Models;
-using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Mappings;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Kerbero.Identity.Modules.Authentication.Services;
 

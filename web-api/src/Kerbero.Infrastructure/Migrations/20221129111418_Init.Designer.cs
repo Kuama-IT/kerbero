@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Kerbero.WebApi.Migrations
+namespace Kerbero.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221125150235_Init")]
+    [Migration("20221129111418_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,32 +195,6 @@ namespace Kerbero.WebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialDraftEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RedirectUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("NukiCredentialDrafts");
-                });
-
             modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -229,27 +203,15 @@ namespace Kerbero.WebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TokenExpiringTimeInSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TokenType")
-                        .IsRequired()
+                    b.Property<string>("User")
                         .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -258,11 +220,19 @@ namespace Kerbero.WebApi.Migrations
 
             modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.UserNukiCredentialEntity", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<int>("NukiCredentialId")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("NukiCredentialId");
 
@@ -382,17 +352,6 @@ namespace Kerbero.WebApi.Migrations
                         .HasForeignKey("StateId");
 
                     b.Navigation("State");
-                });
-
-            modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.NukiCredentialDraftEntity", b =>
-                {
-                    b.HasOne("Kerbero.Identity.Modules.Users.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Kerbero.Infrastructure.NukiAuthentication.Entities.UserNukiCredentialEntity", b =>

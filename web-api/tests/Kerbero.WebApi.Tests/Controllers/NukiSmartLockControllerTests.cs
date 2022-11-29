@@ -1,16 +1,3 @@
-using FluentAssertions;
-using FluentResults;
-using Kerbero.Domain.NukiActions.Errors;
-using Kerbero.Domain.NukiActions.Interfaces;
-using Kerbero.Domain.NukiActions.Models.PresentationRequest;
-using Kerbero.Domain.NukiActions.Models.PresentationResponse;
-using Kerbero.Domain.NukiAuthentication.Dtos;
-using Kerbero.Domain.NukiAuthentication.Interfaces;
-using Kerbero.WebApi.Controllers;
-using Kerbero.WebApi.Models.Requests;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-
 namespace Kerbero.WebApi.Tests.Controllers;
 
 // TODO restore tests

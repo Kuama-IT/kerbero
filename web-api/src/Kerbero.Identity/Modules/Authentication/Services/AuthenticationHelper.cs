@@ -4,8 +4,6 @@ using Kerbero.Identity.Common.Exceptions;
 using Kerbero.Identity.Modules.Roles.Services;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
-using Kerbero.Identity.Modules.Notifier.Services;
-using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 
 namespace Kerbero.Identity.Modules.Authentication.Services;
 

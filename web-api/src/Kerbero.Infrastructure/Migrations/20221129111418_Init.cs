@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Kerbero.WebApi.Migrations
+namespace Kerbero.Infrastructure.Migrations
 {
     public partial class Init : Migration
     {
@@ -58,11 +58,8 @@ namespace Kerbero.WebApi.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Token = table.Column<string>(type: "text", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: false),
-                    TokenExpiringTimeInSeconds = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TokenType = table.Column<string>(type: "text", nullable: false),
-                    ClientId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    User = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -196,35 +193,17 @@ namespace Kerbero.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NukiCredentialDrafts",
+                name: "UserNukiCredentials",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ClientId = table.Column<string>(type: "text", nullable: false),
-                    RedirectUrl = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NukiCredentialDrafts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_NukiCredentialDrafts_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserNukiCredentials",
-                columns: table => new
-                {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     NukiCredentialId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_UserNukiCredentials", x => x.Id);
                     table.ForeignKey(
                         name: "FK_UserNukiCredentials_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -301,11 +280,6 @@ namespace Kerbero.WebApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NukiCredentialDrafts_UserId",
-                table: "NukiCredentialDrafts",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_NukiSmartLocks_StateId",
                 table: "NukiSmartLocks",
                 column: "StateId");
@@ -338,9 +312,6 @@ namespace Kerbero.WebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
-
-            migrationBuilder.DropTable(
-                name: "NukiCredentialDrafts");
 
             migrationBuilder.DropTable(
                 name: "NukiSmartLocks");

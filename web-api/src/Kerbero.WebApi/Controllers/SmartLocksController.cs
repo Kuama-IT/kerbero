@@ -4,7 +4,6 @@ using Kerbero.Domain.NukiAuthentication.Mappers;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Params;
-using Kerbero.WebApi.Exceptions;
 using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;

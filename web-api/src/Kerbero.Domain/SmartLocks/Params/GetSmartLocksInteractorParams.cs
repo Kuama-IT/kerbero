@@ -2,4 +2,4 @@
 
 namespace Kerbero.Domain.SmartLocks.Params;
 
-public record GetSmartLocksInteractorParams(List<NukiCredential> NukiCredentials);
+public record GetSmartLocksInteractorParams(List<NukiCredentialModel> NukiCredentials);

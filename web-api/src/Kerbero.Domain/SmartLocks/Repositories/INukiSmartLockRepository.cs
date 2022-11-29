@@ -6,5 +6,5 @@ namespace Kerbero.Domain.SmartLocks.Repositories;
 
 public interface INukiSmartLockRepository
 {
-  public Task<Result<List<SmartLock>>> GetAll(NukiCredential nukiCredential);
+  public Task<Result<List<SmartLock>>> GetAll(NukiCredentialModel nukiCredentialModel);
 }

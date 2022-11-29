@@ -6,7 +6,6 @@ using Kerbero.Domain.NukiAuthentication.Repositories;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.Infrastructure.NukiAuthentication.Entities;
 using Kerbero.Infrastructure.NukiAuthentication.Mappers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -24,11 +23,12 @@ public class NukiCredentialRepository : INukiCredentialRepository
     _dbContext = dbContext;
   }
 
-  public async Task<Result<NukiCredential>> Create(NukiCredential model, Guid userId)
+  public async Task<Result<NukiCredentialModel>> Create(NukiCredentialModel model, Guid userId)
   {
     try
     {
       var entity = NukiCredentialMapper.Map(model);
+      entity.UserId = userId;
 
       _dbContext.NukiCredentials.Add(entity);
 
@@ -70,7 +70,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
   }
 
-  public async Task<Result<NukiCredential>> GetById(int id)
+  public async Task<Result<NukiCredentialModel>> GetById(int id)
   {
     try
     {
@@ -95,14 +95,8 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
   }
 
-  public async Task<Result<NukiCredential>> Update(NukiCredential model)
+  public async Task<Result<NukiCredentialModel>> Update(NukiCredentialModel model)
   {
-    if (model.Id is null)
-    {
-      // TODO evaluate to throw (we should not have this case, except for bad development errors)
-      return Result.Fail(new InvalidParametersError(nameof(model.Id)));
-    }
-
     try
     {
       var entity = await _dbContext.NukiCredentials.SingleAsync(it => it.Id == model.Id);
@@ -138,7 +132,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
   }
 
-  public async Task<Result<List<NukiCredential>>> GetAllByUserId(Guid userId)
+  public async Task<Result<List<NukiCredentialModel>>> GetAllByUserId(Guid userId)
   {
     var entities = await _dbContext.UserNukiCredentials
       .AsNoTracking()
