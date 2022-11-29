@@ -1,6 +1,6 @@
-using Kerbero.Domain.NukiAuthentication.Dtos;
-using Kerbero.Domain.NukiAuthentication.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Mappers;
+using Kerbero.Domain.NukiCredentials.Dtos;
+using Kerbero.Domain.NukiCredentials.Interfaces;
+using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Params;

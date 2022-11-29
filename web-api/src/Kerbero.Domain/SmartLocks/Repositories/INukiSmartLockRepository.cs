@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLocks.Models;
 
 namespace Kerbero.Domain.SmartLocks.Repositories;

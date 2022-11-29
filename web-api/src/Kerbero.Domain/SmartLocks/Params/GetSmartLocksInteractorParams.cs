@@ -1,4 +1,4 @@
-﻿using Kerbero.Domain.NukiAuthentication.Models;
+﻿using Kerbero.Domain.NukiCredentials.Models;
 
 namespace Kerbero.Domain.SmartLocks.Params;
 

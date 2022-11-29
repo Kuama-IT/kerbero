@@ -1,7 +1,7 @@
 using DotNetEnv;
 using System.Net.Http.Json;
-using Kerbero.Domain.NukiAuthentication.Models;
-using Kerbero.Domain.NukiAuthentication.Repositories;
+using Kerbero.Domain.NukiCredentials.Models;
+using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;

@@ -1,7 +1,7 @@
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Identity.Common;
 using Kerbero.Infrastructure.Common.Interfaces;
-using Kerbero.Infrastructure.NukiAuthentication.Entities;
+using Kerbero.Infrastructure.NukiCredentials.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kerbero.Infrastructure.Common.Context;

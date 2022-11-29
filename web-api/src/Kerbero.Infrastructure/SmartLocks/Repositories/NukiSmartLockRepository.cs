@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using Flurl;
 using Flurl.Http;
-using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Domain.SmartLocks.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
