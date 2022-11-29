@@ -10,5 +10,5 @@ public class NukiSmartLockResponse
 
   [JsonPropertyName("state")] public required NukiSmartlockStateResponse State { get; set; }
 
-  [JsonPropertyName("type")] public required NukiSmartlockType Type { get; set; }
+  [JsonPropertyName("type")] public required ENukiSmartLockType Type { get; set; }
 }

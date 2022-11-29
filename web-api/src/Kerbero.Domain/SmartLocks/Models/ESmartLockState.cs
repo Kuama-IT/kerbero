@@ -1,6 +1,6 @@
 namespace Kerbero.Domain.SmartLocks.Models;
 
-public enum SmartLockState
+public enum ESmartLockState
 {
   /// <summary>
   /// The smart lock is currently closed, a.k.a. it can be opened

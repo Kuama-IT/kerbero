@@ -1,10 +1,13 @@
+using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
+using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Domain.SmartLocks.Params;
 using Kerbero.WebApi.Extensions;
+using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +21,15 @@ public class SmartLocksController : ControllerBase
 {
   private readonly IGetSmartLocksInteractor _getSmartLocksInteractor;
   private readonly IGetNukiCredentialsByUserInteractor _getNukiCredentialsByUserInteractor;
+  private readonly IOpenSmartLockInteractor _openSmartLockInteractor;
 
   public SmartLocksController(IGetSmartLocksInteractor getSmartLocksInteractor,
-    IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor)
+    IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor,
+    IOpenSmartLockInteractor openSmartLockInteractor)
   {
     _getSmartLocksInteractor = getSmartLocksInteractor;
     _getNukiCredentialsByUserInteractor = getNukiCredentialsByUserInteractor;
+    _openSmartLockInteractor = openSmartLockInteractor;
   }
 
   [Authorize]
@@ -54,5 +60,36 @@ public class SmartLocksController : ControllerBase
     }
 
     return smartLocksResult.Value;
+  }
+
+  [Authorize]
+  [HttpPut]
+  [Route("{smartLockId}/open")]
+  public async Task<ActionResult> Open([FromBody] OpenSmartLockRequest request, string smartLockId)
+  {
+    var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
+
+    if (provider is null)
+    {
+      return BadRequest();
+    }
+
+    var userId = HttpContext.GetAuthenticatedUserId();
+    
+    var result = await _openSmartLockInteractor.Handle(new OpenSmartLockParams()
+    {
+      SmartLockProvider = provider,
+      UserId = userId,
+      SmartLockId = smartLockId,
+      CredentialId = request.CredentialsId
+    });
+
+    if (result.IsFailed)
+    {
+      var error = result.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return NoContent();
   }
 }

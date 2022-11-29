@@ -8,11 +8,11 @@ using Kerbero.WebApi.Models.Requests;
 
 namespace Kerbero.Integration.Tests.NukiCredentials;
 
-public class NukiCredentialsTests
+public class NukiCredentialsIntegrationTests
 {
   private readonly KerberoWebApplicationFactory<Program> _application;
 
-  public NukiCredentialsTests()
+  public NukiCredentialsIntegrationTests()
   {
     _application = new KerberoWebApplicationFactory<Program>();
     _application.Server.PreserveExecutionContext = true; // fixture for Flurl
@@ -24,7 +24,7 @@ public class NukiCredentialsTests
     var httpTest = new HttpTest();
     httpTest.RespondWith("everything is good");
 
-    var client = await _application.CreateUserAndAuthenticateClient();
+    var (client, user) = await _application.CreateUserAndAuthenticateClient();
 
     var tExpectedDto = new NukiCredentialDto
     {
@@ -47,7 +47,7 @@ public class NukiCredentialsTests
     var httpTest = new HttpTest();
     httpTest.RespondWith("everything is bad", 500);
 
-    var client = await _application.CreateUserAndAuthenticateClient();
+    var (client, user) = await _application.CreateUserAndAuthenticateClient();
 
     var tExpectedDto = new NukiCredentialDto
     {

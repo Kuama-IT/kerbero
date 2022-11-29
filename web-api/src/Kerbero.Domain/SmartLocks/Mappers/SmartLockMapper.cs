@@ -16,7 +16,7 @@ public static class SmartLockMapper
     {
       Id = model.Id,
       Name = model.Name,
-      Provider = model.Provider.Name,
+      SmartLockProvider = model.SmartLockProvider.Name,
       CredentialId = credentialId,
       State = new SmartLockStateDto()
       {

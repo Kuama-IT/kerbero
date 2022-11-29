@@ -14,5 +14,6 @@ public static
     services.AddScoped<IGetNukiCredentialInteractor, GetNukiCredentialInteractor>();
     services.AddScoped<IGetNukiCredentialsByUserInteractor, GetNukiCredentialsByUserInteractor>();
     services.AddScoped<IGetSmartLocksInteractor, GetSmartLocksInteractor>();
+    services.AddScoped<IOpenSmartLockInteractor, OpenSmartLockInteractor>();
   }
 }
