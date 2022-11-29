@@ -8,6 +8,7 @@ using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Repositories;
+using Kerbero.Domain.SmartLocks.Errors;
 using Moq;
 
 namespace Kerbero.Domain.Tests.NukiActions.Interactors;
@@ -53,7 +54,7 @@ public class OpenNukiSmartLockInteractorTests
     {
         // Arrange
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(async () => await Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
+            .Returns(async () => await Task.FromResult(Result.Fail(new SmartLockNotFoundError("0"))));
         
         // Act
         var result = await _interactor.Handle(new OpenNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0 )); // get external id from db, then call the client
@@ -61,8 +62,8 @@ public class OpenNukiSmartLockInteractorTests
         // Assert
         _persistent.Verify(c => c.GetById(It.Is<int>(x => x == 0)));
         result.IsFailed.Should().BeTrue();
-        result.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError());
-        result.Errors.First().Message.Should().Be("The id provided is not associated to any SmartLock.");
+        result.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError("0"));
+        result.Errors.First().Message.Should().Be("The id provided (0) is not associated to any SmartLock.");
     }
     
     [Fact]

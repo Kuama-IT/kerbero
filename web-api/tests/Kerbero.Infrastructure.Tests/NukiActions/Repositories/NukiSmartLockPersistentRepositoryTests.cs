@@ -2,6 +2,7 @@ using FluentAssertions;
 using Kerbero.Domain.NukiActions.Entities;
 using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiActions.Repositories;
+using Kerbero.Domain.SmartLocks.Errors;
 using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.NukiActions.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -87,6 +88,6 @@ public class NukiSmartLockPersistentRepositoryTests
     {
         var response = await _persistent.GetById(0);
         response.IsFailed.Should().BeTrue();
-        response.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError());
+        response.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError("0"));
     }
 }

@@ -3,6 +3,7 @@ using FluentResults;
 using Flurl.Http;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models.ExternalResponses;
+using Kerbero.Domain.SmartLocks.Errors;
 using Microsoft.Extensions.Logging;
 
 namespace Kerbero.Infrastructure.Common.Helpers;
@@ -33,7 +34,7 @@ public class NukiSafeHttpCallHelper
         catch (FlurlHttpException exception)
         {
             _logger.LogError(exception, "Error while calling nuki Apis with request");
-            if (exception.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.MethodNotAllowed)
+            if (exception.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.MethodNotAllowed or (int)HttpStatusCode.Forbidden)
             {
                 var error = await exception.GetResponseJsonAsync<NukiErrorExternalResponse>();
                 if (error?.Error?.Contains("invalid") == true)
@@ -46,6 +47,11 @@ public class NukiSafeHttpCallHelper
             if (exception.StatusCode is (int)HttpStatusCode.BadRequest)
             {
                 return Result.Fail(new InvalidParametersError(exception.Call.HttpRequestMessage.RequestUri!.PathAndQuery));
+            }
+
+            if (exception.StatusCode is (int)HttpStatusCode.NotFound)
+            {
+                return Result.Fail(new SmartLockNotFoundError(exception.Call.HttpRequestMessage.RequestUri!.Segments.Last()));
             }
 
             if (exception.StatusCode is (int)HttpStatusCode.RequestTimeout or >= 500)
