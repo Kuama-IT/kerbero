@@ -16,70 +16,70 @@ public static class SmartLockMapper
     {
       Id = response.NukiAccountId.ToString(),
       Name = response.Name,
-      Provider = SmartlockProvider.Nuki,
+      SmartLockProvider = SmartLockProvider.Nuki,
       State = Map(response.Type, response.State) // TODO I'm not sure whether we should use state or doorState
     };
   }
 
-  public static SmartLockState Map(NukiSmartlockType type, NukiSmartlockStateResponse nukiSmartlockState)
+  public static ESmartLockState Map(ENukiSmartLockType type, NukiSmartlockStateResponse nukiSmartlockState)
   {
     switch (type)
     {
-      case NukiSmartlockType.Keyturner:
-      case NukiSmartlockType.Box:
-      case NukiSmartlockType.Smartlock3:
-      case NukiSmartlockType.Smartdoor:
-        if (!Enum.IsDefined(typeof(NukiSmartlockState), nukiSmartlockState.State))
+      case ENukiSmartLockType.Keyturner:
+      case ENukiSmartLockType.Box:
+      case ENukiSmartLockType.Smartlock3:
+      case ENukiSmartLockType.Smartdoor:
+        if (!Enum.IsDefined(typeof(ENukiSmartLockState), nukiSmartlockState.State))
         {
           throw new ArgumentOutOfRangeException(nameof(nukiSmartlockState),
             $"Trying to map an unknown state for a Nuki Smartlock State type: ${nukiSmartlockState.State}");
         }
 
-        var state = (NukiSmartlockState)nukiSmartlockState.State;
+        var state = (ENukiSmartLockState)nukiSmartlockState.State;
         switch (state)
         {
-          case NukiSmartlockState.Locked:
-            return SmartLockState.Closed;
-          case NukiSmartlockState.Unlocked:
-          case NukiSmartlockState.UnlockedLockNGo:
-            return SmartLockState.Open;
-          case NukiSmartlockState.Uncalibrated:
-          case NukiSmartlockState.Unlocking:
-          case NukiSmartlockState.Locking:
-          case NukiSmartlockState.Unlatched:
-          case NukiSmartlockState.Unlatching:
-            return SmartLockState.Unmapped;
-          case NukiSmartlockState.MotorBlocked:
-            return SmartLockState.Error;
-          case NukiSmartlockState.Undefined:
-            return SmartLockState.Unknown;
+          case ENukiSmartLockState.Locked:
+            return ESmartLockState.Closed;
+          case ENukiSmartLockState.Unlocked:
+          case ENukiSmartLockState.UnlockedLockNGo:
+            return ESmartLockState.Open;
+          case ENukiSmartLockState.Uncalibrated:
+          case ENukiSmartLockState.Unlocking:
+          case ENukiSmartLockState.Locking:
+          case ENukiSmartLockState.Unlatched:
+          case ENukiSmartLockState.Unlatching:
+            return ESmartLockState.Unmapped;
+          case ENukiSmartLockState.MotorBlocked:
+            return ESmartLockState.Error;
+          case ENukiSmartLockState.Undefined:
+            return ESmartLockState.Unknown;
           default:
             throw new ArgumentOutOfRangeException(nameof(state),
               $"Unmapped case for Nuki Smartlock State type: ${nukiSmartlockState.State}");
         }
 
-      case NukiSmartlockType.Opener:
-        if (!Enum.IsDefined(typeof(NukiSmartlockOpenerState), nukiSmartlockState.State))
+      case ENukiSmartLockType.Opener:
+        if (!Enum.IsDefined(typeof(ENukiSmartLockOpenerState), nukiSmartlockState.State))
         {
           throw new ArgumentOutOfRangeException(nameof(nukiSmartlockState),
             $"Trying to map an unknown state for a Nuki Smartlock Opener type: ${nukiSmartlockState.State}");
         }
 
-        var openerState = (NukiSmartlockOpenerState)nukiSmartlockState.State;
+        var openerState = (ENukiSmartLockOpenerState)nukiSmartlockState.State;
 
         switch (openerState)
         {
-          case NukiSmartlockOpenerState.BootRun:
-          case NukiSmartlockOpenerState.Opening:
-          case NukiSmartlockOpenerState.RingToOpenActive:
-          case NukiSmartlockOpenerState.Untrained:
-            return SmartLockState.Unmapped;
-          case NukiSmartlockOpenerState.Open:
-            return SmartLockState.Open;
-          case NukiSmartlockOpenerState.Online:
-            return SmartLockState.Closed; // TODO is this correct?
-          case NukiSmartlockOpenerState.Undefined:
-            return SmartLockState.Unknown;
+          case ENukiSmartLockOpenerState.BootRun:
+          case ENukiSmartLockOpenerState.Opening:
+          case ENukiSmartLockOpenerState.RingToOpenActive:
+          case ENukiSmartLockOpenerState.Untrained:
+            return ESmartLockState.Unmapped;
+          case ENukiSmartLockOpenerState.Open:
+            return ESmartLockState.Open;
+          case ENukiSmartLockOpenerState.Online:
+            return ESmartLockState.Closed; // TODO is this correct?
+          case ENukiSmartLockOpenerState.Undefined:
+            return ESmartLockState.Unknown;
           default:
             throw new ArgumentOutOfRangeException(nameof(nukiSmartlockState),
               $"Unmapped case for Nuki Smartlock Opener type: ${nukiSmartlockState.State}");

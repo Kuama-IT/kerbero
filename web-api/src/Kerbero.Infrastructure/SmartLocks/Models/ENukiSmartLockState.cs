@@ -6,7 +6,7 @@ namespace Kerbero.Infrastructure.SmartLocks.Models;
 /// This is a 1 to 1 mapping from what can be seen inside the Nuki official swagger https://api.nuki.io/#/Smartlock/SmartlockResource_get_get
 /// Note that they have different states based on the <see cref="NukiSmartLockResponse.Type"/>
 /// </summary>
-public enum NukiSmartlockState
+public enum ENukiSmartLockState
 {
   Uncalibrated = 0,
   Locked = 1,
@@ -20,7 +20,7 @@ public enum NukiSmartlockState
   Undefined = 255
 }
 
-public enum NukiSmartlockOpenerState
+public enum ENukiSmartLockOpenerState
 {
   Untrained = 0,
   Online = 1,

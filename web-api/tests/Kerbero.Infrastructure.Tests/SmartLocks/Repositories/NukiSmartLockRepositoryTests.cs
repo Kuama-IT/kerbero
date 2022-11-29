@@ -58,9 +58,9 @@ public class NukiSmartLockRepositoryTests
     var expected = new SmartLock()
     {
       Id = "0",
-      State = SmartLockState.Unknown,
+      State = ESmartLockState.Unknown,
       Name = "string",
-      Provider = SmartlockProvider.Nuki
+      SmartLockProvider = SmartLockProvider.Nuki
     };
     actual.IsSuccess.Should().BeTrue();
     actual.Should().BeEquivalentTo(Result.Ok(expected));

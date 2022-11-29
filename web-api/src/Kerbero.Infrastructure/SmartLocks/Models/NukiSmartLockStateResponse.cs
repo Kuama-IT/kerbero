@@ -25,7 +25,7 @@ public class NukiSmartlockStateResponse
   /// </summary>
   [JsonPropertyName("batteryCharge")] public int BatteryCharge { get; set; }
 
-  [JsonPropertyName("doorState")] public required NukiDoorStateResponse DoorStateResponse { get; set; }
+  [JsonPropertyName("doorState")] public required ENukiDoorStateResponse DoorStateResponse { get; set; }
 
   /// <summary>
   /// The operation id - if set it's locked for another operation

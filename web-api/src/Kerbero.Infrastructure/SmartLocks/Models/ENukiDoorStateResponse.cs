@@ -3,7 +3,7 @@ namespace Kerbero.Infrastructure.SmartLocks.Models;
 /// <summary>
 /// This is a 1 to 1 mapping from what can be seen inside the Nuki official swagger https://api.nuki.io/#/Smartlock/SmartlockResource_get_get
 /// </summary>
-public enum NukiDoorStateResponse
+public enum ENukiDoorStateResponse
 {
   UnavailableOrNotPaired = 0,
   Deactivated = 1,

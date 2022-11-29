@@ -7,6 +7,7 @@ using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
 using Kerbero.Infrastructure.Common.Context;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -57,33 +58,35 @@ public class KerberoWebApplicationFactory<TStartup>
     });
   }
 
-  public async Task<HttpClient> CreateUserAndAuthenticateClient()
+  public async Task<(HttpClient client, User user)> CreateUserAndAuthenticateClient()
   {
     ClientOptions.HandleCookies = true;
     ClientOptions.BaseAddress = new Uri("https://localhost");
     var client = CreateClient();
-    
-    await CreateUser(IntegrationTestsUtils.GetSeedingUser());
+    var user = IntegrationTestsUtils.GetSeedingUser();
+    await CreateUser(user);
 
     await client.PostAsJsonAsync("api/authentication/login", new LoginDto
     {
       Email = "test@test.com",
       Password = "Test.0"
     });
-    return client;
+
+    return (client, user);
   }
 
-  public async Task CreateNukiCredential(NukiCredentialModel model, Guid userId)
+  public async Task<NukiCredentialModel> CreateNukiCredential(NukiCredentialModel model, Guid userId)
   {
     using var scope = Services.CreateScope();
-    var accountPersistentRepository = scope.ServiceProvider.GetRequiredService<INukiCredentialRepository>();
-    await accountPersistentRepository.Create(model, userId);
+    var nukiCredentialRepository = scope.ServiceProvider.GetRequiredService<INukiCredentialRepository>();
+    var result = await nukiCredentialRepository.Create(model, userId);
+    return result.Value;
   }
 
-  private async Task CreateUser(User user)
+  private async Task<IdentityResult> CreateUser(User user)
   {
     using var scope = Services.CreateScope();
     var userManager = scope.ServiceProvider.GetRequiredService<IUserManager>();
-    await userManager.Create(user, "Test.0");
+    return await userManager.Create(user, "Test.0");
   }
 }
