@@ -1,7 +1,7 @@
 using Kerbero.Domain.NukiActions.Interactors;
 using Kerbero.Domain.NukiActions.Interfaces;
-using Kerbero.Domain.NukiAuthentication.Interactors;
-using Kerbero.Domain.NukiAuthentication.Interfaces;
+using Kerbero.Domain.NukiCredentials.Interactors;
+using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.SmartLocks.Interactors;
 using Kerbero.Domain.SmartLocks.Interfaces;
 

@@ -1,9 +1,9 @@
 using Kerbero.Domain.NukiActions.Repositories;
-using Kerbero.Domain.NukiAuthentication.Repositories;
+using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLocks.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.NukiActions.Repositories;
-using Kerbero.Infrastructure.NukiAuthentication.Repositories;
+using Kerbero.Infrastructure.NukiCredentials.Repositories;
 using Kerbero.Infrastructure.SmartLocks.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 

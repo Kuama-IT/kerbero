@@ -1,4 +1,4 @@
-using Kerbero.Domain.NukiAuthentication.Models;
+using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Identity.Modules.Users.Entities;
 
 namespace Kerbero.Integration.Tests;
