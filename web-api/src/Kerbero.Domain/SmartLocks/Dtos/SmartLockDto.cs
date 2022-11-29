@@ -2,10 +2,12 @@
 
 public class SmartLockDto
 {
-  public string Id { get; set; }
-  public string Name { get; set; } = null!;
+  public required string Id { get; set; }
+  public required string Name { get; set; }
 
-  public string Provider { get; set; } = null!;
+  public required string Provider { get; set; }
 
   public int CredentialId { get; set; }
+
+  public required SmartLockStateDto State { get; set; }
 }
