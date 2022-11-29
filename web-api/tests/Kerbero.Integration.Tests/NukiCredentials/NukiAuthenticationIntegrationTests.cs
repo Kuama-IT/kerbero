@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Flurl.Http.Testing;
 using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Models.Requests;
@@ -20,6 +21,9 @@ public class NukiCredentialsTests
   [Fact]
   public async Task Post_CreateNukiCredentials_WithValidParameters()
   {
+    var httpTest = new HttpTest();
+    httpTest.RespondWith("everything is good");
+
     var client = await _application.CreateUserAndAuthenticateClient();
 
     var tExpectedDto = new NukiCredentialDto
@@ -35,5 +39,25 @@ public class NukiCredentialsTests
     var readNukiCredentialDto = await response.Content.ReadFromJsonAsync<NukiCredentialDto>();
     readNukiCredentialDto.Should().NotBeNull();
     readNukiCredentialDto.Should().BeEquivalentTo(tExpectedDto);
+  }
+  
+  [Fact]
+  public async Task Post_CreateNukiCredentials_WithInValidParameters()
+  {
+    var httpTest = new HttpTest();
+    httpTest.RespondWith("everything is bad", 500);
+
+    var client = await _application.CreateUserAndAuthenticateClient();
+
+    var tExpectedDto = new NukiCredentialDto
+    {
+      Id = 1,
+      Token = "VALID_TOKEN"
+    };
+
+    var response =
+      await client.PostAsJsonAsync(
+        "/api/nukicredentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
+    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
   }
 }

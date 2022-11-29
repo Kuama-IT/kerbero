@@ -4,15 +4,17 @@ using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interactors;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
+using Kerbero.Domain.SmartLocks.Repositories;
 using Moq;
 
-namespace Kerbero.Domain.Tests.NukiAuthentication.Interactors;
+namespace Kerbero.Domain.Tests.NukiCredentials.Interactors;
 
 public class CreateNukiCredentialInteractorTests
 {
   private readonly CreateNukiCredentialInteractor _createNukiCredentialInteractor;
 
   private readonly Mock<INukiCredentialRepository> _nukiCredentialRepositoryMock = new();
+  private readonly Mock<INukiSmartLockRepository> _nukiSmartLockRepositoryMock = new();
 
   public CreateNukiCredentialInteractorTests()
   {
@@ -31,6 +33,8 @@ public class CreateNukiCredentialInteractorTests
       Token = "VALID_TOKEN",
     };
 
+    _nukiCredentialRepositoryMock.Setup(repo => repo.ValidateApiToken(It.IsAny<string>()))
+      .ReturnsAsync(Result.Ok);
     _nukiCredentialRepositoryMock.Setup(c => c.Create(It.IsAny<NukiCredentialModel>(), It.IsAny<Guid>()))
       .ReturnsAsync(() => Result.Ok(nukiCredentials));
 

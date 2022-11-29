@@ -1,12 +1,17 @@
 using FluentResults;
+using Flurl;
+using Flurl.Http;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiCredentials.Errors;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
+using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.Infrastructure.NukiCredentials.Entities;
 using Kerbero.Infrastructure.NukiCredentials.Mappers;
+using Kerbero.Infrastructure.SmartLocks.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
@@ -16,10 +21,15 @@ public class NukiCredentialRepository : INukiCredentialRepository
 {
   private readonly IApplicationDbContext _dbContext;
   private readonly ILogger<NukiCredentialRepository> _logger;
+  private readonly IConfiguration _configuration;
+  private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
 
-  public NukiCredentialRepository(IApplicationDbContext dbContext, ILogger<NukiCredentialRepository> logger)
+  public NukiCredentialRepository(IApplicationDbContext dbContext, ILogger<NukiCredentialRepository> logger,
+    NukiSafeHttpCallHelper nukiSafeHttpCallHelper, IConfiguration configuration)
   {
     _logger = logger;
+    _nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
+    _configuration = configuration;
     _dbContext = dbContext;
   }
 
@@ -95,43 +105,6 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
   }
 
-  public async Task<Result<NukiCredentialModel>> Update(NukiCredentialModel model)
-  {
-    try
-    {
-      var entity = await _dbContext.NukiCredentials.SingleAsync(it => it.Id == model.Id);
-
-      NukiCredentialMapper.Map(entity, model: model);
-      await _dbContext.SaveChangesAsync();
-
-      return NukiCredentialMapper.Map(entity);
-    }
-    catch (NotSupportedException exception)
-    {
-      _logger.LogError(exception, "Error while adding a NukiCredential to the database");
-      return Result.Fail(new PersistentResourceNotAvailableError());
-    }
-    catch (DbUpdateException exception)
-    {
-      _logger.LogError(exception, "Error while adding a NukiCredential to the database");
-      if (exception.InnerException?.InnerException is NpgsqlException &&
-          exception.InnerException.InnerException.HResult >
-          int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) &&
-          exception.InnerException.InnerException.HResult <
-          int.Parse(PostgresErrorCodes.CheckViolation))
-      {
-        return Result.Fail(new DuplicateEntryError("Nuki account"));
-      }
-
-      return Result.Fail(new PersistentResourceNotAvailableError());
-    }
-    catch (Exception exception)
-    {
-      _logger.LogError(exception, "Error while adding a NukiCredential to the database");
-      return Result.Fail(new KerberoError());
-    }
-  }
-
   public async Task<Result<List<NukiCredentialModel>>> GetAllByUserId(Guid userId)
   {
     var entities = await _dbContext.UserNukiCredentials
@@ -155,6 +128,23 @@ public class NukiCredentialRepository : INukiCredentialRepository
     _dbContext.UserNukiCredentials.Add(entity);
 
     await _dbContext.SaveChangesAsync();
+
+    return Result.Ok();
+  }
+
+  public async Task<Result> ValidateApiToken(string apiToken)
+  {
+    var result = await _nukiSafeHttpCallHelper.Handle(() =>
+      _configuration["NUKI_DOMAIN"]
+        .AppendPathSegment("account")
+        .WithOAuthBearerToken(apiToken)
+        .GetAsync()
+    );
+
+    if (result.IsFailed)
+    {
+      return Result.Fail(new NukiCredentialInvalidTokenError());
+    }
 
     return Result.Ok();
   }
