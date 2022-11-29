@@ -1,6 +1,7 @@
 using Kerbero.Domain.NukiAuthentication.Dtos;
 using Kerbero.Domain.NukiAuthentication.Interfaces;
 using Kerbero.WebApi.Extensions;
+using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,12 +28,13 @@ public class NukiCredentialsController : ControllerBase
   /// <param name="apiToken"></param>
   /// <returns></returns>
   [HttpPost]
-  public async Task<ActionResult<NukiCredentialDto>> CreateNukiCredentialsWithToken([FromBody] string apiToken)
+  public async Task<ActionResult<NukiCredentialDto>> CreateNukiCredentialsWithToken(
+    [FromBody] CreateNukiSmartLockCredentialRequest request)
   {
     var interactorResponse = await _createNukiCredential.Handle(
       new CreateNukiCredentialParams
       {
-        Token = apiToken,
+        Token = request.Token,
         UserId = HttpContext.GetAuthenticatedUserId()
       });
 
@@ -41,7 +43,7 @@ public class NukiCredentialsController : ControllerBase
       var error = interactorResponse.Errors.First();
       return ModelState.AddErrorAndReturnAction(error);
     }
-    
+
     return interactorResponse.Value;
   }
 }

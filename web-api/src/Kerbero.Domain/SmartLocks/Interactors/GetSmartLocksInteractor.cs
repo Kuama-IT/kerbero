@@ -28,7 +28,7 @@ public class GetSmartLocksInteractor : IGetSmartLocksInteractor
         return Result.Fail(nukiSmartLockResult.Errors);
       }
 
-      var dtos = SmartLockMapper.Map(nukiSmartLockResult.Value, "nuki", nukiCredential.Id);
+      var dtos = SmartLockMapper.Map(nukiSmartLockResult.Value, nukiCredential.Id);
       smartLockDtos.AddRange(dtos);
     }
 
