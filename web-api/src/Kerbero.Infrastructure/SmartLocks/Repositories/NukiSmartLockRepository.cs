@@ -38,4 +38,22 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
 
     return SmartLockMapper.Map(result.Value);
   }
+
+  public async Task<Result<SmartLock>> Get(NukiCredentialModel nukiCredentialModel, string id)
+  {
+    var result = await _nukiSafeHttpCallHelper.Handle(() =>
+      _configuration["NUKI_DOMAIN"]
+        .AppendPathSegment("smartlock")
+        .AppendPathSegment(id)
+        .WithOAuthBearerToken(nukiCredentialModel.Token)
+        .GetJsonAsync<NukiSmartLockResponse>()
+    );
+
+    if (result.IsFailed)
+    {
+      return result.ToResult();
+    }
+
+    return SmartLockMapper.Map(result.Value);
+  }
 }

@@ -8,6 +8,7 @@ using Kerbero.Domain.NukiActions.Interfaces;
 using Kerbero.Domain.NukiActions.Models.ExternalRequests;
 using Kerbero.Domain.NukiActions.Models.PresentationRequest;
 using Kerbero.Domain.NukiActions.Repositories;
+using Kerbero.Domain.SmartLocks.Errors;
 using Moq;
 
 namespace Kerbero.Domain.Tests.NukiActions.Interactors;
@@ -53,13 +54,13 @@ public class CloseNukiSmartLockInteractorTest
     public async Task Handle_NoSmartLockFound()
     {
         _persistent.Setup(c => c.GetById(It.IsAny<int>()))
-            .Returns(async () => await Task.FromResult(Result.Fail(new SmartLockNotFoundError())));
+            .Returns(async () => await Task.FromResult(Result.Fail(new SmartLockNotFoundError("0"))));
         
         // Act
         var result = await _interactor.Handle(new CloseNukiSmartLockPresentationRequest("ACCESS_TOKEN", 0));
 
         result.IsFailed.Should().BeTrue();
-        result.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError());
+        result.Errors.First().Should().BeEquivalentTo(new SmartLockNotFoundError("0"));
     }
     
     [Fact]

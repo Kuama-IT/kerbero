@@ -3,6 +3,7 @@ using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiCredentials.Errors;
+using Kerbero.Domain.SmartLocks.Errors;
 using Kerbero.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
