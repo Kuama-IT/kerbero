@@ -27,13 +27,10 @@ public class OpenSmartLockInteractor : IOpenSmartLockInteractor
     _nukiSmartLockRepository = nukiSmartLockRepository;
   }
 
-  public async Task<Result> Handle(OpenSmartLockParams openSmartLockParams)
+  public async Task<Result> Handle(Guid userId, SmartLockProvider smartLockProvider, string smartLockId, int credentialId)
   {
-    var userNukiCredentialsResult = await _getNukiCredentialsByUserInteractor.Handle(
-      new GetNukiCredentialsByUserInteractorParams
-      {
-        UserId = openSmartLockParams.UserId,
-      });
+    var userNukiCredentialsResult =
+      await _getNukiCredentialsByUserInteractor.Handle(userId: userId);
 
     if (userNukiCredentialsResult.IsFailed)
     {
@@ -41,20 +38,20 @@ public class OpenSmartLockInteractor : IOpenSmartLockInteractor
     }
 
     // ensure provided credentials belong to current user
-    var credential = userNukiCredentialsResult.Value.Find(it => it.Id == openSmartLockParams.CredentialId);
+    var credential = userNukiCredentialsResult.Value.Find(it => it.Id == credentialId);
 
     if (credential is null)
     {
       return Result.Fail(new UnauthorizedAccessError());
     }
 
-    if (openSmartLockParams.SmartLockProvider != SmartLockProvider.Nuki)
+    if (smartLockProvider != SmartLockProvider.Nuki)
     {
       return Result.Fail(new UnsupportedSmartLockProviderError());
     }
 
     var result =
-      await _nukiSmartLockRepository.Open(NukiCredentialMapper.Map(credential), openSmartLockParams.SmartLockId);
+      await _nukiSmartLockRepository.Open(NukiCredentialMapper.Map(credential), smartLockId);
 
     return result;
   }

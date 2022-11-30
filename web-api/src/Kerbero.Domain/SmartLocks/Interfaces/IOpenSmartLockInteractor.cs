@@ -1,9 +1,9 @@
-using Kerbero.Domain.Common.Interfaces;
-using Kerbero.Domain.NukiActions.Models.PresentationRequest;
-using Kerbero.Domain.SmartLocks.Dtos;
+using FluentResults;
+using Kerbero.Domain.SmartLocks.Models;
 
 namespace Kerbero.Domain.SmartLocks.Interfaces;
 
-public interface IOpenSmartLockInteractor : InteractorAsync<OpenSmartLockParams>
+public interface IOpenSmartLockInteractor
 {
+  Task<Result> Handle(Guid userId, SmartLockProvider smartLockProvider, string smartLockId, int credentialId);
 }

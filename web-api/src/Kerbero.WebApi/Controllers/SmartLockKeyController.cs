@@ -11,40 +11,38 @@ namespace Kerbero.WebApi.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class SmartLockKeysController: ControllerBase
+public class SmartLockKeysController : ControllerBase
 {
-	private readonly ICreateSmartLockKeyInteractor _createSmartLockKeyInteractor;
+  private readonly ICreateSmartLockKeyInteractor _createSmartLockKeyInteractor;
 
-	public SmartLockKeysController(ICreateSmartLockKeyInteractor createSmartLockKeyInteractor)
-	{
-		_createSmartLockKeyInteractor = createSmartLockKeyInteractor;
-	}
+  public SmartLockKeysController(ICreateSmartLockKeyInteractor createSmartLockKeyInteractor)
+  {
+    _createSmartLockKeyInteractor = createSmartLockKeyInteractor;
+  }
 
-	[HttpPost]
-	public async Task<ActionResult<SmartLockKeyDto>> CreateSmartLockKeyBySmartLockId([FromBody] CreateSmartLockKeyRequest request)
-	{
-		var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
+  [HttpPost]
+  public async Task<ActionResult<SmartLockKeyDto>> CreateSmartLockKeyBySmartLockId(
+    [FromBody] CreateSmartLockKeyRequest request)
+  {
+    var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
 
-		if (provider is null)
-		{
-			return BadRequest();
-		}
-		
-		var createInteractorResult = await _createSmartLockKeyInteractor.Handle(
-			new CreateSmartLockKeyParams(
-				request.SmartLockId,
-				request.ExpiryDate,
-				request.CredentialId,
-				provider));
-		
-		if (createInteractorResult.IsFailed)
-		{
-			var error = createInteractorResult.Errors.First();
-			return ModelState.AddErrorAndReturnAction(error);
-		}
+    if (provider is null)
+    {
+      return BadRequest();
+    }
 
-		return Ok(createInteractorResult.Value);
-	}
-	
-	
+    var createInteractorResult = await _createSmartLockKeyInteractor.Handle(
+      smartLockId: request.SmartLockId,
+      expiryDate: request.ExpiryDate,
+      credentialId: request.CredentialId,
+      smartLockProvider: provider);
+
+    if (createInteractorResult.IsFailed)
+    {
+      var error = createInteractorResult.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return Ok(createInteractorResult.Value);
+  }
 }

@@ -18,16 +18,16 @@ public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
     _nukiCredentialRepository = nukiCredentialRepository;
   }
 
-  public async Task<Result<NukiCredentialDto>> Handle(CreateNukiCredentialParams request)
+  public async Task<Result<NukiCredentialDto>> Handle(Guid userId, string token)
   {
-    var result = await _nukiCredentialRepository.ValidateApiToken(request.Token);
+    var result = await _nukiCredentialRepository.ValidateApiToken(token);
     if (result.IsFailed)
     {
       return Result.Fail(new NukiCredentialInvalidTokenError());
     }
 
-    var nukiCredentialModel = new NukiCredentialModel() { Token = request.Token };
-    var createNukiCredentialResult = await _nukiCredentialRepository.Create(nukiCredentialModel, request.UserId);
+    var nukiCredentialModel = new NukiCredentialModel() { Token = token };
+    var createNukiCredentialResult = await _nukiCredentialRepository.Create(nukiCredentialModel, userId);
 
     if (createNukiCredentialResult.IsFailed)
     {

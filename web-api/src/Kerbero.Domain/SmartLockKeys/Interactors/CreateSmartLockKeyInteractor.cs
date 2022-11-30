@@ -27,26 +27,26 @@ public class CreateSmartLockKeyInteractor: ICreateSmartLockKeyInteractor
 		_nukiCredentialRepository = nukiCredentialRepository;
 	}
 
-	public async Task<Result<SmartLockKeyDto>> Handle(CreateSmartLockKeyParams @params)
+	public async Task<Result<SmartLockKeyDto>> Handle(string smartLockId, DateTime expiryDate, int credentialId, SmartLockProvider smartLockProvider)
 	{
-		if (@params.SmartLockProvider != SmartLockProvider.Nuki)
+		if (smartLockProvider != SmartLockProvider.Nuki)
 		{
 			return Result.Fail(new UnsupportedSmartLockProviderError());
 		}
-		var nukiCredentialResult = await _nukiCredentialRepository.GetById(@params.CredentialId);
+		var nukiCredentialResult = await _nukiCredentialRepository.GetById(credentialId);
 		if (nukiCredentialResult.IsFailed)
 		{
 			return Result.Fail(nukiCredentialResult.Errors);
 		}
 
-		var nukiSmartLockResult = await _nukiSmartLockRepository.Get(nukiCredentialResult.Value, @params.SmartLockId);
+		var nukiSmartLockResult = await _nukiSmartLockRepository.Get(nukiCredentialResult.Value, smartLockId);
 		
 		if (nukiSmartLockResult.IsFailed)
 		{
 			return Result.Fail(nukiCredentialResult.Errors);
 		}
 		
-		var generatedKey = SmartLockKeyModel.CreateKey(@params.SmartLockId, @params.ExpiryDate, @params.CredentialId);
+		var generatedKey = SmartLockKeyModel.CreateKey(smartLockId, expiryDate, credentialId);
 		var createSmartLockKeyResult = await _smartLockKeyRepository.Create(generatedKey);
 		
 		if (createSmartLockKeyResult.IsFailed)

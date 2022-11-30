@@ -15,9 +15,9 @@ public class GetNukiCredentialsByUserInteractor : IGetNukiCredentialsByUserInter
     _nukiCredentialRepository = nukiCredentialRepository;
   }
 
-  public async Task<Result<List<NukiCredentialDto>>> Handle(GetNukiCredentialsByUserInteractorParams request)
+  public async Task<Result<List<NukiCredentialDto>>> Handle(Guid userId)
   {
-    var nukiCredentialsResult = await _nukiCredentialRepository.GetAllByUserId(request.UserId);
+    var nukiCredentialsResult = await _nukiCredentialRepository.GetAllByUserId(userId);
 
     if (nukiCredentialsResult.IsFailed)
     {

@@ -40,7 +40,7 @@ public class CreateNukiCredentialInteractorTests
 
     // Act
     var nukiCredentialDto = await _createNukiCredentialInteractor.Handle(
-      new CreateNukiCredentialParams() { Token = "VALID_TOKEN", UserId = new Guid() }
+      token: "VALID_TOKEN", userId: new Guid()
     );
 
     // Assert
