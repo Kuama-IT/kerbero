@@ -1,4 +1,5 @@
-﻿using Kerbero.Identity.Common.Models;
+﻿using System.Diagnostics;
+using Kerbero.Identity.Common.Models;
 using Kerbero.Identity.Modules.Roles.Entities;
 using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Roles.Dtos;
@@ -26,7 +27,9 @@ public static class RoleMappings
     return new RoleReadDto
     {
       Id = entity.Id,
-      Name = entity.Name,
+      Name = entity.Name ??
+             throw new UnreachableException(
+               $"unable to map {nameof(Role)} the property {nameof(entity.Name)} is null"),
     };
   }
 

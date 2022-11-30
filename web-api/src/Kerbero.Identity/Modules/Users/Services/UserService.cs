@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.Encodings.Web;
 using FluentValidation;
 using FluentValidation.Results;
@@ -349,6 +350,7 @@ public class UserService : IUserService
       }
     }
 
+    Debug.Assert(role.Name != null, "role.Name != null");
     var userAddRoleResult = await _userManager.AddRoleByNameToUser(user, role.Name);
     if (!userAddRoleResult.Succeeded)
     {

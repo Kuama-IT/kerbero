@@ -7,7 +7,6 @@ using FluentAssertions;
 using Kerbero.Identity.Common.Exceptions;
 using Kerbero.Identity.Library.Modules.Claims.Dtos;
 using Kerbero.Identity.Library.Modules.Roles.Dtos;
-using Kerbero.Identity.Modules.Claims.Mappings;
 using Kerbero.Identity.Modules.Notifier.Events;
 using Kerbero.Identity.Modules.Notifier.Services;
 using Kerbero.Identity.Modules.Roles.Entities;
@@ -43,7 +42,7 @@ public class RoleServiceTest
   {
     var tRoles = new List<Role>
     {
-      new Role(),
+      new Role { Name = "test" },
     };
 
     _roleManagerMock
@@ -64,7 +63,7 @@ public class RoleServiceTest
   [Fact]
   public async Task GetById_Exists_ReturnCorrectResult()
   {
-    var tRole = new Role { Id = Guid.NewGuid() };
+    var tRole = new Role { Id = Guid.NewGuid(), Name = "test" };
 
     _roleManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -109,9 +108,9 @@ public class RoleServiceTest
     var tUser = new User { Id = tUserId };
     var tRoles = new List<Role>
     {
-      new Role(),
+      new Role() { Name = "testRoleName" },
     };
-    var tRolesNames = tRoles.Select(e => e.Name).ToList();
+    var tRolesNames = new List<string> { "testRoleName" };
 
     _userManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -196,7 +195,6 @@ public class RoleServiceTest
   public async Task GetClaimsById_NotExists_ThrowNotFound()
   {
     var tRoleId = Guid.NewGuid();
-    var tRole = new Role { Id = tRoleId };
 
     _roleManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -216,8 +214,8 @@ public class RoleServiceTest
   [Fact]
   public async Task Create_ValidInput_ReturnCorrectResult()
   {
-    var tCreateDto = new RoleCreateDto();
-    var tRole = new Role();
+    var tCreateDto = new RoleCreateDto { Name = "test" };
+    var tRole = new Role { Name = "test" };
 
     _roleManagerMock
       .Setup(e => e.Create(It.IsAny<Role>()))
@@ -267,8 +265,8 @@ public class RoleServiceTest
   [Fact]
   public async Task Update_ValidInput_ReturnCorrectResult()
   {
-    var tUpdateDto = new RoleUpdateDto();
-    var tRole = new Role { Id = Guid.NewGuid() };
+    var tUpdateDto = new RoleUpdateDto { Name = "test" };
+    var tRole = new Role { Id = Guid.NewGuid(), Name = "test" };
 
     _roleManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -347,7 +345,7 @@ public class RoleServiceTest
   public async Task Delete_ValidInput_ReturnCorrectResult()
   {
     var tRoleId = Guid.NewGuid();
-    var tRole = new Role { Id = tRoleId };
+    var tRole = new Role { Id = tRoleId, Name = "test" };
 
     _roleManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -483,13 +481,6 @@ public class RoleServiceTest
     };
 
     var tId = Guid.NewGuid();
-    var tRole = new Role();
-    var tRoleClaims = new List<Claim>
-    {
-      new Claim("key", "val")
-    };
-
-    var tClaimsToAdd = ClaimMappings.Map(tSetClaimsDto.Claims);
 
     _roleManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -524,8 +515,6 @@ public class RoleServiceTest
     {
       new Claim("key", "val")
     };
-
-    var tClaimsToAdd = ClaimMappings.Map(tSetClaimsDto.Claims);
 
     _roleManagerMock
       .Setup(e => e.GetById(It.IsAny<Guid>()))
@@ -591,7 +580,7 @@ public class RoleServiceTest
       .ReturnsAsync(IdentityResult.Failed());
 
     var action = () => _roleService.SetClaims(tId, tSetClaimsDto);
-    
+
     await action.Should().ThrowAsync<BadRequestException>();
 
     _roleManagerMock.Verify(e => e.GetById(tId));
