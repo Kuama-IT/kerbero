@@ -15,7 +15,6 @@ public static class ConfigureService
   {
     services.AddScoped<INukiCredentialRepository, NukiCredentialRepository>();
     services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
-    services.AddScoped<INukiSmartLockPersistentRepository, NukiSmartLockPersistentRepository>();
     services.AddScoped<INukiSmartLockRepository, NukiSmartLockRepository>();
 
     services.AddScoped<NukiSafeHttpCallHelper>();
