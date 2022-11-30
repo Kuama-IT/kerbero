@@ -1,4 +1,5 @@
-﻿using Kerbero.Identity.Common.Models;
+﻿using System.Diagnostics;
+using Kerbero.Identity.Common.Models;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Library.Common.Dtos;
 using Kerbero.Identity.Library.Modules.Users.Dtos;
@@ -17,8 +18,12 @@ public static class UserMappings
     return new UserReadDto
     {
       Id = entity.Id,
-      UserName = entity.UserName,
-      Email = entity.Email,
+      UserName = entity.UserName ??
+                 throw new UnreachableException(
+                   $"unable to map {nameof(User)} the property {nameof(entity.UserName)} is null"),
+      Email = entity.Email ??
+              throw new UnreachableException(
+                $"unable to map {nameof(User)} the property {nameof(entity.Email)} is null"),
       EmailConfirmed = entity.EmailConfirmed
     };
   }
@@ -31,7 +36,7 @@ public static class UserMappings
       Email = createDto.Email,
     };
   }
-  
+
   public static void Patch(UserUpdateDto updateDto, User entity)
   {
     entity.Email = updateDto.Email;
@@ -43,7 +48,7 @@ public static class UserMappings
   {
     return new PaginatedDto<UserReadDto>
     {
-      Items =  Map(paginatedEntities.Items),
+      Items = Map(paginatedEntities.Items),
       TotalItems = paginatedEntities.TotalItems,
     };
   }

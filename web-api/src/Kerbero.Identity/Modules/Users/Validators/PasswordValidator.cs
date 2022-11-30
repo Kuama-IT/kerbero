@@ -52,7 +52,6 @@ public class PasswordValidator : AbstractValidator<IHavePassword>
       RuleFor(e => e.Password)
         .Must(password => password.Distinct().Count() >= passwordOptions.RequiredUniqueChars)
         .WithMessage(describer.PasswordRequiresUniqueChars(passwordOptions.RequiredUniqueChars).Description);
-      ;
     }
   }
 }
