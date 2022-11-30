@@ -40,7 +40,7 @@ public class SmartLockIntegrationTests
     }, userId: user.Id);
     var response =
       await client.PutAsJsonAsync(
-        "/api/smartlocks/0/open", new OpenSmartLockRequest(
+        "/api/smart-locks/0/open", new OpenSmartLockRequest(
           CredentialsId: credentials.Id,
           SmartLockProvider: "nuki"
         )
@@ -59,7 +59,7 @@ public class SmartLockIntegrationTests
 
     var response =
       await client.PutAsJsonAsync(
-        "/api/smartlocks/0/open", new OpenSmartLockRequest(
+        "/api/smart-locks/0/open", new OpenSmartLockRequest(
           CredentialsId: 0, // these credentials do not belong to the user
           SmartLockProvider: "nuki"
         )

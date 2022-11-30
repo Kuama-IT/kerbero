@@ -34,7 +34,7 @@ public class NukiCredentialsIntegrationTests
 
     var response =
       await client.PostAsJsonAsync(
-        "/api/nukicredentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
+        "/api/nuki-credentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
     response.StatusCode.Should().Be(HttpStatusCode.OK);
     var readNukiCredentialDto = await response.Content.ReadFromJsonAsync<NukiCredentialDto>();
     readNukiCredentialDto.Should().NotBeNull();
@@ -57,7 +57,7 @@ public class NukiCredentialsIntegrationTests
 
     var response =
       await client.PostAsJsonAsync(
-        "/api/nukicredentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
+        "/api/nuki-credentials/", new CreateNukiSmartLockCredentialRequest() { Token = "VALID_TOKEN" });
     response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
   }
 }

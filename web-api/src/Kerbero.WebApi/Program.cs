@@ -7,6 +7,7 @@ using Kerbero.Infrastructure.Common.Context;
 using Kerbero.Infrastructure.Common.Interfaces;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Exceptions;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,7 +45,11 @@ builder.Services.AddKerberoIdentity<ApplicationDbContext>(
     }
   });
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers(options =>
+{
+  options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyOutboundParameterTransformer()));
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option => option.AddKerberoIdentitySwaggerGeneratorOptions());
