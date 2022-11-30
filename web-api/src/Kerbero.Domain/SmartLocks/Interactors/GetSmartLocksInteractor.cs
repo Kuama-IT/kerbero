@@ -1,8 +1,8 @@
 ﻿using FluentResults;
+using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Mappers;
-using Kerbero.Domain.SmartLocks.Params;
 using Kerbero.Domain.SmartLocks.Repositories;
 
 namespace Kerbero.Domain.SmartLocks.Interactors;
@@ -16,10 +16,10 @@ public class GetSmartLocksInteractor : IGetSmartLocksInteractor
     _nukiSmartLockRepository = nukiSmartLockRepository;
   }
 
-  public async Task<Result<List<SmartLockDto>>> Handle(GetSmartLocksInteractorParams request)
+  public async Task<Result<List<SmartLockDto>>> Handle(List<NukiCredentialModel> nukiCredentials)
   {
     List<SmartLockDto> smartLockDtos = new();
-    foreach (var nukiCredential in request.NukiCredentials)
+    foreach (var nukiCredential in nukiCredentials)
     {
       var nukiSmartLockResult = await _nukiSmartLockRepository.GetAll(nukiCredential);
 

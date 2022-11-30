@@ -32,11 +32,9 @@ public class NukiCredentialsController : ControllerBase
     [FromBody] CreateNukiCredentialRequest request)
   {
     var interactorResponse = await _createNukiCredential.Handle(
-      new CreateNukiCredentialParams
-      {
-        Token = request.Token,
-        UserId = HttpContext.GetAuthenticatedUserId()
-      });
+      userId: HttpContext.GetAuthenticatedUserId(),
+      token: request.Token
+    );
 
     if (interactorResponse.IsFailed)
     {

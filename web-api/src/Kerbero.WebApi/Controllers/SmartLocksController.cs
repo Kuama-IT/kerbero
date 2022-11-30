@@ -5,7 +5,6 @@ using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Models;
-using Kerbero.Domain.SmartLocks.Params;
 using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
@@ -38,11 +37,7 @@ public class SmartLocksController : ControllerBase
   {
     var userId = HttpContext.GetAuthenticatedUserId();
 
-    var nukiCredentialsResult = await _getNukiCredentialsByUserInteractor.Handle(
-      new GetNukiCredentialsByUserInteractorParams
-      {
-        UserId = userId,
-      });
+    var nukiCredentialsResult = await _getNukiCredentialsByUserInteractor.Handle(userId: userId);
 
     if (nukiCredentialsResult.IsFailed)
     {
@@ -51,7 +46,7 @@ public class SmartLocksController : ControllerBase
     }
 
     var nukiCredentials = NukiCredentialMapper.Map(nukiCredentialsResult.Value);
-    var smartLocksResult = await _getSmartLocksInteractor.Handle(new GetSmartLocksInteractorParams(nukiCredentials));
+    var smartLocksResult = await _getSmartLocksInteractor.Handle(nukiCredentials);
 
     if (smartLocksResult.IsFailed)
     {
@@ -75,14 +70,13 @@ public class SmartLocksController : ControllerBase
     }
 
     var userId = HttpContext.GetAuthenticatedUserId();
-    
-    var result = await _openSmartLockInteractor.Handle(new OpenSmartLockParams()
-    {
-      SmartLockProvider = provider,
-      UserId = userId,
-      SmartLockId = smartLockId,
-      CredentialId = request.CredentialsId
-    });
+
+    var result = await _openSmartLockInteractor.Handle(
+      smartLockProvider: provider,
+      userId: userId,
+      smartLockId: smartLockId,
+      credentialId: request.CredentialsId
+    );
 
     if (result.IsFailed)
     {
