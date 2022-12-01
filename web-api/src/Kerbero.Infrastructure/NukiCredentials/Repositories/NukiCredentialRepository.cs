@@ -8,6 +8,7 @@ using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Interfaces;
+using Kerbero.Infrastructure.NukiCredentials.Dtos;
 using Kerbero.Infrastructure.NukiCredentials.Entities;
 using Kerbero.Infrastructure.NukiCredentials.Mappers;
 using Microsoft.EntityFrameworkCore;
@@ -136,17 +137,110 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
     catch (NotSupportedException exception)
     {
-      _logger.LogError(exception, "Error while adding a NukiCredential to the database");
+      _logger.LogError(exception, "Error while searching a NukiCredential inside the database");
       return Result.Fail(new PersistentResourceNotAvailableError());
     }
     catch (InvalidOperationException exception)
     {
-      _logger.LogError(exception, "Error while adding a NukiCredential to the database");
+      _logger.LogError(exception, "Error while searching a NukiCredential inside the database");
       return Result.Fail(new NukiCredentialNotFoundError());
     }
     catch (Exception exception)
     {
-      _logger.LogError(exception, "Error while adding a NukiCredential to the database");
+      _logger.LogError(exception, "Error while searching a NukiCredential inside the database");
+      return Result.Fail(new KerberoError());
+    }
+  }
+
+  public async Task<Result<NukiCredentialDraftModel>> GetRefreshableCredentialByUrl(string url)
+  {
+    try
+    {
+      var entity = await _dbContext.NukiCredentials.AsNoTracking()
+        .SingleAsync(it => it.IsDraft == true && it.GeneratedWithUrl == url);
+
+      return Result.Ok(NukiCredentialMapper.MapAsDraft(entity));
+    }
+    catch (NotSupportedException exception)
+    {
+      _logger.LogError(exception, "Error while searching a NukiCredential inside the database");
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (InvalidOperationException exception)
+    {
+      _logger.LogError(exception, "Error while searching a NukiCredential inside the database");
+      return Result.Fail(new NukiCredentialNotFoundError());
+    }
+    catch (Exception exception)
+    {
+      _logger.LogError(exception, "Error while searching a NukiCredential inside the database");
+      return Result.Fail(new KerberoError());
+    }
+  }
+
+  public async Task<Result<NukiRefreshableCredentialModel>> GetRefreshableCredential(string oAuthCode)
+  {
+    Url redirectUriClientId;
+    try
+    {
+      redirectUriClientId = _configuration["ALIAS_DOMAIN"]
+        .AppendPathSegment(_configuration["NUKI_REDIRECT_FOR_TOKEN"])
+        .AppendPathSegment(_configuration["NUKI_CLIENT_ID"]);
+    }
+    catch (ArgumentNullException)
+    {
+      return Result.Fail(new InvalidParametersError("options"));
+    }
+
+    var result = await _ExecuteApiRequest(new
+    {
+      client_id = _configuration["NUKI_CLIENT_ID"],
+      client_secret = _configuration["NUKI_CLIENT_SECRET"],
+      grant_type = "authorization_code",
+      code = oAuthCode,
+      redirect_uri = redirectUriClientId.ToString()
+    });
+
+    if (result.IsFailed)
+    {
+      return result.ToResult();
+    }
+
+    return result.Value;
+  }
+
+  public async Task<Result<NukiCredentialModel>> ConfirmDraft(NukiCredentialDraftModel draft,
+    NukiRefreshableCredentialModel model)
+  {
+    try
+    {
+      var entity = await _dbContext.NukiCredentials.SingleAsync(it => it.Id == draft.Id);
+      NukiCredentialMapper.Map(entity, model);
+      await _dbContext.SaveChangesAsync();
+      return NukiCredentialMapper.Map(entity);
+    }
+    catch (NotSupportedException exception)
+    {
+      _logger.LogError(exception, "Error while updating a NukiCredential (draft to confirmed) to the database");
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (DbUpdateException exception)
+    {
+      _logger.LogError(exception, "Error while updating a NukiCredential (draft to confirmed) to the database");
+      if (exception.InnerException?.InnerException is NpgsqlException &&
+          exception.InnerException.InnerException.HResult >
+          int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) &&
+          exception.InnerException.InnerException.HResult <
+          int.Parse(PostgresErrorCodes.CheckViolation))
+      {
+        return Result.Fail(new DuplicateEntryError("Nuki credential (draft to confirmed)"));
+      }
+
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (Exception exception)
+    {
+      _logger.LogError(exception, "Error while updating a NukiCredential (draft to confirmed) to the database");
       return Result.Fail(new KerberoError());
     }
   }
@@ -193,5 +287,24 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
 
     return Result.Ok();
+  }
+
+  // TODO would be nice to type the body
+  private async Task<Result<NukiRefreshableCredentialModel>> _ExecuteApiRequest(object body)
+  {
+    var response = await _nukiSafeHttpCallHelper.Handle(
+      async () => await _configuration["NUKI_DOMAIN"]
+        .AppendPathSegment("oauth")
+        .AppendPathSegment("token")
+        .PostUrlEncodedAsync(body)
+        .ReceiveJson<NukiOAuthResponseDto>());
+
+
+    if (response.IsFailed)
+    {
+      return response.ToResult();
+    }
+
+    return NukiCredentialMapper.Map(response.Value, DateTime.UtcNow);
   }
 }

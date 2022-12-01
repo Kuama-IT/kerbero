@@ -1,6 +1,3 @@
 namespace Kerbero.WebApi.Dto;
 
-public class NukiCredentialDraftDto
-{
-  
-}
+public record NukiCredentialDraftDto(string RedirectUrl);

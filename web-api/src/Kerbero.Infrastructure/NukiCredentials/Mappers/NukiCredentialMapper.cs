@@ -1,4 +1,5 @@
 using Kerbero.Domain.NukiCredentials.Models;
+using Kerbero.Infrastructure.NukiCredentials.Dtos;
 using Kerbero.Infrastructure.NukiCredentials.Entities;
 
 namespace Kerbero.Infrastructure.NukiCredentials.Mappers;
@@ -42,5 +43,32 @@ public static class NukiCredentialMapper
   public static void Map(NukiCredentialEntity entity, NukiCredentialModel model)
   {
     entity.Token = model.Token;
+  }
+
+  public static void Map(NukiCredentialEntity entity, NukiRefreshableCredentialModel model)
+  {
+    entity.Token = model.Token;
+    entity.RefreshToken = model.RefreshToken;
+    entity.CreatedAt = model.CreatedAt;
+    entity.ExpiresIn = model.TokenExpiresIn;
+    entity.IsRefreshable = true;
+    entity.IsDraft = false;
+  }
+
+  public static NukiCredentialDraftModel MapAsDraft(NukiCredentialEntity entity)
+  {
+    return new NukiCredentialDraftModel(RedirectUrl: entity.GeneratedWithUrl, UserId: entity.UserId, Id: entity.Id);
+  }
+  
+  public static NukiRefreshableCredentialModel Map(NukiOAuthResponseDto entity, DateTime createdAt)
+  {
+    return new()
+    {
+      Token = entity.Token,
+      Error = entity.Error,
+      RefreshToken = entity.RefreshToken,
+      TokenExpiresIn = entity.TokenExpiresIn,
+      CreatedAt = createdAt
+    };
   }
 }
