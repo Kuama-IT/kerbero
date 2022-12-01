@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using Flurl.Http.Testing;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLocks.Errors;
 using Kerbero.Domain.SmartLocks.Models;

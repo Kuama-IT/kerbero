@@ -1,6 +1,4 @@
-using System.Text.Json.Serialization;
-
-namespace Kerbero.Domain.SmartLocks.Models;
+namespace Kerbero.Domain.Common.Models;
 
 /// <summary>
 /// Providers of smartlocks supported from Kerbero platform

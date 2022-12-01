@@ -56,4 +56,15 @@ public class SmartLockKeyRepository: ISmartLockKeyRepository
 			return Result.Fail(new KerberoError());
 		}
 	}
+
+	public async Task<Result<List<SmartLockKeyModel>>> GetAllByCredentials(List<NukiCredentialModel> credentials)
+	{
+		List<SmartLockKeyEntity> smartLockKeyEntities = new();
+		foreach (var credential in credentials)
+		{
+			smartLockKeyEntities.AddRange(
+				await _applicationDbContext.SmartLockKeys.Where(key => key.CredentialId == credential.Id).ToListAsync());
+		}
+		return SmartLockKeyMapper.Map(smartLockKeyEntities);
+	}
 }

@@ -1,8 +1,9 @@
 using DotNetEnv;
 using System.Net.Http.Json;
-using FluentResults;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
+using Kerbero.Domain.SmartLockKeys.Models;
+using Kerbero.Domain.SmartLockKeys.Repositories;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
@@ -84,10 +85,18 @@ public class KerberoWebApplicationFactory<TStartup>
     return result.Value;
   }
 
-  private async Task<IdentityResult> CreateUser(User user)
+  private async Task CreateUser(User user)
   {
     using var scope = Services.CreateScope();
     var userManager = scope.ServiceProvider.GetRequiredService<IUserManager>();
-    return await userManager.Create(user, "Test.0");
+    await userManager.Create(user, "Test.0");
+  }
+
+  public async Task<SmartLockKeyModel> CreateSmartLockKey(SmartLockKeyModel model)
+  {
+    using var scope = Services.CreateScope();
+    var smartLockKeyRepository = scope.ServiceProvider.GetRequiredService<ISmartLockKeyRepository>();
+    var smartLockKeyResult = await smartLockKeyRepository.Create(model);
+    return smartLockKeyResult.Value;
   }
 }

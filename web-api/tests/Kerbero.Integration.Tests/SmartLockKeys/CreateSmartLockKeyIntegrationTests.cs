@@ -35,7 +35,7 @@ public class CreateSmartLockKeyIntegrationTests: IDisposable
 		
 		var tNukiCredential = await _application.CreateNukiCredential(IntegrationTestsUtils.GetNukiCredential(), user.Id);
 
-		var expiryDate = DateTime.Now.AddDays(7).ToUniversalTime();
+		var expiryDate = DateTime.Now.AddDays(7);
 
 		var response = await loggedClient.PostAsJsonAsync("/api/smart-lock-keys/",
 			new CreateSmartLockKeyRequest("VALID_ID", expiryDate, tNukiCredential.Id, "nuki"));
@@ -44,7 +44,7 @@ public class CreateSmartLockKeyIntegrationTests: IDisposable
 		response.IsSuccessStatusCode.Should().BeTrue();
 		var smartLockKeyResponse = await response.Content.ReadFromJsonAsync<SmartLockKeyDto>();
 		smartLockKeyResponse.Should().NotBeNull();
-		smartLockKeyResponse!.CreationDate.Should().BeCloseTo(DateTime.Now.ToUniversalTime(), TimeSpan.FromSeconds(5));
+		smartLockKeyResponse!.CreationDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
 		smartLockKeyResponse.ExpiryDate.Should().Be(expiryDate);
 	}
 	

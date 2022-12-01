@@ -29,7 +29,7 @@ public class NukiCredentialsController : ControllerBase
   /// <returns></returns>
   [HttpPost]
   public async Task<ActionResult<NukiCredentialDto>> CreateNukiCredentialsWithToken(
-    [FromBody] CreateNukiCredentialRequest request)
+     CreateNukiCredentialRequest request)
   {
     var interactorResponse = await _createNukiCredential.Handle(
       userId: HttpContext.GetAuthenticatedUserId(),

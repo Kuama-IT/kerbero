@@ -14,5 +14,10 @@ public static class SmartLockKeyMapper
 			CreationDate = result.CreationDate,
 			ExpiryDate = result.ExpiryDate
 		};
+	}	
+	
+	public static List<SmartLockKeyDto> Map(List<SmartLockKeyModel> models)
+	{
+		return models.ConvertAll(Map);
 	}
 }

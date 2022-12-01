@@ -1,4 +1,5 @@
 using Kerbero.Domain.NukiCredentials.Models;
+using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Identity.Modules.Users.Entities;
 
 namespace Kerbero.Integration.Tests;
@@ -23,6 +24,20 @@ public static class IntegrationTestsUtils
       Email = "test@test.com",
       EmailConfirmed = true,
       UserName = "test",
+    };
+  }
+
+  public static SmartLockKeyModel GetSmartLockKey()
+  {
+    return new SmartLockKeyModel()
+    {
+      Token = "TOKEN",
+      CreationDate = DateTime.Now,
+      ExpiryDate = DateTime.Now.AddDays(7),
+      UsageCounter = 0,
+      IsDisabled = false,
+      SmartLockId = "VALID_ID",
+      CredentialId = 1
     };
   }
 }

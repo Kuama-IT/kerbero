@@ -13,8 +13,8 @@ public static class SmartLockKeyMapper
 		return new SmartLockKeyEntity
 		{
 			Token = smartLockKeyModel.Token,
-			CreationDate = smartLockKeyModel.CreationDate.ToUniversalTime(),
-			ExpiryDate = smartLockKeyModel.ExpiryDate.ToUniversalTime(),
+			CreationDate = smartLockKeyModel.CreationDate,
+			ExpiryDate = smartLockKeyModel.ExpiryDate,
 			IsDisabled = smartLockKeyModel.IsDisabled,
 			UsageCounter = smartLockKeyModel.UsageCounter,
 			SmartLockId = smartLockKeyModel.SmartLockId,
@@ -22,7 +22,7 @@ public static class SmartLockKeyMapper
 		};
 	}
 
-	public static Result<SmartLockKeyModel> Map(SmartLockKeyEntity entity)
+	public static SmartLockKeyModel Map(SmartLockKeyEntity entity)
 	{
 		return new SmartLockKeyModel()
 		{
@@ -35,5 +35,10 @@ public static class SmartLockKeyMapper
 			SmartLockId = entity.SmartLockId,
 			CredentialId = entity.CredentialId
 		};
+	}
+
+	public static List<SmartLockKeyModel> Map(List<SmartLockKeyEntity> entities)
+	{
+		return entities.ConvertAll(Map);
 	}
 }

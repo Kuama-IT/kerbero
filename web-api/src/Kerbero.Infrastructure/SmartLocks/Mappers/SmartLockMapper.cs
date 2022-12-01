@@ -1,4 +1,5 @@
-﻿using Kerbero.Domain.SmartLocks.Models;
+﻿using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Infrastructure.SmartLocks.Models;
 
 namespace Kerbero.Infrastructure.SmartLocks.Mappers;
