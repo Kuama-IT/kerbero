@@ -1,3 +1,4 @@
+using System.Net;
 using FluentResults;
 using Flurl;
 using Flurl.Http;
@@ -67,7 +68,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
           exception.InnerException.InnerException.HResult <
           int.Parse(PostgresErrorCodes.CheckViolation))
       {
-        return Result.Fail(new DuplicateEntryError("Nuki account"));
+        return Result.Fail(new DuplicateEntryError("Nuki credential"));
       }
 
       return Result.Fail(new PersistentResourceNotAvailableError());
@@ -79,9 +80,50 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
   }
 
-  public Task<Result<NukiCredentialModel>> CreateDraft(NukiCredentialDraftModel model)
+  public async Task<Result<NukiCredentialModel>> CreateDraft(NukiCredentialDraftModel model)
   {
-    throw new NotImplementedException();
+    try
+    {
+      var entity = NukiCredentialMapper.Map(model);
+
+      _dbContext.NukiCredentials.Add(entity);
+
+      var pivotEntity = new UserNukiCredentialEntity
+      {
+        NukiCredential = entity,
+        UserId = model.UserId,
+      };
+
+      _dbContext.UserNukiCredentials.Add(pivotEntity);
+
+      await _dbContext.SaveChangesAsync();
+
+      return NukiCredentialMapper.Map(entity);
+    }
+    catch (NotSupportedException exception)
+    {
+      _logger.LogError(exception, "Error while adding a NukiCredential (draft) to the database");
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (DbUpdateException exception)
+    {
+      _logger.LogError(exception, "Error while adding a NukiCredential (draft) to the database");
+      if (exception.InnerException?.InnerException is NpgsqlException &&
+          exception.InnerException.InnerException.HResult >
+          int.Parse(PostgresErrorCodes.IntegrityConstraintViolation) &&
+          exception.InnerException.InnerException.HResult <
+          int.Parse(PostgresErrorCodes.CheckViolation))
+      {
+        return Result.Fail(new DuplicateEntryError("Nuki credential"));
+      }
+
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (Exception exception)
+    {
+      _logger.LogError(exception, "Error while adding a NukiCredential (draft) to the database");
+      return Result.Fail(new KerberoError());
+    }
   }
 
   public async Task<Result<NukiCredentialModel>> GetById(int id)
@@ -136,7 +178,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
     return Result.Ok();
   }
 
-  public async Task<Result> ValidateApiToken(string apiToken)
+  public async Task<Result> ValidateNotRefreshableApiToken(string apiToken)
   {
     var result = await _nukiSafeHttpCallHelper.Handle(() =>
       _configuration["NUKI_DOMAIN"]

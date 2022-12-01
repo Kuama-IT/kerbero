@@ -128,6 +128,24 @@ namespace Kerbero.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ExpiresIn")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("GeneratedWithUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDraft")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRefreshable")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");

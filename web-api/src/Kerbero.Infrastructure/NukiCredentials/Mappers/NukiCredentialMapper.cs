@@ -15,7 +15,6 @@ public static class NukiCredentialMapper
     };
   }
 
-
   public static List<NukiCredentialModel> Map(List<NukiCredentialEntity> entities)
   {
     return entities.ConvertAll(Map);
@@ -27,5 +26,21 @@ public static class NukiCredentialMapper
     {
       Token = model.Token,
     };
+  }
+
+  public static NukiCredentialEntity Map(NukiCredentialDraftModel model)
+  {
+    return new NukiCredentialEntity()
+    {
+      IsRefreshable = true,
+      IsDraft = true,
+      UserId = model.UserId,
+      GeneratedWithUrl = model.RedirectUrl
+    };
+  }
+
+  public static void Map(NukiCredentialEntity entity, NukiCredentialModel model)
+  {
+    entity.Token = model.Token;
   }
 }
