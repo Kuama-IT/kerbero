@@ -8,7 +8,7 @@ public class SmartLockKeyEntity
 	
 	public required DateTime ExpiryDate { get; set; }
 
-	public required string Token { get; set; }
+	public required string Password { get; set; }
 
 	public bool IsDisabled { get; set; }
 	

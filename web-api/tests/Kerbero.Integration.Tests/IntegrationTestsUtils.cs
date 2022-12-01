@@ -31,7 +31,7 @@ public static class IntegrationTestsUtils
   {
     return new SmartLockKeyModel()
     {
-      Token = "TOKEN",
+      Password = "TOKEN",
       CreationDate = DateTime.Now,
       ExpiryDate = DateTime.Now.AddDays(7),
       UsageCounter = 0,

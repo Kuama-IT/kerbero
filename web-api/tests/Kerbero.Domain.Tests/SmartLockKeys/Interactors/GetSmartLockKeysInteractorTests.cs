@@ -24,7 +24,7 @@ public class GetSmartLockKeysInteractorTests
 			.ReturnsAsync(new List<NukiCredentialModel>() { new() { Id = 1, Token = "VALID_TOKEN" } });
 		var tSmartLockKeyModel = new SmartLockKeyModel
 		{
-			Token = "VALID_TOKEN",
+			Password = "VALID_TOKEN",
 			SmartLockId = "VALID_ID",
 		};
 

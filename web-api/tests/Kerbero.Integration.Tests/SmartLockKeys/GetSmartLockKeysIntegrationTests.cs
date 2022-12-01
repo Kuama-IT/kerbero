@@ -41,7 +41,7 @@ public class GetSmartLockKeysIntegrationTests: IDisposable
 		var smartLockKeyDtos = await httpResponseMessage.Content.ReadFromJsonAsync<List<SmartLockKeyDto>>();
 		var tExpected = new SmartLockKeyDto()
 		{
-			Token = tSmartLockKey.Token,
+			Password = tSmartLockKey.Password,
 			CreationDate = tSmartLockKey.CreationDate,
 			Id = tSmartLockKey.Id,
 			ExpiryDate = tSmartLockKey.ExpiryDate
