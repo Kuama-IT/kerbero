@@ -79,6 +79,11 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
   }
 
+  public Task<Result<NukiCredentialModel>> CreateDraft(NukiCredentialDraftModel model)
+  {
+    throw new NotImplementedException();
+  }
+
   public async Task<Result<NukiCredentialModel>> GetById(int id)
   {
     try
