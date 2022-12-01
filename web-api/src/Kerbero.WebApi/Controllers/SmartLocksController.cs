@@ -21,14 +21,17 @@ public class SmartLocksController : ControllerBase
   private readonly IGetSmartLocksInteractor _getSmartLocksInteractor;
   private readonly IGetNukiCredentialsByUserInteractor _getNukiCredentialsByUserInteractor;
   private readonly IOpenSmartLockInteractor _openSmartLockInteractor;
+  private readonly ICloseSmartLockInteractor _closeSmartLockInteractor;
 
   public SmartLocksController(IGetSmartLocksInteractor getSmartLocksInteractor,
     IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor,
-    IOpenSmartLockInteractor openSmartLockInteractor)
+    IOpenSmartLockInteractor openSmartLockInteractor,
+    ICloseSmartLockInteractor closeSmartLockInteractor)
   {
     _getSmartLocksInteractor = getSmartLocksInteractor;
     _getNukiCredentialsByUserInteractor = getNukiCredentialsByUserInteractor;
     _openSmartLockInteractor = openSmartLockInteractor;
+    _closeSmartLockInteractor = closeSmartLockInteractor;
   }
 
   [Authorize]
@@ -72,6 +75,36 @@ public class SmartLocksController : ControllerBase
     var userId = HttpContext.GetAuthenticatedUserId();
 
     var result = await _openSmartLockInteractor.Handle(
+      smartLockProvider: provider,
+      userId: userId,
+      smartLockId: smartLockId,
+      credentialId: request.CredentialsId
+    );
+
+    if (result.IsFailed)
+    {
+      var error = result.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return NoContent();
+  }
+  
+  [Authorize]
+  [HttpPut]
+  [Route("{smartLockId}/close")]
+  public async Task<ActionResult> Close( OpenSmartLockRequest request, string smartLockId)
+  {
+    var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
+
+    if (provider is null)
+    {
+      return BadRequest();
+    }
+
+    var userId = HttpContext.GetAuthenticatedUserId();
+
+    var result = await _closeSmartLockInteractor.Handle(
       smartLockProvider: provider,
       userId: userId,
       smartLockId: smartLockId,
