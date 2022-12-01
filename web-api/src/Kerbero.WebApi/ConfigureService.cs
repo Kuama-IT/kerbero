@@ -22,5 +22,6 @@ public static class ConfigureService
     services.AddScoped<ICreateNukiCredentialDraftInteractor, CreateNukiCredentialDraftInteractor>();
     services.AddScoped<IConfirmNukiDraftCredentialsInteractor, ConfirmNukiDraftCredentialsInteractor>();
     services.AddScoped<IBuildNukiRedirectUriInteractor, BuildNukiRedirectUriInteractor>();
+    services.AddScoped<ICloseSmartLockInteractor, CloseSmartLockInteractor>();
   }
 }

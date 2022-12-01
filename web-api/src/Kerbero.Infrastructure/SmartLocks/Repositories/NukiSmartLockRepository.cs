@@ -77,8 +77,23 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
     return Result.Ok();
   }
 
-  public Task<Result> Close(NukiCredentialModel nukiCredentialModel, string id)
+  public async Task<Result> Close(NukiCredentialModel nukiCredentialModel, string id)
   {
-    throw new NotImplementedException();
+    var result = await _nukiSafeHttpCallHelper.Handle(() =>
+      _configuration["NUKI_DOMAIN"]
+        .AppendPathSegment("smartlock")
+        .AppendPathSegment(id)
+        .AppendPathSegment("action")
+        .AppendPathSegment("lock")
+        .WithOAuthBearerToken(nukiCredentialModel.Token)
+        .PostAsync()
+    );
+
+    if (result.IsFailed)
+    {
+      return result.ToResult();
+    }
+
+    return Result.Ok();
   }
 }
