@@ -8,4 +8,8 @@ public interface ISmartLockKeyRepository
 {
 	Task<Result<SmartLockKeyModel>> Create(SmartLockKeyModel model);
 	Task<Result<List<SmartLockKeyModel>>> GetAllByCredentials(List<NukiCredentialModel> credentials);
+
+	Task<Result<SmartLockKeyModel>> GetById(Guid id);
+	
+	Task<Result<SmartLockKeyModel>> Update(SmartLockKeyModel smartLockKey);
 }

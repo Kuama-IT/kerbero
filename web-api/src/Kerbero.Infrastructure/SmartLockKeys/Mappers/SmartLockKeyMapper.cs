@@ -18,7 +18,8 @@ public static class SmartLockKeyMapper
 			IsDisabled = smartLockKeyModel.IsDisabled,
 			UsageCounter = smartLockKeyModel.UsageCounter,
 			SmartLockId = smartLockKeyModel.SmartLockId,
-			CredentialId = smartLockKeyModel.CredentialId
+			CredentialId = smartLockKeyModel.CredentialId,
+			SmartLockProvider = smartLockKeyModel.SmartLockProvider
 		};
 	}
 
@@ -33,7 +34,8 @@ public static class SmartLockKeyMapper
 			IsDisabled = entity.IsDisabled,
 			UsageCounter = entity.UsageCounter,
 			SmartLockId = entity.SmartLockId,
-			CredentialId = entity.CredentialId
+			CredentialId = entity.CredentialId,
+			SmartLockProvider = entity.SmartLockProvider
 		};
 	}
 

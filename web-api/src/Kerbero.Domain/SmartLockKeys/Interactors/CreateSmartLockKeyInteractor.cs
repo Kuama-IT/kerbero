@@ -46,7 +46,7 @@ public class CreateSmartLockKeyInteractor: ICreateSmartLockKeyInteractor
 			return Result.Fail(nukiCredentialResult.Errors);
 		}
 		
-		var generatedKey = SmartLockKeyModel.CreateKey(smartLockId, expiryDate, credentialId);
+		var generatedKey = SmartLockKeyModel.CreateKey(smartLockId, expiryDate, credentialId, smartLockProvider);
 		var createSmartLockKeyResult = await _smartLockKeyRepository.Create(generatedKey);
 		
 		if (createSmartLockKeyResult.IsFailed)

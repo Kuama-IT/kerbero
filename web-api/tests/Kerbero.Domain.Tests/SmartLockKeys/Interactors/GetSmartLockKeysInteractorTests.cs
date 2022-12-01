@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Dtos;
@@ -26,6 +27,7 @@ public class GetSmartLockKeysInteractorTests
 		{
 			Password = "VALID_TOKEN",
 			SmartLockId = "VALID_ID",
+			SmartLockProvider = SmartLockProvider.Nuki.Name,
 		};
 
 		var tExpected = new List<SmartLockKeyDto>()

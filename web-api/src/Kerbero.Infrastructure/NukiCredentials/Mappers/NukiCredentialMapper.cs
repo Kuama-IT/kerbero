@@ -11,6 +11,7 @@ public static class NukiCredentialMapper
     {
       Id = entity.Id,
       Token = entity.Token,
+      UserId = entity.UserId
     };
   }
 
@@ -26,10 +27,5 @@ public static class NukiCredentialMapper
     {
       Token = model.Token,
     };
-  }
-
-  public static void Map(NukiCredentialEntity entity, NukiCredentialModel model)
-  {
-    entity.Token = model.Token;
   }
 }
