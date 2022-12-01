@@ -5,5 +5,5 @@ namespace Kerbero.Domain.NukiCredentials.Interfaces;
 
 public interface ICreateNukiCredentialDraftInteractor
 {
-  Task<Result<NukiCredentialDraftModel>> Handle(string clientId, Guid userId);
+  Task<Result<NukiCredentialDraftModel>> Handle(Guid userId);
 }

@@ -30,7 +30,7 @@ public class CreateNukiCredentialDraftInteractor : ICreateNukiCredentialDraftInt
     _kerberoConfigurationRepository = kerberoConfigurationRepository;
   }
 
-  public async Task<Result<NukiCredentialDraftModel>> Handle(string clientId, Guid userId)
+  public async Task<Result<NukiCredentialDraftModel>> Handle(Guid userId)
   {
     var nukiApiDefinitionResult = await _kerberoConfigurationRepository.GetApiDefinition();
     

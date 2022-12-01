@@ -11,4 +11,8 @@ public interface INukiCredentialRepository
   Task<Result<NukiCredentialModel>> GetById(int id);
   Task<Result<List<NukiCredentialModel>>> GetAllByUserId(Guid userId);
   Task<Result> ValidateNotRefreshableApiToken(string apiToken);
+  Task<Result<NukiCredentialDraftModel>> GetRefreshableCredentialByUrl(string url);
+  
+  Task<Result<NukiRefreshableCredentialModel>> GetRefreshableCredential(string oAuthCode);
+  Task<Result<NukiCredentialModel>> ConfirmDraft(NukiCredentialDraftModel draft, NukiRefreshableCredentialModel model);
 }
