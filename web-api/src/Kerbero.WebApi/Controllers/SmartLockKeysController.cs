@@ -16,14 +16,17 @@ public class SmartLockKeysController: ControllerBase
 {
 	private readonly ICreateSmartLockKeyInteractor _createSmartLockKeyInteractor;
 	private readonly IGetSmartLockKeysInteractor _getSmartLockKeysInteractor;
+	private readonly IOpenSmartLockWithKeyInteractor _openSmartLockWithKeyInteractor;
 
 	public SmartLockKeysController(
 		ICreateSmartLockKeyInteractor createSmartLockKeyInteractor, 
-		IGetSmartLockKeysInteractor getSmartLockKeysInteractor
+		IGetSmartLockKeysInteractor getSmartLockKeysInteractor,
+		IOpenSmartLockWithKeyInteractor openSmartLockWithKeyInteractor
 		)
 	{
 		_createSmartLockKeyInteractor = createSmartLockKeyInteractor;
 		_getSmartLockKeysInteractor = getSmartLockKeysInteractor;
+		_openSmartLockWithKeyInteractor = openSmartLockWithKeyInteractor;
 	}
 
 	[HttpPost]
@@ -64,6 +67,24 @@ public class SmartLockKeysController: ControllerBase
 		}
 
 		return interactorResponse.Value;
+	}
+
+	[AllowAnonymous]
+	[HttpPut("open-smartlock")]
+	public async Task<ActionResult> OpenSmartLockWithKeyAndPassword(OpenSmartLockWithKeyRequest request)
+	{
+		var interactorResponse = await _openSmartLockWithKeyInteractor.Handle(
+			request.SmartLockKeyId,
+			request.KeyPassword
+		);
+		
+		if (interactorResponse.IsFailed)
+		{
+			var error = interactorResponse.Errors.First();
+			return ModelState.AddErrorAndReturnAction(error);
+		}
+
+		return NoContent();
 	}
 
 }

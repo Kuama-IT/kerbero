@@ -128,7 +128,7 @@ namespace Kerbero.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -185,11 +185,15 @@ namespace Kerbero.Infrastructure.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("SmartLockId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("SmartLockProvider")
                         .IsRequired()
                         .HasColumnType("text");
 

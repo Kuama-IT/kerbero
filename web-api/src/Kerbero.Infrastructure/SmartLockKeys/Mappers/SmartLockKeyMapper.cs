@@ -43,4 +43,16 @@ public static class SmartLockKeyMapper
 	{
 		return entities.ConvertAll(Map);
 	}
+
+	public static void Map(SmartLockKeyEntity entity, SmartLockKeyModel model)
+	{
+		entity.Password = model.Password;
+		entity.CreationDate = model.CreationDate;
+		entity.ExpiryDate = model.ExpiryDate;
+		entity.IsDisabled = model.IsDisabled;
+		entity.UsageCounter = model.UsageCounter;
+		entity.SmartLockId = model.SmartLockId;
+		entity.CredentialId = model.CredentialId;
+		entity.SmartLockProvider = model.SmartLockProvider;
+	}
 }

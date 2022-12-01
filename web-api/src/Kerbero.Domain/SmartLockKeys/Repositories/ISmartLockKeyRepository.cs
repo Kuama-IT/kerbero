@@ -11,5 +11,5 @@ public interface ISmartLockKeyRepository
 
 	Task<Result<SmartLockKeyModel>> GetById(Guid id);
 	
-	Task<Result<SmartLockKeyModel>> Update(SmartLockKeyModel smartLockKey);
+	Task<Result<SmartLockKeyModel>> Update(SmartLockKeyModel model);
 }
