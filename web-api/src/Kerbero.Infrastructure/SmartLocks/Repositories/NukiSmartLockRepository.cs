@@ -76,4 +76,9 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
 
     return Result.Ok();
   }
+
+  public Task<Result> Close(NukiCredentialModel nukiCredentialModel, string id)
+  {
+    throw new NotImplementedException();
+  }
 }

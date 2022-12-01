@@ -11,4 +11,5 @@ public interface INukiSmartLockRepository
   public Task<Result<SmartLock>> Get(NukiCredentialModel nukiCredentialModel, string id);
 
   public Task<Result> Open(NukiCredentialModel nukiCredentialModel, string id);
+  public Task<Result> Close(NukiCredentialModel nukiCredentialModel, string id);
 }
