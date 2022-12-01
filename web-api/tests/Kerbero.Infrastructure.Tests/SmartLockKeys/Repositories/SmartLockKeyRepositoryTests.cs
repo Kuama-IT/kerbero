@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Infrastructure.Common.Context;
@@ -32,7 +33,8 @@ public class SmartLockKeyRepositoryTests
 			UsageCounter = 0,
 			IsDisabled = false,
 			SmartLockId = "VALID_ID",
-			CredentialId = 1
+			CredentialId = 1,
+			SmartLockProvider = SmartLockProvider.Nuki.Name
 		};
 
 		var tNukiCredential = new NukiCredentialModel
@@ -66,7 +68,8 @@ public class SmartLockKeyRepositoryTests
 			UsageCounter = 0,
 			IsDisabled = false,
 			SmartLockId = "VALID_ID",
-			CredentialId = 1
+			CredentialId = 1,
+			SmartLockProvider = SmartLockProvider.Nuki.Name
 		};
 
 		applicationDbContext.SmartLockKeys.Add(SmartLockKeyMapper.Map(tModel));

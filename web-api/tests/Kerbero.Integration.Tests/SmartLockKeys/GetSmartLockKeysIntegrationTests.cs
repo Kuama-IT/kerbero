@@ -44,7 +44,7 @@ public class GetSmartLockKeysIntegrationTests: IDisposable
 			Password = tSmartLockKey.Password,
 			CreationDate = tSmartLockKey.CreationDate,
 			Id = tSmartLockKey.Id,
-			ExpiryDate = tSmartLockKey.ExpiryDate
+			ExpiryDate = tSmartLockKey.ExpiryDate,
 		};
 		smartLockKeyDtos.Should().BeEquivalentTo(new List<SmartLockKeyDto>()
 		{

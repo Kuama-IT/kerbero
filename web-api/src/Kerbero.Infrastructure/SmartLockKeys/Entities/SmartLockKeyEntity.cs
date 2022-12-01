@@ -17,4 +17,6 @@ public class SmartLockKeyEntity
 	public required string SmartLockId { get; set; }
 
 	public required int CredentialId { get; set; }
+	
+	public required string SmartLockProvider { get; set; }
 }

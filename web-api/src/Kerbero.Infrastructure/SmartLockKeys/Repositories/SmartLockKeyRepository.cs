@@ -67,4 +67,14 @@ public class SmartLockKeyRepository: ISmartLockKeyRepository
 		}
 		return SmartLockKeyMapper.Map(smartLockKeyEntities);
 	}
+
+	public Task<Result<SmartLockKeyModel>> GetById(Guid id)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<Result<SmartLockKeyModel>> Update(SmartLockKeyModel smartLockKey)
+	{
+		throw new NotImplementedException();
+	}
 }

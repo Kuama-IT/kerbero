@@ -12,7 +12,7 @@ public static class SmartLockKeyMapper
 			Id = result.Id,
 			Password = result.Password,
 			CreationDate = result.CreationDate,
-			ExpiryDate = result.ExpiryDate
+			ExpiryDate = result.ExpiryDate,
 		};
 	}	
 	

@@ -1,4 +1,5 @@
 using CrypticWizard.RandomWordGenerator;
+using Kerbero.Domain.Common.Models;
 
 namespace Kerbero.Domain.SmartLockKeys.Models;
 
@@ -10,7 +11,7 @@ public class SmartLockKeyModel
 	
 	public DateTime ExpiryDate { get; set; }
 
-	public string Password { get; set; } = null!;
+	public required string Password { get; set; }
 
 	public bool IsDisabled { get; set; }
 	
@@ -19,8 +20,9 @@ public class SmartLockKeyModel
 	public required string SmartLockId { get; set; }
 	
 	public int CredentialId { get; set; }
+	public required string SmartLockProvider { get; set; }
 	
-	public static SmartLockKeyModel CreateKey(string smartLockId, DateTime expiryDate, int credentialId)
+	public static SmartLockKeyModel CreateKey(string smartLockId, DateTime expiryDate, int credentialId, SmartLockProvider smartLockProvider)
 	{
 		var wordGenerator = new WordGenerator();
 		return new SmartLockKeyModel
@@ -31,7 +33,8 @@ public class SmartLockKeyModel
 			CreationDate = DateTime.Now,
 			IsDisabled = false,
 			UsageCounter = 0,
-			CredentialId = credentialId
+			CredentialId = credentialId,
+			SmartLockProvider = smartLockProvider.Name
 		};
 	}
 }
