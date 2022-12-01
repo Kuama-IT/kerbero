@@ -1,7 +1,4 @@
-using FluentResults;
-using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLockKeys.Models;
-using Kerbero.Infrastructure.NukiCredentials.Mappers;
 using Kerbero.Infrastructure.SmartLockKeys.Entities;
 
 namespace Kerbero.Infrastructure.SmartLockKeys.Mappers;

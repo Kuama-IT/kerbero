@@ -1,7 +1,6 @@
 using FluentResults;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.SmartLockKeys.Dtos;
-using Kerbero.Domain.SmartLocks.Models;
 
 namespace Kerbero.Domain.SmartLockKeys.Interfaces;
 

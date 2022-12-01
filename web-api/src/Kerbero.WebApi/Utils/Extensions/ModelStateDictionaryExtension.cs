@@ -1,7 +1,6 @@
 using System.Net;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.NukiActions.Errors;
 using Kerbero.Domain.NukiCredentials.Errors;
 using Kerbero.Domain.SmartLocks.Errors;
 using Kerbero.WebApi.Exceptions;
@@ -31,7 +30,6 @@ public static class ModelStateDictionaryExtension
       case UnableToParseResponseError:
       case ExternalServiceUnreachableError:
       case PersistentResourceNotAvailableError:
-      case SmartLockNotReachableError:
         return HttpStatusCode.BadGateway;
       case UnauthorizedAccessError:
       case NukiCredentialNotFoundError:

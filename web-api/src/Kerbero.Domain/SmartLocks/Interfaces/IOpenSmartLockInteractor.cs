@@ -1,6 +1,5 @@
 using FluentResults;
 using Kerbero.Domain.Common.Models;
-using Kerbero.Domain.SmartLocks.Models;
 
 namespace Kerbero.Domain.SmartLocks.Interfaces;
 
