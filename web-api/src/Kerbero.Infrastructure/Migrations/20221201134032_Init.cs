@@ -75,11 +75,12 @@ namespace Kerbero.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Token = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
                     IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
                     UsageCounter = table.Column<int>(type: "integer", nullable: false),
                     SmartLockId = table.Column<string>(type: "text", nullable: false),
-                    CredentialId = table.Column<int>(type: "integer", nullable: false)
+                    CredentialId = table.Column<int>(type: "integer", nullable: false),
+                    SmartLockProvider = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -7,8 +7,7 @@ using Kerbero.Domain.SmartLocks.Interfaces;
 
 namespace Kerbero.WebApi;
 
-public static
-  class ConfigureService
+public static class ConfigureService
 {
   public static void AddWebApiServices(this IServiceCollection services)
   {
@@ -19,5 +18,6 @@ public static
     services.AddScoped<IOpenSmartLockInteractor, OpenSmartLockInteractor>();
     services.AddScoped<ICreateSmartLockKeyInteractor, CreateSmartLockKeyInteractor>();
     services.AddScoped<IGetSmartLockKeysInteractor, GetSmartLockKeysInteractor>();
+    services.AddScoped<IOpenSmartLockWithKeyInteractor, OpenSmartLockWithKeyInteractor>();
   }
 }

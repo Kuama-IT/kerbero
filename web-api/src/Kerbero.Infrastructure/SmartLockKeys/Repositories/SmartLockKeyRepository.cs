@@ -1,6 +1,7 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiCredentials.Models;
+using Kerbero.Domain.SmartLockKeys.Errors;
 using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Domain.SmartLockKeys.Repositories;
 using Kerbero.Infrastructure.Common.Interfaces;
@@ -68,13 +69,54 @@ public class SmartLockKeyRepository: ISmartLockKeyRepository
 		return SmartLockKeyMapper.Map(smartLockKeyEntities);
 	}
 
-	public Task<Result<SmartLockKeyModel>> GetById(Guid id)
+	public async Task<Result<SmartLockKeyModel>> GetById(Guid id)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			var entity = await _applicationDbContext.SmartLockKeys.AsNoTracking().SingleAsync(it => it.Id == id);
+
+			return Result.Ok(SmartLockKeyMapper.Map(entity));
+		}
+		catch (NotSupportedException exception)
+		{
+			_logger.LogError(exception, "Error while searching for a SmartLockKey to the database");
+			return Result.Fail(new PersistentResourceNotAvailableError());
+		}
+		catch (InvalidOperationException exception)
+		{
+			_logger.LogError(exception, "Error while searching for a SmartLockKey to the database");
+			return Result.Fail(new SmartLockKeyNotFoundError());
+		}
+		catch (Exception exception)
+		{
+			_logger.LogError(exception, "Error while searching for a SmartLockKey to the database");
+			return Result.Fail(new KerberoError());
+		}
 	}
 
-	public Task<Result<SmartLockKeyModel>> Update(SmartLockKeyModel smartLockKey)
+	public async Task<Result<SmartLockKeyModel>> Update(SmartLockKeyModel model)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			var entity = await _applicationDbContext.SmartLockKeys.SingleAsync(it => it.Id == model.Id);
+			SmartLockKeyMapper.Map(entity, model);
+			await _applicationDbContext.SaveChangesAsync();
+			return Result.Ok(SmartLockKeyMapper.Map(entity));
+		}
+		catch (NotSupportedException exception)
+		{
+			_logger.LogError(exception, "Error while updating SmartLockKey {model}", model.Id);
+			return Result.Fail(new PersistentResourceNotAvailableError());
+		}
+		catch (InvalidOperationException exception)
+		{
+			_logger.LogError(exception, "Error while updating SmartLockKey {model}", model.Id);
+			return Result.Fail(new SmartLockKeyNotFoundError());
+		}
+		catch (Exception exception)
+		{
+			_logger.LogError(exception, "Error while updating SmartLockKey {model}", model.Id);
+			return Result.Fail(new KerberoError());
+		}
 	}
 }

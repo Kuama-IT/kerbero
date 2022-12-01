@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kerbero.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221130113343_Init")]
+    [Migration("20221201134032_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -188,11 +188,15 @@ namespace Kerbero.Infrastructure.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("SmartLockId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Token")
+                    b.Property<string>("SmartLockProvider")
                         .IsRequired()
                         .HasColumnType("text");
 
