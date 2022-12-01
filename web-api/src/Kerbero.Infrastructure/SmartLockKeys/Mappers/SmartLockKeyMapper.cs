@@ -12,7 +12,7 @@ public static class SmartLockKeyMapper
 	{
 		return new SmartLockKeyEntity
 		{
-			Token = smartLockKeyModel.Token,
+			Password = smartLockKeyModel.Password,
 			CreationDate = smartLockKeyModel.CreationDate,
 			ExpiryDate = smartLockKeyModel.ExpiryDate,
 			IsDisabled = smartLockKeyModel.IsDisabled,
@@ -27,7 +27,7 @@ public static class SmartLockKeyMapper
 		return new SmartLockKeyModel()
 		{
 			Id = entity.Id,
-			Token = entity.Token,
+			Password = entity.Password,
 			CreationDate = entity.CreationDate,
 			ExpiryDate = entity.ExpiryDate,
 			IsDisabled = entity.IsDisabled,

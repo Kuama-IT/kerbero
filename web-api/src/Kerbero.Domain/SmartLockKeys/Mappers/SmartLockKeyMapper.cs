@@ -10,7 +10,7 @@ public static class SmartLockKeyMapper
 		return new SmartLockKeyDto()
 		{
 			Id = result.Id,
-			Token = result.Token,
+			Password = result.Password,
 			CreationDate = result.CreationDate,
 			ExpiryDate = result.ExpiryDate
 		};

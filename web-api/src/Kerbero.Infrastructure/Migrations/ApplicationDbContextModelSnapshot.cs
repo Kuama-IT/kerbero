@@ -128,7 +128,7 @@ namespace Kerbero.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Token")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -189,7 +189,7 @@ namespace Kerbero.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Token")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
 
