@@ -1,16 +1,12 @@
 using System.Threading.Tasks;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.NukiActions.Models.ExternalRequests;
-using Kerbero.Domain.NukiActions.Models.PresentationRequest;
-using Kerbero.Domain.NukiActions.Repositories;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Dtos;
-using Kerbero.Domain.NukiCredentials.Interactors;
 using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
-using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Domain.SmartLocks.Repositories;
 
 namespace Kerbero.Domain.SmartLocks.Interactors;

@@ -1,4 +1,4 @@
-using Kerbero.Domain.NukiActions.Models.PresentationRequest;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Mappers;
@@ -60,7 +60,7 @@ public class SmartLocksController : ControllerBase
   [Authorize]
   [HttpPut]
   [Route("{smartLockId}/open")]
-  public async Task<ActionResult> Open([FromBody] OpenSmartLockRequest request, string smartLockId)
+  public async Task<ActionResult> Open( OpenSmartLockRequest request, string smartLockId)
   {
     var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
 

@@ -7,4 +7,5 @@ namespace Kerbero.Domain.SmartLockKeys.Repositories;
 public interface ISmartLockKeyRepository
 {
 	Task<Result<SmartLockKeyModel>> Create(SmartLockKeyModel model);
+	Task<Result<List<SmartLockKeyModel>>> GetAllByCredentials(List<NukiCredentialModel> credentials);
 }

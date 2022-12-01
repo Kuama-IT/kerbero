@@ -1,12 +1,12 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.Domain.SmartLockKeys.Interfaces;
 using Kerbero.Domain.SmartLockKeys.Mappers;
 using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Domain.SmartLockKeys.Repositories;
-using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Domain.SmartLocks.Repositories;
 
 namespace Kerbero.Domain.SmartLockKeys.Interactors;

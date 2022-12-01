@@ -1,4 +1,6 @@
-﻿namespace Kerbero.Domain.SmartLocks.Models;
+﻿using Kerbero.Domain.Common.Models;
+
+namespace Kerbero.Domain.SmartLocks.Models;
 
 public class SmartLock
 {

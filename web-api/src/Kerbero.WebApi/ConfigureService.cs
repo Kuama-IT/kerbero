@@ -18,5 +18,6 @@ public static
     services.AddScoped<IGetSmartLocksInteractor, GetSmartLocksInteractor>();
     services.AddScoped<IOpenSmartLockInteractor, OpenSmartLockInteractor>();
     services.AddScoped<ICreateSmartLockKeyInteractor, CreateSmartLockKeyInteractor>();
+    services.AddScoped<IGetSmartLockKeysInteractor, GetSmartLockKeysInteractor>();
   }
 }
