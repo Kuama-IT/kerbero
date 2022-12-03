@@ -9,4 +9,6 @@ public interface INukiCredentialRepository
   Task<Result<NukiCredentialModel>> GetById(int id);
   Task<Result<List<NukiCredentialModel>>> GetAllByUserId(Guid userId);
   Task<Result> ValidateApiToken(string apiToken);
+  
+  Task<Result<NukiCredentialModel>> CreateDraft(NukiCredentialDraftModel model);
 }

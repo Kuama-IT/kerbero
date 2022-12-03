@@ -147,4 +147,9 @@ public class NukiCredentialRepository : INukiCredentialRepository
 
     return Result.Ok();
   }
+
+  public Task<Result<NukiCredentialModel>> CreateDraft(NukiCredentialDraftModel model)
+  {
+    throw new NotImplementedException();
+  }
 }
