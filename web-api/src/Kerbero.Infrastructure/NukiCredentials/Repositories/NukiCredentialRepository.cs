@@ -152,4 +152,25 @@ public class NukiCredentialRepository : INukiCredentialRepository
   {
     throw new NotImplementedException();
   }
+
+  public Task<Result<NukiCredentialDraftModel>> GetDraftCredentialsByUserId(Guid userId)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<Result<NukiRefreshableCredentialModel>> GetRefreshableCredential(string oAuthCode, string redirectUri)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<Result<NukiCredentialModel>> ConfirmDraft(NukiCredentialDraftModel draft,
+    NukiRefreshableCredentialModel model)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<Result> DeleteDraftByUserId(Guid userId)
+  {
+    throw new NotImplementedException();
+  }
 }
