@@ -11,4 +11,12 @@ public interface INukiCredentialRepository
   Task<Result> ValidateApiToken(string apiToken);
   
   Task<Result<NukiCredentialModel>> CreateDraft(NukiCredentialDraftModel model);
+  
+  Task<Result<NukiCredentialDraftModel>> GetDraftCredentialsByUserId(Guid userId);
+  
+  Task<Result<NukiRefreshableCredentialModel>> GetRefreshableCredential(string oAuthCode, string redirectUri);
+  
+  Task<Result<NukiCredentialModel>> ConfirmDraft(NukiCredentialDraftModel draft, NukiRefreshableCredentialModel model);
+
+  Task<Result> DeleteDraftByUserId(Guid userId);
 }
