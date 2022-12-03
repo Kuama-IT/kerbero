@@ -8,12 +8,12 @@ using Moq;
 
 namespace Kerbero.Domain.Tests.NukiCredentials.Interactors;
 
-public class BuildNukiRedirectUriTests
+public class BuildNukiRedirectUriInteractorTests
 {
   private readonly BuildNukiRedirectUriInteractor _interactor;
   private readonly Mock<IKerberoConfigurationRepository> _kerberoConfigurationRepositoryMock = new();
 
-  public BuildNukiRedirectUriTests()
+  public BuildNukiRedirectUriInteractorTests()
   {
     _interactor = new BuildNukiRedirectUriInteractor(_kerberoConfigurationRepositoryMock.Object);
   }
