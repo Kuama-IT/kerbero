@@ -131,7 +131,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
     return Result.Ok();
   }
 
-  public async Task<Result> ValidateApiToken(string apiToken)
+  public async Task<Result> ValidateNotRefreshableApiToken(string apiToken)
   {
     var result = await _nukiSafeHttpCallHelper.Handle(() =>
       _configuration["NUKI_DOMAIN"]

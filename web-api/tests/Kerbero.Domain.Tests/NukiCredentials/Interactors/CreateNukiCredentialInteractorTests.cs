@@ -33,7 +33,7 @@ public class CreateNukiCredentialInteractorTests
       Token = "VALID_TOKEN",
     };
 
-    _nukiCredentialRepositoryMock.Setup(repo => repo.ValidateApiToken(It.IsAny<string>()))
+    _nukiCredentialRepositoryMock.Setup(repo => repo.ValidateNotRefreshableApiToken(It.IsAny<string>()))
       .ReturnsAsync(Result.Ok);
     _nukiCredentialRepositoryMock.Setup(c => c.Create(It.IsAny<NukiCredentialModel>(), It.IsAny<Guid>()))
       .ReturnsAsync(() => Result.Ok(nukiCredentials));

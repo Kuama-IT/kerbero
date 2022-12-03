@@ -20,7 +20,7 @@ public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
 
   public async Task<Result<NukiCredentialDto>> Handle(Guid userId, string token)
   {
-    var result = await _nukiCredentialRepository.ValidateApiToken(token);
+    var result = await _nukiCredentialRepository.ValidateNotRefreshableApiToken(token);
     if (result.IsFailed)
     {
       return Result.Fail(new NukiCredentialInvalidTokenError());
