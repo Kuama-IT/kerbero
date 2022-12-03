@@ -34,6 +34,7 @@ public class NukiSafeHttpCallHelper
         catch (FlurlHttpException exception)
         {
             _logger.LogError(exception, "Error while calling nuki Apis with request");
+            _logger.LogDebug(await exception.GetResponseStringAsync());
             if (exception.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.MethodNotAllowed or (int)HttpStatusCode.Forbidden)
             {
                 var error = await exception.GetResponseJsonAsync<NukiErrorExternalResponse>();
