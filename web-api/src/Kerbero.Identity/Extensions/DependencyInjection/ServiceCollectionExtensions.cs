@@ -55,7 +55,8 @@ public static class ServiceCollectionExtensions
 		{
 			options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 			options.Cookie.HttpOnly = true;
-			options.Cookie.SameSite = SameSiteMode.Strict;
+			// this needs to be Lax in order to keep the user logged in between oauth refirects
+			options.Cookie.SameSite = SameSiteMode.Lax;
 			options.ExpireTimeSpan = TimeSpan.FromDays(1);
 			options.Events.OnRedirectToLogin = context =>
 			{

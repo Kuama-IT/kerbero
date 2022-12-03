@@ -16,7 +16,6 @@ public static class NukiCredentialMapper
     };
   }
 
-
   public static List<NukiCredentialModel> Map(List<NukiCredentialEntity> entities)
   {
     return entities.ConvertAll(Map);

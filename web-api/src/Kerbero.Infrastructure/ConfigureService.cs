@@ -1,8 +1,10 @@
+using Kerbero.Domain.Common.Repositories;
 using Kerbero.Domain.NukiActions.Repositories;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Repositories;
 using Kerbero.Domain.SmartLocks.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
+using Kerbero.Infrastructure.Common.Repositories;
 using Kerbero.Infrastructure.NukiActions.Repositories;
 using Kerbero.Infrastructure.NukiCredentials.Repositories;
 using Kerbero.Infrastructure.SmartLockKeys.Repositories;
@@ -19,7 +21,7 @@ public static class ConfigureService
     services.AddScoped<INukiSmartLockExternalRepository, NukiSmartLockExternalRepository>();
     services.AddScoped<INukiSmartLockRepository, NukiSmartLockRepository>();
     services.AddScoped<ISmartLockKeyRepository, SmartLockKeyRepository>();
-
+    services.AddScoped<IKerberoConfigurationRepository, KerberoConfigurationRepository>();
     services.AddScoped<NukiSafeHttpCallHelper>();
   }
 }
