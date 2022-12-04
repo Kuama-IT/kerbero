@@ -51,7 +51,7 @@ public class NukiSmartLockRepositoryTests
     var actual = await repository.Get(credentials, "ID");
 
     // Assert
-    var expected = new SmartLock()
+    var expected = new SmartLockModel()
     {
       Id = "0",
       State = ESmartLockState.Unknown,

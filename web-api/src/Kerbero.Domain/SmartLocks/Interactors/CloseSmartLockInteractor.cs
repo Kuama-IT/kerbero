@@ -2,7 +2,6 @@ using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Repositories;
 
@@ -45,7 +44,7 @@ public class CloseSmartLockInteractor: ICloseSmartLockInteractor
     }
     
     var result =
-      await _nukiSmartLockRepository.Close(NukiCredentialMapper.Map(credential), smartLockId);
+      await _nukiSmartLockRepository.Close(credential, smartLockId);
 
     return result;
   }

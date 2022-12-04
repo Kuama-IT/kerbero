@@ -2,9 +2,7 @@ using FluentAssertions;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
-using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.Domain.SmartLockKeys.Interactors;
-using Kerbero.Domain.SmartLockKeys.Mappers;
 using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Domain.SmartLockKeys.Repositories;
 using Moq;
@@ -30,16 +28,12 @@ public class GetSmartLockKeysInteractorTests
 			SmartLockProvider = SmartLockProvider.Nuki.Name,
 		};
 
-		var tExpected = new List<SmartLockKeyDto>()
+		var tExpected = new List<SmartLockKeyModel>()
 		{
-			SmartLockKeyMapper.Map(tSmartLockKeyModel)
+			tSmartLockKeyModel
 		};
-		
 		smartLockKeysRepository.Setup(c => c.GetAllByCredentials(It.IsAny<List<NukiCredentialModel>>()))
-			.ReturnsAsync(new List<SmartLockKeyModel>()
-			{
-				tSmartLockKeyModel
-			});
+			.ReturnsAsync(tExpected);
 		var result = await getSmartLockKeysInteractor.Handle(new Guid());
 		result.Value.Should().BeEquivalentTo(tExpected);
 	}

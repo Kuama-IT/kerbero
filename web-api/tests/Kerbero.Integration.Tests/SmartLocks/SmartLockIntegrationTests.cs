@@ -4,6 +4,7 @@ using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.WebApi;
+using Kerbero.WebApi.Dtos;
 using Kerbero.WebApi.Models.Requests;
 
 namespace Kerbero.Integration.Tests.SmartLocks;
@@ -40,7 +41,7 @@ public class SmartLockIntegrationTests
     }, userId: user.Id);
     var response =
       await client.PutAsJsonAsync(
-        "/api/smart-locks/0/open", new OpenSmartLockRequest(
+        "/api/smart-locks/0/open", new OpenSmartLockRequestDto(
           CredentialsId: credentials.Id,
           SmartLockProvider: "nuki"
         )
@@ -59,7 +60,7 @@ public class SmartLockIntegrationTests
 
     var response =
       await client.PutAsJsonAsync(
-        "/api/smart-locks/0/open", new OpenSmartLockRequest(
+        "/api/smart-locks/0/open", new OpenSmartLockRequestDto(
           CredentialsId: 0, // these credentials do not belong to the user
           SmartLockProvider: "nuki"
         )

@@ -1,13 +1,13 @@
-using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.Domain.SmartLockKeys.Models;
+using Kerbero.WebApi.Dtos;
 
-namespace Kerbero.Domain.SmartLockKeys.Mappers;
+namespace Kerbero.WebApi.Mappers;
 
 public static class SmartLockKeyMapper
 {
-	public static SmartLockKeyDto Map(SmartLockKeyModel result)
+	public static SmartLockKeyResponseDto Map(SmartLockKeyModel result)
 	{
-		return new SmartLockKeyDto()
+		return new SmartLockKeyResponseDto()
 		{
 			Id = result.Id,
 			Password = result.Password,
@@ -16,7 +16,7 @@ public static class SmartLockKeyMapper
 		};
 	}	
 	
-	public static List<SmartLockKeyDto> Map(List<SmartLockKeyModel> models)
+	public static List<SmartLockKeyResponseDto> Map(List<SmartLockKeyModel> models)
 	{
 		return models.ConvertAll(Map);
 	}

@@ -1,8 +1,6 @@
 using FluentResults;
-using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Errors;
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 
@@ -18,7 +16,7 @@ public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
     _nukiCredentialRepository = nukiCredentialRepository;
   }
 
-  public async Task<Result<NukiCredentialDto>> Handle(Guid userId, string token)
+  public async Task<Result<NukiCredentialModel>> Handle(Guid userId, string token)
   {
     var result = await _nukiCredentialRepository.ValidateNotRefreshableApiToken(token);
     if (result.IsFailed)
@@ -34,6 +32,6 @@ public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
       return Result.Fail(createNukiCredentialResult.Errors);
     }
 
-    return NukiCredentialMapper.Map(createNukiCredentialResult.Value);
+    return createNukiCredentialResult.Value;
   }
 }

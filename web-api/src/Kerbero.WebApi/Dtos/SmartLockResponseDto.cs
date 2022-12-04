@@ -1,8 +1,9 @@
-﻿namespace Kerbero.Domain.SmartLocks.Dtos;
+﻿namespace Kerbero.WebApi.Dtos;
 
-public class SmartLockDto
+public class SmartLockResponseDto
 {
   public required string Id { get; set; }
+  
   public required string Name { get; set; }
 
   public required string SmartLockProvider { get; set; }

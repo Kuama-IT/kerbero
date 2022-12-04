@@ -1,10 +1,9 @@
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.Domain.NukiCredentials.Mappers;
-using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
+using Kerbero.WebApi.Dtos;
 using Kerbero.WebApi.Extensions;
-using Kerbero.WebApi.Models.Requests;
+using Kerbero.WebApi.Mappers;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +33,7 @@ public class SmartLocksController : ControllerBase
 
   [Authorize]
   [HttpGet]
-  public async Task<ActionResult<List<SmartLockDto>>> GetAll()
+  public async Task<ActionResult<List<SmartLockResponseDto>>> GetAll()
   {
     var userId = HttpContext.GetAuthenticatedUserId();
 
@@ -46,8 +45,7 @@ public class SmartLocksController : ControllerBase
       return ModelState.AddErrorAndReturnAction(error);
     }
 
-    var nukiCredentials = NukiCredentialMapper.Map(nukiCredentialsResult.Value);
-    var smartLocksResult = await _getSmartLocksInteractor.Handle(nukiCredentials);
+    var smartLocksResult = await _getSmartLocksInteractor.Handle(nukiCredentialsResult.Value);
 
     if (smartLocksResult.IsFailed)
     {
@@ -55,13 +53,13 @@ public class SmartLocksController : ControllerBase
       return ModelState.AddErrorAndReturnAction(error);
     }
 
-    return smartLocksResult.Value;
+    return SmartLockMapper.Map(smartLocksResult.Value);
   }
 
   [Authorize]
   [HttpPut]
   [Route("{smartLockId}/open")]
-  public async Task<ActionResult> Open( OpenSmartLockRequest request, string smartLockId)
+  public async Task<ActionResult> Open( OpenSmartLockRequestDto request, string smartLockId)
   {
     var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
 
@@ -91,7 +89,7 @@ public class SmartLocksController : ControllerBase
   [Authorize]
   [HttpPut]
   [Route("{smartLockId}/close")]
-  public async Task<ActionResult> Close( OpenSmartLockRequest request, string smartLockId)
+  public async Task<ActionResult> Close( CloseSmartLockRequest request, string smartLockId)
   {
     var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
 

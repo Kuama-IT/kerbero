@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
-using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.WebApi;
+using Kerbero.WebApi.Dtos;
 
 namespace Kerbero.Integration.Tests.SmartLockKeys;
 
@@ -38,15 +38,15 @@ public class GetSmartLockKeysIntegrationTests: IDisposable
 
 		httpResponseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 		httpResponseMessage.IsSuccessStatusCode.Should().BeTrue();
-		var smartLockKeyDtos = await httpResponseMessage.Content.ReadFromJsonAsync<List<SmartLockKeyDto>>();
-		var tExpected = new SmartLockKeyDto()
+		var smartLockKeyDtos = await httpResponseMessage.Content.ReadFromJsonAsync<List<SmartLockKeyResponseDto>>();
+		var tExpected = new SmartLockKeyResponseDto()
 		{
 			Password = tSmartLockKey.Password,
 			CreationDate = tSmartLockKey.CreationDate,
 			Id = tSmartLockKey.Id,
 			ExpiryDate = tSmartLockKey.ExpiryDate,
 		};
-		smartLockKeyDtos.Should().BeEquivalentTo(new List<SmartLockKeyDto>()
+		smartLockKeyDtos.Should().BeEquivalentTo(new List<SmartLockKeyResponseDto>()
 		{
 			tExpected
 		});

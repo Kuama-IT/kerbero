@@ -2,9 +2,7 @@ using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
-using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.Domain.SmartLockKeys.Interfaces;
-using Kerbero.Domain.SmartLockKeys.Mappers;
 using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Domain.SmartLockKeys.Repositories;
 using Kerbero.Domain.SmartLocks.Repositories;
@@ -27,7 +25,7 @@ public class CreateSmartLockKeyInteractor: ICreateSmartLockKeyInteractor
 		_nukiCredentialRepository = nukiCredentialRepository;
 	}
 
-	public async Task<Result<SmartLockKeyDto>> Handle(string smartLockId, DateTime expiryDate, int credentialId, SmartLockProvider smartLockProvider)
+	public async Task<Result<SmartLockKeyModel>> Handle(string smartLockId, DateTime expiryDate, int credentialId, SmartLockProvider smartLockProvider)
 	{
 		if (smartLockProvider != SmartLockProvider.Nuki)
 		{
@@ -53,6 +51,6 @@ public class CreateSmartLockKeyInteractor: ICreateSmartLockKeyInteractor
 		{
 			return Result.Fail(createSmartLockKeyResult.Errors);
 		}
-		return SmartLockKeyMapper.Map(createSmartLockKeyResult.Value);
+		return createSmartLockKeyResult.Value;
 	}
 }

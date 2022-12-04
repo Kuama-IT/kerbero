@@ -1,7 +1,8 @@
 using Kerbero.Domain.Common.Models;
-using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.Domain.SmartLockKeys.Interfaces;
+using Kerbero.WebApi.Dtos;
 using Kerbero.WebApi.Extensions;
+using Kerbero.WebApi.Mappers;
 using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -30,9 +31,9 @@ public class SmartLockKeysController: ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<ActionResult<SmartLockKeyDto>> CreateSmartLockKeyBySmartLockId(CreateSmartLockKeyRequest request)
+	public async Task<ActionResult<SmartLockKeyResponseDto>> CreateSmartLockKeyBySmartLockId(CreateSmartLockKeyRequestDto requestDto)
 	{
-		var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
+		var provider = SmartLockProvider.TryParse(requestDto.SmartLockProvider);
 
 		if (provider is null)
 		{
@@ -40,9 +41,9 @@ public class SmartLockKeysController: ControllerBase
 		}
 		
 		var createInteractorResult = await _createSmartLockKeyInteractor.Handle(
-				request.SmartLockId,
-				request.ExpiryDate,
-				request.CredentialId,
+				requestDto.SmartLockId,
+				requestDto.ExpiryDate,
+				requestDto.CredentialId,
 				provider);
 		
 		if (createInteractorResult.IsFailed)
@@ -55,7 +56,7 @@ public class SmartLockKeysController: ControllerBase
 	}
 	
 	[HttpGet]
-	public async Task<ActionResult<List<SmartLockKeyDto>>> GetAllKeys()
+	public async Task<ActionResult<List<SmartLockKeyResponseDto>>> GetAllKeys()
 	{
 		var interactorResponse = await _getSmartLockKeysInteractor.Handle(
 			HttpContext.GetAuthenticatedUserId());
@@ -66,12 +67,12 @@ public class SmartLockKeysController: ControllerBase
 			return ModelState.AddErrorAndReturnAction(error);
 		}
 
-		return interactorResponse.Value;
+		return SmartLockKeyMapper.Map(interactorResponse.Value);
 	}
 
 	[AllowAnonymous]
 	[HttpPut("open-smartlock")]
-	public async Task<ActionResult> OpenSmartLockWithKeyAndPassword(OpenSmartLockWithKeyRequest request)
+	public async Task<ActionResult> OpenSmartLockWithKeyAndPassword(OpenSmartLockWithKeyRequestDto request)
 	{
 		var interactorResponse = await _openSmartLockWithKeyInteractor.Handle(
 			request.SmartLockKeyId,
