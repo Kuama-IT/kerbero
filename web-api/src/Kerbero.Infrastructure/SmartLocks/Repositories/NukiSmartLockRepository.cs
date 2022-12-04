@@ -22,7 +22,7 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
     _nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
   }
 
-  public async Task<Result<List<SmartLock>>> GetAll(NukiCredentialModel nukiCredentialModel)
+  public async Task<Result<List<SmartLockModel>>> GetAll(NukiCredentialModel nukiCredentialModel)
   {
     var result = await _nukiSafeHttpCallHelper.Handle(() =>
       _configuration["NUKI_DOMAIN"]
@@ -39,7 +39,7 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
     return SmartLockMapper.Map(result.Value);
   }
 
-  public async Task<Result<SmartLock>> Get(NukiCredentialModel nukiCredentialModel, string id)
+  public async Task<Result<SmartLockModel>> Get(NukiCredentialModel nukiCredentialModel, string id)
   {
     var result = await _nukiSafeHttpCallHelper.Handle(() =>
       _configuration["NUKI_DOMAIN"]

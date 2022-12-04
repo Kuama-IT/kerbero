@@ -1,8 +1,8 @@
 ﻿using FluentResults;
+using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Models;
-using Kerbero.Domain.SmartLocks.Dtos;
 using Kerbero.Domain.SmartLocks.Interfaces;
-using Kerbero.Domain.SmartLocks.Mappers;
+using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Domain.SmartLocks.Repositories;
 
 namespace Kerbero.Domain.SmartLocks.Interactors;
@@ -16,9 +16,9 @@ public class GetSmartLocksInteractor : IGetSmartLocksInteractor
     _nukiSmartLockRepository = nukiSmartLockRepository;
   }
 
-  public async Task<Result<List<SmartLockDto>>> Handle(List<NukiCredentialModel> nukiCredentials)
+  public async Task<Result<List<SmartLockWithCredentialModel>>> Handle(List<NukiCredentialModel> nukiCredentials)
   {
-    List<SmartLockDto> smartLockDtos = new();
+    List<SmartLockWithCredentialModel> smartLockDtos = new();
     foreach (var nukiCredential in nukiCredentials)
     {
       var nukiSmartLockResult = await _nukiSmartLockRepository.GetAll(nukiCredential);
@@ -28,7 +28,14 @@ public class GetSmartLocksInteractor : IGetSmartLocksInteractor
         return Result.Fail(nukiSmartLockResult.Errors);
       }
 
-      var dtos = SmartLockMapper.Map(nukiSmartLockResult.Value, nukiCredential.Id);
+      var dtos = nukiSmartLockResult.Value.ConvertAll(s => new SmartLockWithCredentialModel
+      {
+        Id = s.Id,
+        Name = s.Name,
+        SmartLockProvider = SmartLockProvider.Nuki,
+        State = s.State,
+        CredentialId = nukiCredential.Id
+      });
       smartLockDtos.AddRange(dtos);
     }
 

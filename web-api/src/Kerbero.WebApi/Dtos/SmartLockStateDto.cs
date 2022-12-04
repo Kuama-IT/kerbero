@@ -1,4 +1,4 @@
-namespace Kerbero.Domain.SmartLocks.Dtos;
+namespace Kerbero.WebApi.Dtos;
 
 public class SmartLockStateDto
 {

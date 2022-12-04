@@ -1,9 +1,7 @@
 using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Models;
-using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLocks.Interactors;
 using Kerbero.Domain.SmartLocks.Repositories;
@@ -25,14 +23,14 @@ public class CloseSmartLockInteractorTests
 
 		var tUserId = new Guid();
 		var token = "VALID_TOKEN";
-		var tCredentials = new NukiCredentialDto()
+		var tCredentials = new NukiCredentialModel()
 		{
 			Id = 1,
 			Token = token
 		};
 
 		getNukiCredentialsByUserInteractor.Setup(c => c.Handle(It.IsAny<Guid>()))
-			.ReturnsAsync(new List<NukiCredentialDto>()
+			.ReturnsAsync(new List<NukiCredentialModel>()
 			{
 				tCredentials
 			});

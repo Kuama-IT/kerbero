@@ -1,7 +1,6 @@
 using FluentResults;
-using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.Domain.NukiCredentials.Mappers;
+using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 
 namespace Kerbero.Domain.NukiCredentials.Interactors;
@@ -15,7 +14,7 @@ public class GetNukiCredentialInteractor : IGetNukiCredentialInteractor
     _nukiCredentialRepository = nukiCredentialRepository;
   }
 
-  public async Task<Result<NukiCredentialDto>> Handle(int nukiCredentialId)
+  public async Task<Result<NukiCredentialModel>> Handle(int nukiCredentialId)
   {
     var nukiCredentialsResult = await _nukiCredentialRepository.GetById(nukiCredentialId);
 
@@ -24,6 +23,6 @@ public class GetNukiCredentialInteractor : IGetNukiCredentialInteractor
       return Result.Fail(nukiCredentialsResult.Errors);
     }
 
-    return NukiCredentialMapper.Map(nukiCredentialsResult.Value);
+    return nukiCredentialsResult.Value;
   }
 }

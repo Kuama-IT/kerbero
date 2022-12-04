@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
-using Kerbero.Domain.SmartLockKeys.Dtos;
 using Kerbero.WebApi;
+using Kerbero.WebApi.Dtos;
 using Kerbero.WebApi.Models.Requests;
 
 namespace Kerbero.Integration.Tests.SmartLockKeys;
@@ -38,11 +38,11 @@ public class CreateSmartLockKeyIntegrationTests: IDisposable
 		var expiryDate = DateTime.Now.AddDays(7);
 
 		var response = await loggedClient.PostAsJsonAsync("/api/smart-lock-keys/",
-			new CreateSmartLockKeyRequest("VALID_ID", expiryDate, tNukiCredential.Id, "nuki"));
+			new CreateSmartLockKeyRequestDto("VALID_ID", expiryDate, tNukiCredential.Id, "nuki"));
 
 		response.StatusCode.Should().Be(HttpStatusCode.OK);
 		response.IsSuccessStatusCode.Should().BeTrue();
-		var smartLockKeyResponse = await response.Content.ReadFromJsonAsync<SmartLockKeyDto>();
+		var smartLockKeyResponse = await response.Content.ReadFromJsonAsync<SmartLockKeyResponseDto>();
 		smartLockKeyResponse.Should().NotBeNull();
 		smartLockKeyResponse!.CreationDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
 		smartLockKeyResponse.ExpiryDate.Should().Be(expiryDate);
@@ -56,7 +56,7 @@ public class CreateSmartLockKeyIntegrationTests: IDisposable
 		var expiryDate = DateTime.Now.AddDays(7);
 
 		var response = await loggedClient.PostAsJsonAsync("/api/smart-lock-keys/",
-			new CreateSmartLockKeyRequest("VALID_ID", expiryDate, 0, "nuki"));
+			new CreateSmartLockKeyRequestDto("VALID_ID", expiryDate, 0, "nuki"));
 		
 		response.IsSuccessStatusCode.Should().BeFalse();
 		response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

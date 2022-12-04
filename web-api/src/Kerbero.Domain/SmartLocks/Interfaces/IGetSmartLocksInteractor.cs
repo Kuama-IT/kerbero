@@ -1,10 +1,10 @@
 ﻿using FluentResults;
 using Kerbero.Domain.NukiCredentials.Models;
-using Kerbero.Domain.SmartLocks.Dtos;
+using Kerbero.Domain.SmartLocks.Models;
 
 namespace Kerbero.Domain.SmartLocks.Interfaces;
 
 public interface IGetSmartLocksInteractor
 {
-  Task<Result<List<SmartLockDto>>> Handle(List<NukiCredentialModel> nukiCredentials);
+  Task<Result<List<SmartLockWithCredentialModel>>> Handle(List<NukiCredentialModel> nukiCredentials);
 }

@@ -1,4 +1,3 @@
-using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.WebApi.Dtos;
 using Kerbero.WebApi.Extensions;
@@ -41,7 +40,7 @@ public class NukiCredentialsController : ControllerBase
   /// Nuki Account procedure
   /// </summary>
   [HttpPost("draft")]
-  public async Task<ActionResult<NukiCredentialDraftDto>> CreateDraft()
+  public async Task<ActionResult<NukiCredentialDraftResponseDto>> CreateDraft()
   {
     var userId = HttpContext.GetAuthenticatedUserId();
 
@@ -71,7 +70,7 @@ public class NukiCredentialsController : ControllerBase
   /// <param name="code">Returned by nuki to let us ask for a token</param>
   /// <returns></returns>
   [HttpGet("confirm-draft-hook")]
-  public async Task<ActionResult<NukiCredentialDto>> ConfirmDraft(string code)
+  public async Task<ActionResult<NukiCredentialResponseDto>> ConfirmDraft(string code)
   {
     var userId = HttpContext.GetAuthenticatedUserId();
 
@@ -91,8 +90,8 @@ public class NukiCredentialsController : ControllerBase
   /// <param name="request"></param>
   /// <returns></returns>
   [HttpPost]
-  public async Task<ActionResult<NukiCredentialDto>> CreateNukiCredentialsWithToken(
-     CreateNukiCredentialRequest request)
+  public async Task<ActionResult<NukiCredentialResponseDto>> CreateNukiCredentialsWithToken(
+     CreateNukiCredentialRequestDto request)
   {
     var interactorResponse = await _createNukiCredential.Handle(
       userId: HttpContext.GetAuthenticatedUserId(),
@@ -105,6 +104,6 @@ public class NukiCredentialsController : ControllerBase
       return ModelState.AddErrorAndReturnAction(error);
     }
 
-    return interactorResponse.Value;
+    return NukiCredentialMapper.Map(interactorResponse.Value);
   }
 }

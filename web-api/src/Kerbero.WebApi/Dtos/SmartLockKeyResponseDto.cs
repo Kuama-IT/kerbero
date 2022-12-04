@@ -1,6 +1,6 @@
-namespace Kerbero.Domain.SmartLockKeys.Dtos;
+namespace Kerbero.WebApi.Dtos;
 
-public record SmartLockKeyDto
+public record SmartLockKeyResponseDto
 {
 	public Guid Id { get; set; }
 	public DateTime CreationDate { get; set; }

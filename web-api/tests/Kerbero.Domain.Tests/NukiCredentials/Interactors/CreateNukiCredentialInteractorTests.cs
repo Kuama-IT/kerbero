@@ -1,6 +1,5 @@
 using FluentAssertions;
 using FluentResults;
-using Kerbero.Domain.NukiCredentials.Dtos;
 using Kerbero.Domain.NukiCredentials.Interactors;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
@@ -45,8 +44,8 @@ public class CreateNukiCredentialInteractorTests
 
     // Assert
     _nukiCredentialRepositoryMock.Verify();
-    nukiCredentialDto.Should().BeOfType<Result<NukiCredentialDto>>();
-    nukiCredentialDto.Should().BeEquivalentTo(Result.Ok(new NukiCredentialDto()
+    nukiCredentialDto.Should().BeOfType<Result<NukiCredentialModel>>();
+    nukiCredentialDto.Should().BeEquivalentTo(Result.Ok(new NukiCredentialModel()
     {
       Id = 1,
       Token = "VALID_TOKEN"

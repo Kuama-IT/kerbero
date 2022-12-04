@@ -6,8 +6,17 @@ namespace Kerbero.WebApi.Mappers;
 
 public static class NukiCredentialMapper
 {
-  public static NukiCredentialDraftDto Map(Uri uri)
+  public static NukiCredentialDraftResponseDto Map(Uri uri)
   {
-    return new NukiCredentialDraftDto(RedirectUrl: uri.ToString());
+    return new NukiCredentialDraftResponseDto(RedirectUrl: uri.ToString());
+  }
+  
+  public static NukiCredentialResponseDto Map(NukiCredentialModel model)
+  {
+    return new NukiCredentialResponseDto
+    {
+      Id = model.Id,
+      Token = model.Token
+    };
   }
 }

@@ -2,7 +2,7 @@
 
 namespace Kerbero.Domain.SmartLocks.Models;
 
-public class SmartLock
+public class SmartLockModel
 {
   public required string Id { get; set; }
   public required string Name { get; set; }

@@ -2,7 +2,6 @@ using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.Domain.NukiCredentials.Mappers;
 using Kerbero.Domain.SmartLocks.Interfaces;
 using Kerbero.Domain.SmartLocks.Repositories;
 
@@ -44,7 +43,7 @@ public class OpenSmartLockInteractor : IOpenSmartLockInteractor
     }
 
     var result =
-      await _nukiSmartLockRepository.Open(NukiCredentialMapper.Map(credential), smartLockId);
+      await _nukiSmartLockRepository.Open(credential, smartLockId);
 
     return result;
   }

@@ -1,9 +1,9 @@
 using FluentResults;
-using Kerbero.Domain.NukiCredentials.Dtos;
+using Kerbero.Domain.NukiCredentials.Models;
 
 namespace Kerbero.Domain.NukiCredentials.Interfaces;
 
 public interface ICreateNukiCredentialInteractor
 {
-  Task<Result<NukiCredentialDto>> Handle(Guid userId, string token);
+  Task<Result<NukiCredentialModel>> Handle(Guid userId, string token);
 }

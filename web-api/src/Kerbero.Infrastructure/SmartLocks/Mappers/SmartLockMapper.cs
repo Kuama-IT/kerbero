@@ -6,14 +6,14 @@ namespace Kerbero.Infrastructure.SmartLocks.Mappers;
 
 public static class SmartLockMapper
 {
-  public static List<SmartLock> Map(List<NukiSmartLockResponse> responses)
+  public static List<SmartLockModel> Map(List<NukiSmartLockResponse> responses)
   {
     return responses.ConvertAll(Map);
   }
 
-  public static SmartLock Map(NukiSmartLockResponse response)
+  public static SmartLockModel Map(NukiSmartLockResponse response)
   {
-    return new SmartLock
+    return new SmartLockModel
     {
       Id = response.NukiAccountId.ToString(),
       Name = response.Name,
