@@ -19,6 +19,7 @@ public static class ConfigureService
     services.AddScoped<ICreateSmartLockKeyInteractor, CreateSmartLockKeyInteractor>();
     services.AddScoped<IGetSmartLockKeysInteractor, GetSmartLockKeysInteractor>();
     services.AddScoped<IOpenSmartLockWithKeyInteractor, OpenSmartLockWithKeyInteractor>();
+    services.AddScoped<ICloseSmartLockWithKeyInteractor, CloseSmartLockWithKeyInteractor>();
     services.AddScoped<ICreateNukiCredentialDraftInteractor, CreateNukiCredentialDraftInteractor>();
     services.AddScoped<IConfirmNukiDraftCredentialsInteractor, ConfirmNukiDraftCredentialsInteractor>();
     services.AddScoped<IBuildNukiRedirectUriInteractor, BuildNukiRedirectUriInteractor>();

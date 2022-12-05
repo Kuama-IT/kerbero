@@ -34,16 +34,17 @@ public class CloseSmartLockWithKeyInteractor : ICloseSmartLockWithKeyInteractor
     }
 
     var smartLockKey = smartLockKeyResult.Value;
-    var validationResult = smartLockKey.CanOperateWith(smartLockKeyPassword);
-    if (validationResult.IsFailed)
-    {
-      return Result.Fail(validationResult.Errors);
-    }
 
     var smartLockProvider = SmartLockProvider.TryParse(smartLockKey.SmartLockProvider);
     if (smartLockProvider != SmartLockProvider.Nuki)
     {
       return Result.Fail(new UnsupportedSmartLockProviderError());
+    }
+    
+    var validationResult = smartLockKey.CanOperateWith(smartLockKeyPassword);
+    if (validationResult.IsFailed)
+    {
+      return Result.Fail(validationResult.Errors);
     }
 
     var nukiCredentialResult = await _nukiCredentialRepository.GetById(smartLockKey.CredentialId);
