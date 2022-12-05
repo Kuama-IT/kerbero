@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Kerbero.Identity.Modules.Users.Entities;
 
 namespace Kerbero.Infrastructure.NukiCredentials.Entities;
 
@@ -22,7 +23,7 @@ public class NukiCredentialEntity
 
   public Guid UserId { get; set; }
 
-  [ForeignKey((nameof(UserId)))] public string? User { get; set; }
+  [ForeignKey((nameof(UserId)))] public User? User { get; set; }
 
   // Email used by our user to signup into Nuki web services 
   public string NukiEmail { get; set; } = null!;

@@ -54,27 +54,6 @@ namespace Kerbero.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NukiCredentials",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Token = table.Column<string>(type: "text", nullable: true),
-                    IsDraft = table.Column<bool>(type: "boolean", nullable: false),
-                    IsRefreshable = table.Column<bool>(type: "boolean", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    ExpiresIn = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    User = table.Column<string>(type: "text", nullable: true),
-                    NukiEmail = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NukiCredentials", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SmartLockKeys",
                 columns: table => new
                 {
@@ -201,6 +180,32 @@ namespace Kerbero.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NukiCredentials",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Token = table.Column<string>(type: "text", nullable: true),
+                    IsDraft = table.Column<bool>(type: "boolean", nullable: false),
+                    IsRefreshable = table.Column<bool>(type: "boolean", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
+                    ExpiresIn = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NukiEmail = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NukiCredentials", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NukiCredentials_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserNukiCredentials",
                 columns: table => new
                 {
@@ -264,6 +269,11 @@ namespace Kerbero.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_NukiCredentials_UserId",
+                table: "NukiCredentials",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserNukiCredentials_NukiCredentialId",
                 table: "UserNukiCredentials",
                 column: "NukiCredentialId");
@@ -303,10 +313,10 @@ namespace Kerbero.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "NukiCredentials");
 
             migrationBuilder.DropTable(
-                name: "NukiCredentials");
+                name: "AspNetUsers");
         }
     }
 }
