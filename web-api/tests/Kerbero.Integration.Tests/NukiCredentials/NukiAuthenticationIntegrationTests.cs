@@ -54,4 +54,22 @@ public class NukiCredentialsIntegrationTests
         "/api/nuki-credentials/", new CreateNukiCredentialRequestDto() { Token = "VALID_TOKEN" });
     response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
   }
+
+  [Fact]
+  public async Task Delete_DeleteNukiCredentials_WithValidParameters()
+  {
+    var (loggedClient, user) = await _application.CreateUserAndAuthenticateClient();
+		
+    var tNukiCredential = await _application.CreateNukiCredential(IntegrationTestsUtils.GetNukiCredential(), user.Id);
+
+    var httpResponseMessage = await loggedClient.DeleteAsync($"api/nuki-credentials/{tNukiCredential.Id}");
+    httpResponseMessage.IsSuccessStatusCode.Should().BeTrue();
+
+    var nukiCredentialResponseDto = await httpResponseMessage.Content.ReadFromJsonAsync<NukiCredentialResponseDto>();
+    
+    var getResponseMessage = await loggedClient.GetAsync($"api/nuki-credentials/");
+    var nukiCredentialsResponseDtos = await getResponseMessage.Content.ReadFromJsonAsync<List<NukiCredentialResponseDto>>();
+
+    nukiCredentialsResponseDtos.Should().NotContain(nukiCredentialResponseDto!);
+  }
 }
