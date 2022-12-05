@@ -2,8 +2,8 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Models;
-using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Errors;
 using Kerbero.Domain.SmartLockKeys.Interactors;
 using Kerbero.Domain.SmartLockKeys.Models;
@@ -19,12 +19,12 @@ public class OpenSmartLockWithKeyInteractorTests
   public async Task OpenSmartLock_WithValidParameters()
   {
     var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
-    var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
+    var getNukiCredentialInteractor = new Mock<IGetNukiCredentialInteractor>();
     var openSmartLockInteractor = new Mock<IOpenSmartLockInteractor>();
     var openSmartLockWithKeyInteractor = new OpenSmartLockWithKeyInteractor(
-      smartLockKeyRepository.Object,
-      nukiCredentialRepository.Object,
-      openSmartLockInteractor.Object
+      smartLockKeyRepository: smartLockKeyRepository.Object,
+      openSmartLockInteractor: openSmartLockInteractor.Object,
+      getNukiCredentialInteractor: getNukiCredentialInteractor.Object
     );
 
     var tSmartLockProvider = SmartLockProvider.Nuki;
@@ -55,7 +55,7 @@ public class OpenSmartLockWithKeyInteractorTests
 
     smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
       .ReturnsAsync(tSmartLockKeyModel);
-    nukiCredentialRepository.Setup(c => c.GetById(It.IsAny<int>()))
+    getNukiCredentialInteractor.Setup(c => c.Handle(It.IsAny<int>(), It.IsAny<Guid?>()))
       .ReturnsAsync(tNukiCredentialModel);
     openSmartLockInteractor.Setup(c =>
         c.Handle(It.IsAny<Guid>(), It.IsAny<SmartLockProvider>(), It.IsAny<string>(), It.IsAny<int>()))
@@ -72,8 +72,7 @@ public class OpenSmartLockWithKeyInteractorTests
     smartLockKeyRepository.Verify(c => c.Update(tSmartLockKeyModel));
     smartLockKeyRepository.VerifyNoOtherCalls();
 
-    nukiCredentialRepository.Verify(c => c.GetById(tSmartLockKeyModel.CredentialId));
-    nukiCredentialRepository.VerifyNoOtherCalls();
+    getNukiCredentialInteractor.Verify();
 
     openSmartLockInteractor.Verify(c => c.Handle(tNukiCredentialModel.UserId,
       tSmartLockProvider,
@@ -87,12 +86,12 @@ public class OpenSmartLockWithKeyInteractorTests
   public async Task OpenSmartLock_PasswordMismatch()
   {
     var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
-    var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
+    var getNukiCredentialInteractor = new Mock<IGetNukiCredentialInteractor>();
     var openSmartLockInteractor = new Mock<IOpenSmartLockInteractor>();
     var openSmartLockWithKeyInteractor = new OpenSmartLockWithKeyInteractor(
-      smartLockKeyRepository.Object,
-      nukiCredentialRepository.Object,
-      openSmartLockInteractor.Object
+      smartLockKeyRepository: smartLockKeyRepository.Object,
+      openSmartLockInteractor: openSmartLockInteractor.Object,
+      getNukiCredentialInteractor: getNukiCredentialInteractor.Object
     );
 
     var tSmartLockProvider = SmartLockProvider.Nuki;
@@ -128,12 +127,12 @@ public class OpenSmartLockWithKeyInteractorTests
   public async Task OpenSmartLock_SmartLockKeyIsExpired()
   {
     var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
-    var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
+    var getNukiCredentialInteractor = new Mock<IGetNukiCredentialInteractor>();
     var openSmartLockInteractor = new Mock<IOpenSmartLockInteractor>();
     var openSmartLockWithKeyInteractor = new OpenSmartLockWithKeyInteractor(
-      smartLockKeyRepository.Object,
-      nukiCredentialRepository.Object,
-      openSmartLockInteractor.Object
+      smartLockKeyRepository: smartLockKeyRepository.Object,
+      openSmartLockInteractor: openSmartLockInteractor.Object,
+      getNukiCredentialInteractor: getNukiCredentialInteractor.Object
     );
 
     var tSmartLockProvider = SmartLockProvider.Nuki;

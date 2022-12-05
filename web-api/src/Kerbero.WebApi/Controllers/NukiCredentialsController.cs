@@ -25,7 +25,7 @@ public class NukiCredentialsController : ControllerBase
     ICreateNukiCredentialInteractor createNukiCredential,
     ICreateNukiCredentialDraftInteractor createNukiCredentialDraft,
     IConfiguration configuration,
-    IConfirmNukiDraftCredentialsInteractor confirmNukiDraftCredentials, 
+    IConfirmNukiDraftCredentialsInteractor confirmNukiDraftCredentials,
     IBuildNukiRedirectUriInteractor buildNukiRedirectUri,
     IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor,
     IDeleteNukiCredentialInteractor deleteNukiCredentialInteractor
@@ -39,7 +39,7 @@ public class NukiCredentialsController : ControllerBase
     _getNukiCredentialsInteractor = getNukiCredentialsByUserInteractor;
     _deleteNukiCredentialInteractor = deleteNukiCredentialInteractor;
   }
-  
+
   /// <summary>
   /// Prepares Nuki Credential draft for current user and returns where to redirect the user to continue with the create
   /// Nuki Account procedure
@@ -96,7 +96,7 @@ public class NukiCredentialsController : ControllerBase
   /// <returns></returns>
   [HttpPost]
   public async Task<ActionResult<NukiCredentialResponseDto>> CreateNukiCredentialsWithToken(
-     CreateNukiCredentialRequestDto request)
+    CreateNukiCredentialRequestDto request)
   {
     var interactorResponse = await _createNukiCredential.Handle(
       userId: HttpContext.GetAuthenticatedUserId(),
@@ -113,10 +113,10 @@ public class NukiCredentialsController : ControllerBase
   }
 
   [HttpGet]
-  public async Task<ActionResult<List<NukiCredentialResponseDto>>> GetAll()
+  public async Task<ActionResult<NukiCredentialListResponseDto>> GetAll()
   {
     var interactorResponse = await _getNukiCredentialsInteractor.Handle(HttpContext.GetAuthenticatedUserId());
-    
+
     if (interactorResponse.IsFailed)
     {
       var error = interactorResponse.Errors.First();
@@ -125,12 +125,12 @@ public class NukiCredentialsController : ControllerBase
 
     return NukiCredentialMapper.Map(interactorResponse.Value);
   }
-  
+
   [HttpDelete("{nukiCredentialId}")]
   public async Task<ActionResult<NukiCredentialResponseDto>> DeleteNukiCredentialsById(int nukiCredentialId)
   {
     var interactorResponse = await _deleteNukiCredentialInteractor.Handle(
-      HttpContext.GetAuthenticatedUserId(), 
+      HttpContext.GetAuthenticatedUserId(),
       nukiCredentialId);
     if (interactorResponse.IsFailed)
     {

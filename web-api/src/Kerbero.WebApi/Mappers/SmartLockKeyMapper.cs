@@ -20,4 +20,12 @@ public static class SmartLockKeyMapper
   {
     return models.ConvertAll(Map);
   }
+
+  public static SmartLockKeyListResponseDto Map(UserSmartLockKeysModel model)
+  {
+    return new SmartLockKeyListResponseDto(
+      SmartLockKeys: Map(model.SmartLockKeys),
+      OutdatedCredentials: NukiCredentialMapper.Map(model.OutdatedCredentials)
+    );
+  }
 }

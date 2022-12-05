@@ -13,7 +13,8 @@ public static class NukiCredentialMapper
       Id = entity.Id,
       Token = entity.Token,
       UserId = entity.UserId,
-      NukiEmail = entity.NukiEmail
+      NukiEmail = entity.NukiEmail,
+      IsRefreshable = entity.IsRefreshable
     };
   }
 
@@ -30,7 +31,7 @@ public static class NukiCredentialMapper
       NukiEmail = model.NukiEmail,
     };
   }
-  
+
   public static NukiCredentialEntity Map(NukiCredentialDraftModel model)
   {
     return new NukiCredentialEntity()
@@ -63,7 +64,16 @@ public static class NukiCredentialMapper
 
   public static NukiRefreshableCredentialModel Map(NukiOAuthResponseDto entity, DateTime createdAt)
   {
-    return new NukiRefreshableCredentialModel(Token: entity.Token, Error: entity.Error, RefreshToken: entity.RefreshToken,
+    return new NukiRefreshableCredentialModel(Token: entity.Token, Error: entity.Error,
+      RefreshToken: entity.RefreshToken,
       TokenExpiresIn: entity.TokenExpiresIn, CreatedAt: createdAt);
+  }
+
+  public static void Map(NukiCredentialEntity entity, NukiOAuthResponseDto response)
+  {
+    entity.Token = response.Token;
+    entity.RefreshToken = response.RefreshToken;
+    entity.CreatedAt = DateTime.Now;
+    entity.ExpiresIn = response.TokenExpiresIn;
   }
 }

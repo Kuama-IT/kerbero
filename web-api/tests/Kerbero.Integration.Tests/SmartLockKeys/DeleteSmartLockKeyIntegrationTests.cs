@@ -49,7 +49,7 @@ public class DeleteSmartLockKeyIntegrationTests : IDisposable
     smartLockKeyDto.Should().BeEquivalentTo(tExpected);
 
     var getResponseMessage = await loggedClient.GetAsync($"api/smart-lock-keys/");
-    var smartLockKeysResponseDtos = await getResponseMessage.Content.ReadFromJsonAsync<List<SmartLockKeyResponseDto>>();
-    smartLockKeysResponseDtos.Should().NotContain(smartLockKeyDto!);
+    var smartLockKeysResponseDtos = await getResponseMessage.Content.ReadFromJsonAsync<SmartLockKeyListResponseDto>();
+    smartLockKeysResponseDtos!.SmartLockKeys.Should().NotContain(smartLockKeyDto!);
   }
 }

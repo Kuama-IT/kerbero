@@ -14,7 +14,7 @@ public class GetNukiCredentialsByUserInteractor : IGetNukiCredentialsByUserInter
     _nukiCredentialRepository = nukiCredentialRepository;
   }
 
-  public async Task<Result<List<NukiCredentialModel>>> Handle(Guid userId)
+  public async Task<Result<UserNukiCredentialsModel>> Handle(Guid userId)
   {
     var nukiCredentialsResult = await _nukiCredentialRepository.GetAllByUserId(userId);
 
@@ -23,6 +23,32 @@ public class GetNukiCredentialsByUserInteractor : IGetNukiCredentialsByUserInter
       return Result.Fail(nukiCredentialsResult.Errors);
     }
 
-    return nukiCredentialsResult.Value;
+    var refreshedNukiCredentials = new List<NukiCredentialModel>();
+    var failedNukiCredentials = new List<(NukiCredentialModel, List<IError>)>();
+
+    foreach (var nukiCredentialModel in nukiCredentialsResult.Value)
+    {
+      if (nukiCredentialModel.IsRefreshable)
+      {
+        var refreshedNukiCredentialResult = await _nukiCredentialRepository.GetRefreshedCredential(nukiCredentialModel);
+        if (refreshedNukiCredentialResult.IsSuccess)
+        {
+          refreshedNukiCredentials.Add(refreshedNukiCredentialResult.Value);
+        }
+        else
+        {
+          failedNukiCredentials.Add((nukiCredentialModel, refreshedNukiCredentialResult.Errors));
+        }
+      }
+      else
+      {
+        refreshedNukiCredentials.Add(nukiCredentialModel);
+      }
+    }
+
+    return new UserNukiCredentialsModel(
+      NukiCredentials: refreshedNukiCredentials,
+      OutdatedCredentials: failedNukiCredentials
+    );
   }
 }

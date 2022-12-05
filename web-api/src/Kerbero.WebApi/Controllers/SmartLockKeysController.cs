@@ -66,7 +66,7 @@ public class SmartLockKeysController : ControllerBase
   }
 
   [HttpGet]
-  public async Task<ActionResult<List<SmartLockKeyResponseDto>>> GetAllKeys()
+  public async Task<ActionResult<SmartLockKeyListResponseDto>> GetAllKeys()
   {
     var interactorResponse = await _getSmartLockKeysInteractor.Handle(
       HttpContext.GetAuthenticatedUserId());

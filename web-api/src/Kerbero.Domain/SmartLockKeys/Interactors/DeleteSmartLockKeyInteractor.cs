@@ -1,5 +1,6 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Interfaces;
 using Kerbero.Domain.SmartLockKeys.Models;
@@ -9,37 +10,33 @@ namespace Kerbero.Domain.SmartLockKeys.Interactors;
 
 public class DeleteSmartLockKeyInteractor : IDeleteSmartLockKeyInteractor
 {
-    private readonly INukiCredentialRepository _nukiCredentialRepository;
-    private readonly ISmartLockKeyRepository _smartLockKeyRepository;
+  private readonly ISmartLockKeyRepository _smartLockKeyRepository;
+  private readonly IEnsureNukiCredentialBelongsToUserInteractor _ensureNukiCredentialBelongsToUserInteractor;
 
-    public DeleteSmartLockKeyInteractor(
-        INukiCredentialRepository nukiCredentialRepository,
-        ISmartLockKeyRepository smartLockKeyRepository)
+  public DeleteSmartLockKeyInteractor(
+    ISmartLockKeyRepository smartLockKeyRepository,
+    IEnsureNukiCredentialBelongsToUserInteractor ensureNukiCredentialBelongsToUserInteractor)
+  {
+    _smartLockKeyRepository = smartLockKeyRepository;
+    _ensureNukiCredentialBelongsToUserInteractor = ensureNukiCredentialBelongsToUserInteractor;
+  }
+
+  public async Task<Result<SmartLockKeyModel>> Handle(Guid userId, Guid smartLockId)
+  {
+    var smartLockKeyResult = await _smartLockKeyRepository.GetById(smartLockId);
+    if (smartLockKeyResult.IsFailed)
     {
-        _nukiCredentialRepository = nukiCredentialRepository;
-        _smartLockKeyRepository = smartLockKeyRepository;
+      return Result.Fail(smartLockKeyResult.Errors);
     }
 
-    public async Task<Result<SmartLockKeyModel>> Handle(Guid userId, Guid smartLockId)
+    var nukiCredentialModelResult =
+      await _ensureNukiCredentialBelongsToUserInteractor.Handle(userId,
+        credentialId: smartLockKeyResult.Value.CredentialId);
+    if (nukiCredentialModelResult.IsFailed)
     {
-        var smartLockKeyResult = await _smartLockKeyRepository.GetById(smartLockId);
-        if (smartLockKeyResult.IsFailed)
-        {
-            return Result.Fail(smartLockKeyResult.Errors);
-        }
-
-        var nukiCredentialsResult = await _nukiCredentialRepository.GetAllByUserId(userId);
-        if (nukiCredentialsResult.IsFailed)
-        {
-            return Result.Fail(nukiCredentialsResult.Errors);
-        }
-
-        var nukiCredentialModel = nukiCredentialsResult.Value.Find(credential => credential.Id == smartLockKeyResult.Value.CredentialId);
-        if (nukiCredentialModel is null)
-        {
-            return Result.Fail(new UnauthorizedAccessError());
-        }
-
-        return await _smartLockKeyRepository.Delete(smartLockId);
+      return nukiCredentialModelResult.ToResult();
     }
+
+    return await _smartLockKeyRepository.Delete(smartLockId);
+  }
 }

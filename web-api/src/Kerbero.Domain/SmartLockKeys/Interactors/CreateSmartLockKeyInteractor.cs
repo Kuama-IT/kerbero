@@ -1,6 +1,7 @@
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Interfaces;
 using Kerbero.Domain.SmartLockKeys.Models;
@@ -13,16 +14,16 @@ public class CreateSmartLockKeyInteractor : ICreateSmartLockKeyInteractor
 {
   private readonly ISmartLockKeyRepository _smartLockKeyRepository;
   private readonly INukiSmartLockRepository _nukiSmartLockRepository;
-  private readonly INukiCredentialRepository _nukiCredentialRepository;
+  private readonly IGetNukiCredentialInteractor _getNukiCredentialInteractor;
 
   public CreateSmartLockKeyInteractor(
     ISmartLockKeyRepository smartLockKeyRepository,
     INukiSmartLockRepository nukiSmartLockRepository,
-    INukiCredentialRepository nukiCredentialRepository)
+    IGetNukiCredentialInteractor getNukiCredentialInteractor)
   {
     _smartLockKeyRepository = smartLockKeyRepository;
     _nukiSmartLockRepository = nukiSmartLockRepository;
-    _nukiCredentialRepository = nukiCredentialRepository;
+    _getNukiCredentialInteractor = getNukiCredentialInteractor;
   }
 
   public async Task<Result<SmartLockKeyModel>> Handle(string smartLockId, DateTime validUntilDate,
@@ -34,7 +35,7 @@ public class CreateSmartLockKeyInteractor : ICreateSmartLockKeyInteractor
       return Result.Fail(new UnsupportedSmartLockProviderError());
     }
 
-    var nukiCredentialResult = await _nukiCredentialRepository.GetById(credentialId);
+    var nukiCredentialResult = await _getNukiCredentialInteractor.Handle(credentialId);
     if (nukiCredentialResult.IsFailed)
     {
       return Result.Fail(nukiCredentialResult.Errors);

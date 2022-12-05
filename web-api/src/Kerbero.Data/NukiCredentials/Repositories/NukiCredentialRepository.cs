@@ -1,12 +1,12 @@
 using FluentResults;
-using Kerbero.Domain.Common.Errors;
-using Kerbero.Domain.NukiCredentials.Errors;
-using Kerbero.Domain.NukiCredentials.Models;
-using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Data.Common.Helpers;
 using Kerbero.Data.Common.Interfaces;
 using Kerbero.Data.NukiCredentials.Entities;
 using Kerbero.Data.NukiCredentials.Mappers;
+using Kerbero.Domain.Common.Errors;
+using Kerbero.Domain.NukiCredentials.Errors;
+using Kerbero.Domain.NukiCredentials.Models;
+using Kerbero.Domain.NukiCredentials.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -38,6 +38,54 @@ public class NukiCredentialRepository : INukiCredentialRepository
     }
 
     return nukiAccountResult.Value.Email;
+  }
+
+  public async Task<Result<NukiCredentialModel>> GetRefreshedCredential(NukiCredentialModel model)
+  {
+    if (string.IsNullOrEmpty(model.Token))
+    {
+      return Result.Fail(new NukiCredentialInvalidTokenError());
+    }
+
+    try
+    {
+      var entity = await _dbContext.NukiCredentials.AsNoTracking().SingleAsync(it => it.Id == model.Id);
+
+      if (string.IsNullOrEmpty(entity.RefreshToken))
+      {
+        return Result.Fail(new NukiCredentialInvalidTokenError());
+      }
+
+      var responseResult = await _nukiRestApiClient.RefreshToken(entity.RefreshToken);
+
+      if (responseResult.IsFailed)
+      {
+        return responseResult.ToResult();
+      }
+
+      var entityToUpdate = await _dbContext.NukiCredentials.SingleAsync(it => it.Id == model.Id);
+
+      NukiCredentialMapper.Map(entity: entityToUpdate, response: responseResult.Value);
+
+      await _dbContext.SaveChangesAsync();
+
+      return NukiCredentialMapper.Map(entityToUpdate);
+    }
+    catch (NotSupportedException exception)
+    {
+      _logger.LogError(exception, "Error while retrieving a NukiCredential from the database");
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (InvalidOperationException exception)
+    {
+      _logger.LogError(exception, "Error while retrieving a NukiCredential from the database");
+      return Result.Fail(new NukiCredentialNotFoundError());
+    }
+    catch (Exception exception)
+    {
+      _logger.LogError(exception, "Error while retrieving a NukiCredential from the database");
+      return Result.Fail(new KerberoError());
+    }
   }
 
   public async Task<Result<NukiCredentialModel>> Create(NukiCredentialModel model, Guid userId)
@@ -287,7 +335,8 @@ public class NukiCredentialRepository : INukiCredentialRepository
 
   public async Task<Result<NukiCredentialModel>> DeleteById(int nukiCredentialId)
   {
-    try{
+    try
+    {
       var entity =
         await _dbContext.NukiCredentials.SingleAsync(credentialEntity => credentialEntity.Id == nukiCredentialId);
       _dbContext.NukiCredentials.Remove(entity);

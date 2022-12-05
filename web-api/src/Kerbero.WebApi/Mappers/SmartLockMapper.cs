@@ -1,13 +1,19 @@
-﻿using Kerbero.Domain.SmartLocks.Models;
+﻿using FluentResults;
+using Kerbero.Domain.NukiCredentials.Models;
+using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.WebApi.Dtos.SmartLocks;
 
 namespace Kerbero.WebApi.Mappers;
 
 public static class SmartLockMapper
 {
-  public static List<SmartLockResponseDto> Map(List<SmartLockWithCredentialModel> models)
+  public static SmartLockListResponseDto Map(List<SmartLockWithCredentialModel> models,
+    List<(NukiCredentialModel, List<IError>)> outdatedCredentials)
   {
-    return models.ConvertAll(Map);
+    return new SmartLockListResponseDto(
+      SmartLocks: models.ConvertAll(Map),
+      OutdatedCredentials: NukiCredentialMapper.Map(outdatedCredentials)
+    );
   }
 
   public static SmartLockResponseDto Map(SmartLockWithCredentialModel model)
@@ -20,7 +26,7 @@ public static class SmartLockMapper
       CredentialId = model.CredentialId,
       State = new SmartLockStateDto()
       {
-        Value = (int) model.State,
+        Value = (int)model.State,
         Description = model.State.ToString()
       }
     };

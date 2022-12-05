@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Errors;
@@ -15,153 +16,152 @@ namespace Kerbero.Domain.Tests.SmartLockKeys.Interactors;
 
 public class CloseSmartLockWithKeyInteractorTests
 {
-	[Fact]
-	public async Task CloseSmartLock_WithValidParameters()
-	{
-		var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
-		var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
-		var closeSmartLockInteractor = new Mock<ICloseSmartLockInteractor>();
-		var closeSmartLockWithKeyInteractor = new CloseSmartLockWithKeyInteractor(
-			smartLockKeyRepository.Object,
-			nukiCredentialRepository.Object,
-			closeSmartLockInteractor.Object
-			);
+  [Fact]
+  public async Task CloseSmartLock_WithValidParameters()
+  {
+    var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
+    var getNukiCredentialInteractor = new Mock<IGetNukiCredentialInteractor>();
+    var closeSmartLockInteractor = new Mock<ICloseSmartLockInteractor>();
+    var closeSmartLockWithKeyInteractor = new CloseSmartLockWithKeyInteractor(
+      smartLockKeyRepository: smartLockKeyRepository.Object,
+      getNukiCredentialInteractor: getNukiCredentialInteractor.Object,
+      closeSmartLockInteractor: closeSmartLockInteractor.Object
+    );
 
-		var tSmartLockProvider = SmartLockProvider.Nuki;
+    var tSmartLockProvider = SmartLockProvider.Nuki;
 
-		var tSmartLockKeyModel = new SmartLockKeyModel()
-		{
-			Id = new Guid(),
-			Password = "PASSWORD",
-			CreatedAt = DateTime.Now,
-			ValidFrom = DateTime.Now,
-			ValidUntil = DateTime.Now.AddDays(7).ToUniversalTime(),
-			CredentialId = 1,
-			IsDisabled = false,
-			UsageCounter = 0,
-			SmartLockId = "VALID_ID",
-			SmartLockProvider = tSmartLockProvider.Name
-		};
+    var tSmartLockKeyModel = new SmartLockKeyModel()
+    {
+      Id = new Guid(),
+      Password = "PASSWORD",
+      CreatedAt = DateTime.Now,
+      ValidFrom = DateTime.Now,
+      ValidUntil = DateTime.Now.AddDays(7).ToUniversalTime(),
+      CredentialId = 1,
+      IsDisabled = false,
+      UsageCounter = 0,
+      SmartLockId = "VALID_ID",
+      SmartLockProvider = tSmartLockProvider.Name
+    };
 
-		var tNukiCredentialModel = new NukiCredentialModel()
-		{
-			Id = 1,
-			Token = "VALID_TOKEN",
-			UserId = new Guid(),
-			NukiEmail = "test@nuki.com"
-		};
+    var tNukiCredentialModel = new NukiCredentialModel()
+    {
+      Id = 1,
+      Token = "VALID_TOKEN",
+      UserId = new Guid(),
+      NukiEmail = "test@nuki.com"
+    };
 
-		var tSmartLockKeyId = new Guid();
+    var tSmartLockKeyId = new Guid();
 
-		smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
-			.ReturnsAsync(tSmartLockKeyModel);
-		nukiCredentialRepository.Setup(c => c.GetById(It.IsAny<int>()))
-			.ReturnsAsync(tNukiCredentialModel);
-		closeSmartLockInteractor.Setup(c =>
-				c.Handle(It.IsAny<Guid>(), It.IsAny<SmartLockProvider>(), It.IsAny<string>(), It.IsAny<int>()))
-			.ReturnsAsync(Result.Ok());
-		smartLockKeyRepository.Setup(c => c.Update(It.IsAny<SmartLockKeyModel>()))
-			.ReturnsAsync(tSmartLockKeyModel);
+    smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
+      .ReturnsAsync(tSmartLockKeyModel);
+    getNukiCredentialInteractor.Setup(c => c.Handle(It.IsAny<int>(), It.IsAny<Guid?>()))
+      .ReturnsAsync(tNukiCredentialModel);
+    closeSmartLockInteractor.Setup(c =>
+        c.Handle(It.IsAny<Guid>(), It.IsAny<SmartLockProvider>(), It.IsAny<string>(), It.IsAny<int>()))
+      .ReturnsAsync(Result.Ok());
+    smartLockKeyRepository.Setup(c => c.Update(It.IsAny<SmartLockKeyModel>()))
+      .ReturnsAsync(tSmartLockKeyModel);
 
-		var result = await closeSmartLockWithKeyInteractor.Handle(tSmartLockKeyId, "PASSWORD");
+    var result = await closeSmartLockWithKeyInteractor.Handle(tSmartLockKeyId, "PASSWORD");
 
-		result.IsSuccess.Should().BeTrue();
+    result.IsSuccess.Should().BeTrue();
 
-		smartLockKeyRepository.Verify(c => c.GetById(tSmartLockKeyId));
-		tSmartLockKeyModel.UsageCounter++;
-		smartLockKeyRepository.Verify(c => c.Update(tSmartLockKeyModel));
-		smartLockKeyRepository.VerifyNoOtherCalls();
+    smartLockKeyRepository.Verify(c => c.GetById(tSmartLockKeyId));
+    tSmartLockKeyModel.UsageCounter++;
+    smartLockKeyRepository.Verify(c => c.Update(tSmartLockKeyModel));
+    smartLockKeyRepository.VerifyNoOtherCalls();
 
-		nukiCredentialRepository.Verify(c => c.GetById(tSmartLockKeyModel.CredentialId));
-		nukiCredentialRepository.VerifyNoOtherCalls();
-		
-		closeSmartLockInteractor.Verify(c => c.Handle(tNukiCredentialModel.UserId,
-			tSmartLockProvider,
-			tSmartLockKeyModel.SmartLockId,
-			tSmartLockKeyModel.CredentialId
-			));
-		closeSmartLockInteractor.VerifyNoOtherCalls();
-	}
-	
-	[Fact]
-	public async Task CloseSmartLock_PasswordMismatch()
-	{
-		var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
-		var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
-		var closeSmartLockInteractor = new Mock<ICloseSmartLockInteractor>();
-		var closeSmartLockWithKeyInteractor = new CloseSmartLockWithKeyInteractor(
-			smartLockKeyRepository.Object,
-			nukiCredentialRepository.Object,
-			closeSmartLockInteractor.Object
-			);
+    getNukiCredentialInteractor.Verify();
 
-		var tSmartLockProvider = SmartLockProvider.Nuki;
+    closeSmartLockInteractor.Verify(c => c.Handle(tNukiCredentialModel.UserId,
+      tSmartLockProvider,
+      tSmartLockKeyModel.SmartLockId,
+      tSmartLockKeyModel.CredentialId
+    ));
+    closeSmartLockInteractor.VerifyNoOtherCalls();
+  }
 
-		var tSmartLockKeyModel = new SmartLockKeyModel()
-		{
-			Id = new Guid(),
-			Password = "PASSWORD",
-			CreatedAt = DateTime.Now,
-			ValidFrom = DateTime.Now,
-			ValidUntil = DateTime.Now.AddDays(7).ToUniversalTime(),
-			CredentialId = 1,
-			IsDisabled = false,
-			UsageCounter = 0,
-			SmartLockId = "VALID_ID",
-			SmartLockProvider = tSmartLockProvider.Name
-		};
+  [Fact]
+  public async Task CloseSmartLock_PasswordMismatch()
+  {
+    var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
+    var getNukiCredentialInteractor = new Mock<IGetNukiCredentialInteractor>();
+    var closeSmartLockInteractor = new Mock<ICloseSmartLockInteractor>();
+    var closeSmartLockWithKeyInteractor = new CloseSmartLockWithKeyInteractor(
+      smartLockKeyRepository: smartLockKeyRepository.Object,
+      getNukiCredentialInteractor: getNukiCredentialInteractor.Object,
+      closeSmartLockInteractor: closeSmartLockInteractor.Object
+    );
 
-		var tSmartLockKeyId = new Guid();
+    var tSmartLockProvider = SmartLockProvider.Nuki;
 
-		smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
-			.ReturnsAsync(tSmartLockKeyModel);
+    var tSmartLockKeyModel = new SmartLockKeyModel()
+    {
+      Id = new Guid(),
+      Password = "PASSWORD",
+      CreatedAt = DateTime.Now,
+      ValidFrom = DateTime.Now,
+      ValidUntil = DateTime.Now.AddDays(7).ToUniversalTime(),
+      CredentialId = 1,
+      IsDisabled = false,
+      UsageCounter = 0,
+      SmartLockId = "VALID_ID",
+      SmartLockProvider = tSmartLockProvider.Name
+    };
 
-		var result = await closeSmartLockWithKeyInteractor.Handle(tSmartLockKeyId, "INVALID_PASSWORD");
+    var tSmartLockKeyId = new Guid();
 
-		result.IsFailed.Should().BeTrue();
-		result.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
+    smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
+      .ReturnsAsync(tSmartLockKeyModel);
 
-		smartLockKeyRepository.Verify(c => c.GetById(tSmartLockKeyId));
-	}
-	
-	[Fact]
-	public async Task OpenSmartLock_SmartLockKeyIsExpired()
-	{
-		var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
-		var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
-		var closeSmartLocInteractor = new Mock<ICloseSmartLockInteractor>();
-		var closeSmartLockWithKeyInteractor = new CloseSmartLockWithKeyInteractor(
-			smartLockKeyRepository.Object,
-			nukiCredentialRepository.Object,
-			closeSmartLocInteractor.Object
-		);
+    var result = await closeSmartLockWithKeyInteractor.Handle(tSmartLockKeyId, "INVALID_PASSWORD");
 
-		var tSmartLockProvider = SmartLockProvider.Nuki;
+    result.IsFailed.Should().BeTrue();
+    result.Errors.First().Should().BeEquivalentTo(new UnauthorizedAccessError());
 
-		var tSmartLockKeyModel = new SmartLockKeyModel()
-		{
-			Id = new Guid(),
-			Password = "PASSWORD",
-			CreatedAt = DateTime.Now,
-			ValidFrom = DateTime.Now,
-			ValidUntil = DateTime.Now.AddDays(-1).ToUniversalTime(),
-			CredentialId = 1,
-			IsDisabled = false,
-			UsageCounter = 0,
-			SmartLockId = "VALID_ID",
-			SmartLockProvider = tSmartLockProvider.Name
-		};
+    smartLockKeyRepository.Verify(c => c.GetById(tSmartLockKeyId));
+  }
 
-		var tSmartLockKeyId = new Guid();
+  [Fact]
+  public async Task OpenSmartLock_SmartLockKeyIsExpired()
+  {
+    var smartLockKeyRepository = new Mock<ISmartLockKeyRepository>();
+    var getNukiCredentialInteractor = new Mock<IGetNukiCredentialInteractor>();
+    var closeSmartLockInteractor = new Mock<ICloseSmartLockInteractor>();
+    var closeSmartLockWithKeyInteractor = new CloseSmartLockWithKeyInteractor(
+      smartLockKeyRepository: smartLockKeyRepository.Object,
+      getNukiCredentialInteractor: getNukiCredentialInteractor.Object,
+      closeSmartLockInteractor: closeSmartLockInteractor.Object
+    );
 
-		smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
-			.ReturnsAsync(tSmartLockKeyModel);
+    var tSmartLockProvider = SmartLockProvider.Nuki;
 
-		var result = await closeSmartLockWithKeyInteractor.Handle(tSmartLockKeyId, "PASSWORD");
+    var tSmartLockKeyModel = new SmartLockKeyModel()
+    {
+      Id = new Guid(),
+      Password = "PASSWORD",
+      CreatedAt = DateTime.Now,
+      ValidFrom = DateTime.Now,
+      ValidUntil = DateTime.Now.AddDays(-1).ToUniversalTime(),
+      CredentialId = 1,
+      IsDisabled = false,
+      UsageCounter = 0,
+      SmartLockId = "VALID_ID",
+      SmartLockProvider = tSmartLockProvider.Name
+    };
 
-		result.IsFailed.Should().BeTrue();
-		result.Errors.First().Should().BeEquivalentTo(new SmartLockKeyExpiredError());
+    var tSmartLockKeyId = new Guid();
 
-		smartLockKeyRepository.Verify(c => c.GetById(tSmartLockKeyId));
-	}
+    smartLockKeyRepository.Setup(c => c.GetById(It.IsAny<Guid>()))
+      .ReturnsAsync(tSmartLockKeyModel);
+
+    var result = await closeSmartLockWithKeyInteractor.Handle(tSmartLockKeyId, "PASSWORD");
+
+    result.IsFailed.Should().BeTrue();
+    result.Errors.First().Should().BeEquivalentTo(new SmartLockKeyExpiredError());
+
+    smartLockKeyRepository.Verify(c => c.GetById(tSmartLockKeyId));
+  }
 }

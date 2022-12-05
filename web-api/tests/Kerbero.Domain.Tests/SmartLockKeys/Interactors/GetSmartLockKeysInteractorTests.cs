@@ -1,7 +1,8 @@
 using FluentAssertions;
+using FluentResults;
 using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Models;
-using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Domain.SmartLockKeys.Interactors;
 using Kerbero.Domain.SmartLockKeys.Models;
 using Kerbero.Domain.SmartLockKeys.Repositories;
@@ -15,19 +16,25 @@ public class GetSmartLockKeysInteractorTests
   public async Task GetSmartLockKeys_ValidParameters()
   {
     var smartLockKeysRepository = new Mock<ISmartLockKeyRepository>();
-    var nukiCredentialRepository = new Mock<INukiCredentialRepository>();
+    var getNukiCredentialsByUserInteractor = new Mock<IGetNukiCredentialsByUserInteractor>();
     var getSmartLockKeysInteractor =
-      new GetSmartLockKeysInteractor(smartLockKeysRepository.Object, nukiCredentialRepository.Object);
+      new GetSmartLockKeysInteractor(smartLockKeysRepository.Object, getNukiCredentialsByUserInteractor.Object);
 
-    nukiCredentialRepository.Setup(c => c.GetAllByUserId(It.IsAny<Guid>()))
-      .ReturnsAsync(new List<NukiCredentialModel>()
+    var credentialsModel = new UserNukiCredentialsModel(
+      NukiCredentials: new List<NukiCredentialModel>()
       {
         new()
         {
           Id = 1, Token = "VALID_TOKEN",
           NukiEmail = "test@nuki.com"
         }
-      });
+      },
+      OutdatedCredentials: new List<(NukiCredentialModel, List<IError>)>()
+    );
+
+    getNukiCredentialsByUserInteractor.Setup(c => c.Handle(It.IsAny<Guid>()))
+      .ReturnsAsync(credentialsModel);
+
     var tSmartLockKeyModel = new SmartLockKeyModel
     {
       Password = "VALID_TOKEN",
@@ -38,12 +45,18 @@ public class GetSmartLockKeysInteractorTests
       CreatedAt = DateTime.Now
     };
 
-    var tExpected = new List<SmartLockKeyModel>()
+    var tExpectedList = new List<SmartLockKeyModel>()
     {
       tSmartLockKeyModel
     };
+
+    var tExpected = new UserSmartLockKeysModel(
+      SmartLockKeys: tExpectedList,
+      OutdatedCredentials: new List<(NukiCredentialModel, List<IError>)>()
+    );
+
     smartLockKeysRepository.Setup(c => c.GetAllByCredentials(It.IsAny<List<NukiCredentialModel>>()))
-      .ReturnsAsync(tExpected);
+      .ReturnsAsync(tExpectedList);
     var result = await getSmartLockKeysInteractor.Handle(new Guid());
     result.Value.Should().BeEquivalentTo(tExpected);
   }
