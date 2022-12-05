@@ -150,13 +150,12 @@ namespace Kerbero.Infrastructure.Migrations
                     b.Property<string>("Token")
                         .HasColumnType("text");
 
-                    b.Property<string>("User")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("NukiCredentials");
                 });
@@ -327,6 +326,17 @@ namespace Kerbero.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Kerbero.Infrastructure.NukiCredentials.Entities.NukiCredentialEntity", b =>
+                {
+                    b.HasOne("Kerbero.Identity.Modules.Users.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Kerbero.Infrastructure.NukiCredentials.Entities.UserNukiCredentialEntity", b =>
