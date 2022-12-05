@@ -2,7 +2,6 @@ using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.WebApi.Dtos;
 using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Mappers;
-using Kerbero.WebApi.Models.Requests;
 using Kerbero.WebApi.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +17,7 @@ public class NukiCredentialsController : ControllerBase
   private readonly ICreateNukiCredentialDraftInteractor _createNukiCredentialDraft;
   private readonly IConfirmNukiDraftCredentialsInteractor _confirmNukiDraftCredentials;
   private readonly IBuildNukiRedirectUriInteractor _buildNukiRedirectUri;
+  private readonly IGetNukiCredentialsByUserInteractor _getNukiCredentialsInteractor;
   private readonly IConfiguration _configuration;
 
   public NukiCredentialsController(
@@ -25,7 +25,8 @@ public class NukiCredentialsController : ControllerBase
     ICreateNukiCredentialDraftInteractor createNukiCredentialDraft,
     IConfiguration configuration,
     IConfirmNukiDraftCredentialsInteractor confirmNukiDraftCredentials, 
-    IBuildNukiRedirectUriInteractor buildNukiRedirectUri
+    IBuildNukiRedirectUriInteractor buildNukiRedirectUri,
+    IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor
   )
   {
     _createNukiCredential = createNukiCredential;
@@ -33,6 +34,7 @@ public class NukiCredentialsController : ControllerBase
     _configuration = configuration;
     _confirmNukiDraftCredentials = confirmNukiDraftCredentials;
     _buildNukiRedirectUri = buildNukiRedirectUri;
+    _getNukiCredentialsInteractor = getNukiCredentialsByUserInteractor;
   }
   
   /// <summary>
@@ -98,6 +100,20 @@ public class NukiCredentialsController : ControllerBase
       token: request.Token
     );
 
+    if (interactorResponse.IsFailed)
+    {
+      var error = interactorResponse.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return NukiCredentialMapper.Map(interactorResponse.Value);
+  }
+
+  [HttpGet]
+  public async Task<ActionResult<List<NukiCredentialResponseDto>>> GetAll()
+  {
+    var interactorResponse = await _getNukiCredentialsInteractor.Handle(HttpContext.GetAuthenticatedUserId());
+    
     if (interactorResponse.IsFailed)
     {
       var error = interactorResponse.Errors.First();
