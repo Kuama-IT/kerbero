@@ -17,6 +17,7 @@ public class SmartLockKeysController : ControllerBase
   private readonly ICreateSmartLockKeyInteractor _createSmartLockKeyInteractor;
   private readonly IGetSmartLockKeysInteractor _getSmartLockKeysInteractor;
   private readonly IOpenSmartLockWithKeyInteractor _openSmartLockWithKeyInteractor;
+  private readonly ICloseSmartLockWithKeyInteractor _closeSmartLockWithKeyInteractor;
   private readonly IDeleteSmartLockKeyInteractor _deleteSmartLockKeyInteractor;
   private readonly IUpdateSmartLockKeyValidityInteractor _updateSmartLockKeyValidityInteractor;
 
@@ -25,11 +26,13 @@ public class SmartLockKeysController : ControllerBase
     IGetSmartLockKeysInteractor getSmartLockKeysInteractor,
     IDeleteSmartLockKeyInteractor deleteSmartLockKeyInteractor,
     IOpenSmartLockWithKeyInteractor openSmartLockWithKeyInteractor,
+    ICloseSmartLockWithKeyInteractor closeSmartLockWithKeyInteractor,
     IUpdateSmartLockKeyValidityInteractor updateSmartLockKeyValidityInteractor)
   {
     _createSmartLockKeyInteractor = createSmartLockKeyInteractor;
     _getSmartLockKeysInteractor = getSmartLockKeysInteractor;
     _openSmartLockWithKeyInteractor = openSmartLockWithKeyInteractor;
+    _closeSmartLockWithKeyInteractor = closeSmartLockWithKeyInteractor;
     _updateSmartLockKeyValidityInteractor = updateSmartLockKeyValidityInteractor;
     _deleteSmartLockKeyInteractor = deleteSmartLockKeyInteractor;
   }
@@ -78,10 +81,28 @@ public class SmartLockKeysController : ControllerBase
   }
 
   [AllowAnonymous]
-  [HttpPut("open-smartlock")]
+  [HttpPut("open-smart-lock")]
   public async Task<ActionResult> OpenSmartLockWithKeyAndPassword(OpenSmartLockWithKeyRequestDto request)
   {
     var interactorResponse = await _openSmartLockWithKeyInteractor.Handle(
+      request.SmartLockKeyId,
+      request.KeyPassword
+    );
+
+    if (interactorResponse.IsFailed)
+    {
+      var error = interactorResponse.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return NoContent();
+  }
+  
+  [AllowAnonymous]
+  [HttpPut("close-smart-lock")]
+  public async Task<ActionResult> CloseSmartLockWithKeyAndPassword(CloseSmartLockWithKeyRequestDto request)
+  {
+    var interactorResponse = await _closeSmartLockWithKeyInteractor.Handle(
       request.SmartLockKeyId,
       request.KeyPassword
     );
