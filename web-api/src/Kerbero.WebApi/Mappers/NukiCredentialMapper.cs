@@ -19,4 +19,9 @@ public static class NukiCredentialMapper
       Token = model.Token
     };
   }
+
+  public static List<NukiCredentialResponseDto> Map(List<NukiCredentialModel> models)
+  {
+    return models.ConvertAll(Map);
+  }
 }
