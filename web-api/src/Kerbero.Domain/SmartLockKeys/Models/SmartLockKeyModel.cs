@@ -37,7 +37,7 @@ public class SmartLockKeyModel
 
   public required string SmartLockProvider { get; set; }
 
-  public static SmartLockKeyModel CreateKey(string smartLockId, DateTime validUntilDate, DateTime validFromDate,
+  public static SmartLockKeyModel Create(string smartLockId, DateTime validUntilDate, DateTime validFromDate,
     int credentialId, SmartLockProvider smartLockProvider)
   {
     var wordGenerator = new WordGenerator();
@@ -67,6 +67,21 @@ public class SmartLockKeyModel
       return Result.Fail(new SmartLockKeyExpiredError());
     }
 
+    return Result.Ok();
+  }
+
+  public Result Validate()
+  {
+    if (DateTime.Now - ValidFrom > TimeSpan.FromMinutes(5))
+    {
+      return Result.Fail(new SmartLockKeyPastValidFromError());
+    }
+
+    if (ValidFrom > ValidUntil)
+    {
+      return Result.Fail(new SmartLockKeyValidUntilPrecedeValidFromError());
+    }
+    
     return Result.Ok();
   }
 }
