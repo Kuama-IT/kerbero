@@ -4,7 +4,6 @@ using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Dtos;
-using Kerbero.WebApi.Models.Requests;
 
 namespace Kerbero.Integration.Tests.NukiCredentials;
 
@@ -25,6 +24,10 @@ public class NukiCredentialsIntegrationTests
     httpTest.RespondWith("everything is good");
 
     var (client, _) = await _application.CreateUserAndAuthenticateClient();
+    
+    httpTest
+      .ForCallsTo("https://api.nuki.io/account")
+      .RespondWithJson(new {accountId = 0, email = "nuki@test.com", name = "Tester"});
 
     var tExpectedDto = new NukiCredentialResponseDto
     {

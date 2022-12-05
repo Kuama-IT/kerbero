@@ -1,12 +1,9 @@
 ﻿using FluentResults;
-using Flurl;
-using Flurl.Http;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.SmartLocks.Models;
 using Kerbero.Domain.SmartLocks.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.SmartLocks.Mappers;
-using Kerbero.Infrastructure.SmartLocks.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace Kerbero.Infrastructure.SmartLocks.Repositories;
@@ -14,22 +11,18 @@ namespace Kerbero.Infrastructure.SmartLocks.Repositories;
 public class NukiSmartLockRepository : INukiSmartLockRepository
 {
   private readonly IConfiguration _configuration;
-  private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
+  private readonly NukiRestApiClient _nukiRestApiClient;
 
-  public NukiSmartLockRepository(IConfiguration configuration, NukiSafeHttpCallHelper nukiSafeHttpCallHelper)
+  public NukiSmartLockRepository(IConfiguration configuration, NukiRestApiClient nukiRestApiClient)
   {
     _configuration = configuration;
-    _nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
+    _nukiRestApiClient = nukiRestApiClient;
   }
 
   public async Task<Result<List<SmartLockModel>>> GetAll(NukiCredentialModel nukiCredentialModel)
   {
-    var result = await _nukiSafeHttpCallHelper.Handle(() =>
-      _configuration["NUKI_DOMAIN"]
-        .AppendPathSegment("smartlock")
-        .WithOAuthBearerToken(nukiCredentialModel.Token)
-        .GetJsonAsync<List<NukiSmartLockResponse>>()
-    );
+    var result = await _nukiRestApiClient
+      .GetAllSmartLocks(nukiCredentialModel.Token);
 
     if (result.IsFailed)
     {
@@ -41,13 +34,8 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
 
   public async Task<Result<SmartLockModel>> Get(NukiCredentialModel nukiCredentialModel, string id)
   {
-    var result = await _nukiSafeHttpCallHelper.Handle(() =>
-      _configuration["NUKI_DOMAIN"]
-        .AppendPathSegment("smartlock")
-        .AppendPathSegment(id)
-        .WithOAuthBearerToken(nukiCredentialModel.Token)
-        .GetJsonAsync<NukiSmartLockResponse>()
-    );
+    var result = await _nukiRestApiClient
+      .GetSmartLock(id, nukiCredentialModel.Token);
 
     if (result.IsFailed)
     {
@@ -59,15 +47,8 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
 
   public async Task<Result> Open(NukiCredentialModel nukiCredentialModel, string id)
   {
-    var result = await _nukiSafeHttpCallHelper.Handle(() =>
-      _configuration["NUKI_DOMAIN"]
-        .AppendPathSegment("smartlock")
-        .AppendPathSegment(id)
-        .AppendPathSegment("action")
-        .AppendPathSegment("unlock")
-        .WithOAuthBearerToken(nukiCredentialModel.Token)
-        .PostAsync()
-    );
+    var result = await _nukiRestApiClient
+      .OpenSmartLock(id, nukiCredentialModel.Token);
 
     if (result.IsFailed)
     {
@@ -79,15 +60,8 @@ public class NukiSmartLockRepository : INukiSmartLockRepository
 
   public async Task<Result> Close(NukiCredentialModel nukiCredentialModel, string id)
   {
-    var result = await _nukiSafeHttpCallHelper.Handle(() =>
-      _configuration["NUKI_DOMAIN"]
-        .AppendPathSegment("smartlock")
-        .AppendPathSegment(id)
-        .AppendPathSegment("action")
-        .AppendPathSegment("lock")
-        .WithOAuthBearerToken(nukiCredentialModel.Token)
-        .PostAsync()
-    );
+    var result = await _nukiRestApiClient
+      .CloseSmartLock(id, nukiCredentialModel.Token);
 
     if (result.IsFailed)
     {

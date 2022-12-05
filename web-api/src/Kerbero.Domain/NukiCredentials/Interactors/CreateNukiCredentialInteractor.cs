@@ -24,7 +24,14 @@ public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
       return Result.Fail(new NukiCredentialInvalidTokenError());
     }
 
-    var nukiCredentialModel = new NukiCredentialModel() { Token = token, NukiEmail = "TODO"};
+    var nukiEmailResult = await _nukiCredentialRepository.GetNukiAccountEmail(token);
+
+    if (nukiEmailResult.IsFailed)
+    {
+      return Result.Fail(new NukiCredentialInvalidTokenError());
+    }
+
+    var nukiCredentialModel = new NukiCredentialModel() { Token = token, NukiEmail = nukiEmailResult.Value };
     var createNukiCredentialResult = await _nukiCredentialRepository.Create(nukiCredentialModel, userId);
 
     if (createNukiCredentialResult.IsFailed)
