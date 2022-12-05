@@ -2,6 +2,7 @@ using System.Net;
 using FluentResults;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiCredentials.Errors;
+using Kerbero.Domain.SmartLockKeys.Errors;
 using Kerbero.Domain.SmartLocks.Errors;
 using Kerbero.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,7 @@ public static class ModelStateDictionaryExtension
       case DuplicateEntryError:
       case SmartLockNotFoundError:
       case NukiCredentialInvalidTokenError:
+      case SmartLockKeyExpiredError:
         return HttpStatusCode.BadRequest;
       default:
         throw new DevException("Forgot to map the error with status code");
