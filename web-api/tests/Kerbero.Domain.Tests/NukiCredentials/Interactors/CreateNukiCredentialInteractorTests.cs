@@ -30,6 +30,7 @@ public class CreateNukiCredentialInteractorTests
     {
       Id = 1,
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
 
     _nukiCredentialRepositoryMock.Setup(repo => repo.ValidateNotRefreshableApiToken(It.IsAny<string>()))
@@ -48,7 +49,8 @@ public class CreateNukiCredentialInteractorTests
     nukiCredentialDto.Should().BeEquivalentTo(Result.Ok(new NukiCredentialModel()
     {
       Id = 1,
-      Token = "VALID_TOKEN"
+      Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     }));
   }
 }

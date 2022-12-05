@@ -14,6 +14,7 @@ public static class IntegrationTestsUtils
     return new NukiCredentialModel()
     {
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
   }
   #endregion
@@ -33,8 +34,9 @@ public static class IntegrationTestsUtils
     return new SmartLockKeyModel()
     {
       Password = "TOKEN",
-      CreationDate = DateTime.Now,
-      ExpiryDate = DateTime.Now.AddDays(7),
+      CreatedAt = DateTime.Now,
+      ValidFrom = DateTime.Now,
+      ValidUntil = DateTime.Now.AddDays(7),
       UsageCounter = 0,
       IsDisabled = false,
       SmartLockId = "VALID_ID",

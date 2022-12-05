@@ -39,7 +39,8 @@ public class ConfirmNukiDraftCredentialsInteractorTests
     {
       Id = 0,
       Token = token,
-      UserId = userId
+      UserId = userId,
+      NukiEmail = "test@nuki.com"
     };
 
     var refreshModel = new NukiRefreshableCredentialModel(

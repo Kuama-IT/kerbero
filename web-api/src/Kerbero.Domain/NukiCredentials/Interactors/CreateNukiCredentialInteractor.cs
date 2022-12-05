@@ -24,7 +24,7 @@ public class CreateNukiCredentialInteractor : ICreateNukiCredentialInteractor
       return Result.Fail(new NukiCredentialInvalidTokenError());
     }
 
-    var nukiCredentialModel = new NukiCredentialModel() { Token = token };
+    var nukiCredentialModel = new NukiCredentialModel() { Token = token, NukiEmail = "TODO"};
     var createNukiCredentialResult = await _nukiCredentialRepository.Create(nukiCredentialModel, userId);
 
     if (createNukiCredentialResult.IsFailed)

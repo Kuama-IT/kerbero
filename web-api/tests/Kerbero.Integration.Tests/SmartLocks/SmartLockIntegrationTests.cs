@@ -5,7 +5,6 @@ using Flurl.Http.Testing;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Dtos;
-using Kerbero.WebApi.Models.Requests;
 
 namespace Kerbero.Integration.Tests.SmartLocks;
 
@@ -27,7 +26,7 @@ public class SmartLockIntegrationTests
     _httpTest
       .ForCallsTo("https://api.nuki.io/account")
       .RespondWith("OK", 200);
-    
+
     _httpTest
       .ForCallsTo("https://api.nuki.io/smartlock/0/unlock")
       .RespondWith("OK", 204);
@@ -37,8 +36,10 @@ public class SmartLockIntegrationTests
     var credentials = await _application.CreateNukiCredential(new NukiCredentialModel
     {
       Id = 0,
-      Token = "A_TOKEN"
+      Token = "A_TOKEN",
+      NukiEmail = "test@nuki.com"
     }, userId: user.Id);
+
     var response =
       await client.PutAsJsonAsync(
         "/api/smart-locks/0/open", new OpenSmartLockRequestDto(

@@ -46,6 +46,7 @@ public class NukiSmartLockRepositoryTests
     {
       Id = 1,
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
     // Act
     var actual = await repository.Get(credentials, "ID");
@@ -73,6 +74,7 @@ public class NukiSmartLockRepositoryTests
     {
       Id = 1,
       Token = "A_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
     
     var httpTest = new HttpTest();

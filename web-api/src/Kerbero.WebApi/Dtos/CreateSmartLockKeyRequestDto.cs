@@ -1,5 +1,5 @@
 namespace Kerbero.WebApi.Dtos;
 
-public record CreateSmartLockKeyRequestDto(string SmartLockId, DateTime ExpiryDate, int CredentialId, string SmartLockProvider)
+public record CreateSmartLockKeyRequestDto(string SmartLockId, DateTime ValidUntilDate, DateTime ValidFromDate, int CredentialId, string SmartLockProvider)
 {
 }

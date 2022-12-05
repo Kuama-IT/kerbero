@@ -4,9 +4,20 @@ public class SmartLockKeyEntity
 {
 	public Guid Id { get; set; }
 	
-	public required DateTime CreationDate { get; set; }
-	
-	public required DateTime ExpiryDate { get; set; }
+	/// <summary>
+	/// Internal information (when the record was created)
+	/// </summary>
+	public required DateTime CreatedAt { get; set; }
+
+	/// <summary>
+	/// From which date this key can be used
+	/// </summary>
+	public required DateTime ValidFrom { get; set; }
+
+	/// <summary>
+	/// Last date this key can be used
+	/// </summary>
+	public required DateTime ValidUntil { get; set; }
 
 	public required string Password { get; set; }
 

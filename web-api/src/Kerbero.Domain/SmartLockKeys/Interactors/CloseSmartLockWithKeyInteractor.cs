@@ -35,7 +35,7 @@ public class CloseSmartLockWithKeyInteractor : ICloseSmartLockWithKeyInteractor
 		}
 
 		var smartLockKey = smartLockKeyResult.Value;
-		var validationResult = _ValidateSmartLockKey(smartLockKey.Password, smartLockKeyPassword, smartLockKey.ExpiryDate);
+		var validationResult = _ValidateSmartLockKey(smartLockKey.Password, smartLockKeyPassword, smartLockKey.ValidUntil);
 		if (validationResult.IsFailed)
 		{
 			return Result.Fail(validationResult.Errors);
