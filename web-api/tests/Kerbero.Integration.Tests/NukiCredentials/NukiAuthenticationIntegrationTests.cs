@@ -71,8 +71,8 @@ public class NukiCredentialsIntegrationTests
     var nukiCredentialResponseDto = await httpResponseMessage.Content.ReadFromJsonAsync<NukiCredentialResponseDto>();
     
     var getResponseMessage = await loggedClient.GetAsync($"api/nuki-credentials/");
-    var nukiCredentialsResponseDtos = await getResponseMessage.Content.ReadFromJsonAsync<List<NukiCredentialResponseDto>>();
+    var nukiCredentialsResponseDtos = await getResponseMessage.Content.ReadFromJsonAsync<NukiCredentialListResponseDto>();
 
-    nukiCredentialsResponseDtos.Should().NotContain(nukiCredentialResponseDto!);
+    nukiCredentialsResponseDtos!.Credentials.Should().NotContain(nukiCredentialResponseDto!);
   }
 }

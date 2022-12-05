@@ -1,4 +1,5 @@
 using FluentResults;
+using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
@@ -14,15 +15,33 @@ public class GetNukiCredentialInteractor : IGetNukiCredentialInteractor
     _nukiCredentialRepository = nukiCredentialRepository;
   }
 
-  public async Task<Result<NukiCredentialModel>> Handle(int nukiCredentialId)
+  public async Task<Result<NukiCredentialModel>> Handle(int nukiCredentialId, Guid? userId = null)
   {
-    var nukiCredentialsResult = await _nukiCredentialRepository.GetById(nukiCredentialId);
+    var nukiCredentialResult = await _nukiCredentialRepository.GetById(nukiCredentialId);
 
-    if (nukiCredentialsResult.IsFailed)
+    if (nukiCredentialResult.IsFailed)
     {
-      return Result.Fail(nukiCredentialsResult.Errors);
+      return Result.Fail(nukiCredentialResult.Errors);
     }
 
-    return nukiCredentialsResult.Value;
+    if (userId is not null && nukiCredentialResult.Value.UserId != userId)
+    {
+      return Result.Fail(new UnauthorizedAccessError());
+    }
+
+    if (nukiCredentialResult.Value.IsRefreshable)
+    {
+      var refreshedNukiCredentialResult =
+        await _nukiCredentialRepository.GetRefreshedCredential(nukiCredentialResult.Value);
+
+      if (nukiCredentialResult.IsFailed)
+      {
+        return Result.Fail(nukiCredentialResult.Errors);
+      }
+
+      nukiCredentialResult = refreshedNukiCredentialResult;
+    }
+
+    return nukiCredentialResult.Value;
   }
 }

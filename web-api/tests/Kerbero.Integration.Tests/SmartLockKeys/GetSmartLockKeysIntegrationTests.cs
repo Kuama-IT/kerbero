@@ -38,7 +38,7 @@ public class GetSmartLockKeysIntegrationTests : IDisposable
 
     httpResponseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
     httpResponseMessage.IsSuccessStatusCode.Should().BeTrue();
-    var smartLockKeyDtos = await httpResponseMessage.Content.ReadFromJsonAsync<List<SmartLockKeyResponseDto>>();
+    var smartLockKeyDtos = await httpResponseMessage.Content.ReadFromJsonAsync<SmartLockKeyListResponseDto>();
     var tExpected = new SmartLockKeyResponseDto()
     {
       Password = tSmartLockKey.Password,
@@ -46,7 +46,7 @@ public class GetSmartLockKeysIntegrationTests : IDisposable
       Id = tSmartLockKey.Id,
       ValidUntilDate = tSmartLockKey.ValidUntil,
     };
-    smartLockKeyDtos.Should().BeEquivalentTo(new List<SmartLockKeyResponseDto>()
+    smartLockKeyDtos!.SmartLockKeys.Should().BeEquivalentTo(new List<SmartLockKeyResponseDto>()
     {
       tExpected
     });

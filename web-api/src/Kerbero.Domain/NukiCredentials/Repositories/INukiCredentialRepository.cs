@@ -22,8 +22,10 @@ public interface INukiCredentialRepository
   Task<Result<NukiCredentialModel>> ConfirmDraft(NukiCredentialDraftModel draft, NukiRefreshableCredentialModel model);
 
   Task<Result> DeleteDraftByUserId(Guid userId);
-  
+
   Task<Result<NukiCredentialModel>> DeleteById(int nukiCredentialId);
 
   Task<Result<string>> GetNukiAccountEmail(string token);
+
+  Task<Result<NukiCredentialModel>> GetRefreshedCredential(NukiCredentialModel model);
 }

@@ -7,4 +7,6 @@ public class NukiCredentialModel
   public Guid UserId { get; set; }
   
   public required string NukiEmail { get; set; }
+  
+  public bool IsRefreshable { get; set; }
 }

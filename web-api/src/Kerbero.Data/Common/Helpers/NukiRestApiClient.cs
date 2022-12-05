@@ -2,11 +2,11 @@ using System.Net;
 using FluentResults;
 using Flurl;
 using Flurl.Http;
+using Kerbero.Data.NukiCredentials.Dtos;
+using Kerbero.Data.SmartLocks.Models;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models.ExternalResponses;
 using Kerbero.Domain.SmartLocks.Errors;
-using Kerbero.Data.NukiCredentials.Dtos;
-using Kerbero.Data.SmartLocks.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -107,6 +107,22 @@ public class NukiRestApiClient
         .WithOAuthBearerToken(apiToken)
         .PostAsync()
     );
+  }
+
+  public async Task<Result<NukiOAuthResponseDto>> RefreshToken(string apiRefreshToken)
+  {
+    return await _Handle(
+      async () => await _configuration["NUKI_DOMAIN"]
+        .AppendPathSegment("oauth")
+        .AppendPathSegment("token")
+        .PostUrlEncodedAsync(new
+        {
+          client_id = _configuration["NUKI_CLIENT_ID"],
+          client_secret = _configuration["NUKI_CLIENT_SECRET"],
+          grant_type = "refresh_token",
+          refresh_token = apiRefreshToken
+        })
+        .ReceiveJson<NukiOAuthResponseDto>());
   }
 
   private async Task<Result<TResponse>> _Handle<TResponse>(Func<Task<TResponse>> call)

@@ -33,7 +33,7 @@ public class SmartLocksController : ControllerBase
 
   [Authorize]
   [HttpGet]
-  public async Task<ActionResult<List<SmartLockResponseDto>>> GetAll()
+  public async Task<ActionResult<SmartLockListResponseDto>> GetAll()
   {
     var userId = HttpContext.GetAuthenticatedUserId();
 
@@ -45,7 +45,7 @@ public class SmartLocksController : ControllerBase
       return ModelState.AddErrorAndReturnAction(error);
     }
 
-    var smartLocksResult = await _getSmartLocksInteractor.Handle(nukiCredentialsResult.Value);
+    var smartLocksResult = await _getSmartLocksInteractor.Handle(nukiCredentialsResult.Value.NukiCredentials);
 
     if (smartLocksResult.IsFailed)
     {
@@ -53,13 +53,13 @@ public class SmartLocksController : ControllerBase
       return ModelState.AddErrorAndReturnAction(error);
     }
 
-    return SmartLockMapper.Map(smartLocksResult.Value);
+    return SmartLockMapper.Map(smartLocksResult.Value, nukiCredentialsResult.Value.OutdatedCredentials);
   }
 
   [Authorize]
   [HttpPut]
   [Route("{smartLockId}/open")]
-  public async Task<ActionResult> Open( OpenSmartLockRequestDto request, string smartLockId)
+  public async Task<ActionResult> Open(OpenSmartLockRequestDto request, string smartLockId)
   {
     var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
 
@@ -85,11 +85,11 @@ public class SmartLocksController : ControllerBase
 
     return NoContent();
   }
-  
+
   [Authorize]
   [HttpPut]
   [Route("{smartLockId}/close")]
-  public async Task<ActionResult> Close( CloseSmartLockRequest request, string smartLockId)
+  public async Task<ActionResult> Close(CloseSmartLockRequest request, string smartLockId)
   {
     var provider = SmartLockProvider.TryParse(request.SmartLockProvider);
 
