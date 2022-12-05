@@ -17,7 +17,7 @@ namespace Kerbero.Infrastructure.Tests.SmartLocks.Repositories;
 public class NukiSmartLockRepositoryTests
 {
   private readonly Mock<ILogger<NukiSmartLockRepository>> _loggerMock = new();
-  private readonly Mock<ILogger<NukiSafeHttpCallHelper>> _httpLoggerMock = new();
+  private readonly Mock<ILogger<NukiRestApiClient>> _httpLoggerMock = new();
 
   private readonly IConfiguration _configuration = new ConfigurationBuilder()
     .AddInMemoryCollection(new Dictionary<string, string>
@@ -26,11 +26,11 @@ public class NukiSmartLockRepositoryTests
     }!)
     .Build();
 
-  private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
+  private readonly NukiRestApiClient _nukiRestApiClient;
 
   public NukiSmartLockRepositoryTests()
   {
-    _nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(_httpLoggerMock.Object);
+    _nukiRestApiClient = new NukiRestApiClient(_httpLoggerMock.Object, _configuration);
   }
 
   [Fact]
@@ -40,7 +40,7 @@ public class NukiSmartLockRepositoryTests
     var httpTest = new HttpTest();
     var rawResponse = await File.ReadAllTextAsync("JsonData/get-nuki-smartlock-response.json");
     httpTest.RespondWith(rawResponse);
-    var repository = new NukiSmartLockRepository(_configuration, _nukiSafeHttpCallHelper);
+    var repository = new NukiSmartLockRepository(_configuration, _nukiRestApiClient);
 
     var credentials = new NukiCredentialModel()
     {
@@ -68,15 +68,15 @@ public class NukiSmartLockRepositoryTests
   {
     // Arrange
 
-    var repository = new NukiSmartLockRepository(_configuration, _nukiSafeHttpCallHelper);
-    
+    var repository = new NukiSmartLockRepository(_configuration, _nukiRestApiClient);
+
     var credentials = new NukiCredentialModel()
     {
       Id = 1,
       Token = "A_TOKEN",
       NukiEmail = "test@nuki.com"
     };
-    
+
     var httpTest = new HttpTest();
 
     #region Nuki 401 error

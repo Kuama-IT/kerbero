@@ -16,7 +16,7 @@ namespace Kerbero.Infrastructure.Tests.NukiCredentials.Repositories;
 public class NukiCredentialRepositoryTests
 {
   private readonly Mock<ILogger<NukiCredentialRepository>> _loggerMock = new();
-  private readonly Mock<ILogger<NukiSafeHttpCallHelper>> _httpLoggerMock = new();
+  private readonly Mock<ILogger<NukiRestApiClient>> _httpLoggerMock = new();
 
   private readonly IConfiguration _configuration = new ConfigurationBuilder()
     .AddInMemoryCollection(new Dictionary<string, string>
@@ -25,11 +25,11 @@ public class NukiCredentialRepositoryTests
     }!)
     .Build();
 
-  private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
+  private readonly NukiRestApiClient _nukiRestApiClient;
 
   public NukiCredentialRepositoryTests()
   {
-    _nukiSafeHttpCallHelper = new NukiSafeHttpCallHelper(_httpLoggerMock.Object);
+    _nukiRestApiClient = new NukiRestApiClient(_httpLoggerMock.Object, _configuration);
   }
 
   [Fact]
@@ -44,8 +44,7 @@ public class NukiCredentialRepositoryTests
     var repository = new NukiCredentialRepository(
       dbContext,
       _loggerMock.Object,
-      _nukiSafeHttpCallHelper,
-      _configuration
+      _nukiRestApiClient
     );
 
     var tNukiCredential = new NukiCredentialModel()
@@ -82,8 +81,7 @@ public class NukiCredentialRepositoryTests
     var repository = new NukiCredentialRepository(
       dbContext,
       _loggerMock.Object,
-      _nukiSafeHttpCallHelper,
-      _configuration
+      _nukiRestApiClient
     );
 
     var tNukiCredentialTable = new NukiCredentialEntity()
@@ -121,8 +119,7 @@ public class NukiCredentialRepositoryTests
     var repository = new NukiCredentialRepository(
       dbContext,
       _loggerMock.Object,
-      _nukiSafeHttpCallHelper,
-      _configuration
+      _nukiRestApiClient
     );
 
     // Act

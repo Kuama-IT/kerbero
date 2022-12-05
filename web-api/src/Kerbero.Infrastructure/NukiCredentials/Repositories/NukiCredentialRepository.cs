@@ -1,13 +1,10 @@
 using FluentResults;
-using Flurl;
-using Flurl.Http;
 using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.NukiCredentials.Errors;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.Domain.NukiCredentials.Repositories;
 using Kerbero.Infrastructure.Common.Helpers;
 using Kerbero.Infrastructure.Common.Interfaces;
-using Kerbero.Infrastructure.NukiCredentials.Dtos;
 using Kerbero.Infrastructure.NukiCredentials.Entities;
 using Kerbero.Infrastructure.NukiCredentials.Mappers;
 using Microsoft.EntityFrameworkCore;
@@ -21,16 +18,27 @@ public class NukiCredentialRepository : INukiCredentialRepository
 {
   private readonly IApplicationDbContext _dbContext;
   private readonly ILogger<NukiCredentialRepository> _logger;
-  private readonly IConfiguration _configuration;
-  private readonly NukiSafeHttpCallHelper _nukiSafeHttpCallHelper;
+  private readonly NukiRestApiClient _nukiRestApiClient;
 
   public NukiCredentialRepository(IApplicationDbContext dbContext, ILogger<NukiCredentialRepository> logger,
-    NukiSafeHttpCallHelper nukiSafeHttpCallHelper, IConfiguration configuration)
+    NukiRestApiClient nukiRestApiClient)
   {
     _logger = logger;
-    _nukiSafeHttpCallHelper = nukiSafeHttpCallHelper;
-    _configuration = configuration;
+    _nukiRestApiClient = nukiRestApiClient;
     _dbContext = dbContext;
+  }
+
+  public async Task<Result<string>> GetNukiAccountEmail(string token)
+  {
+    var nukiAccountResult = await _nukiRestApiClient
+      .GetAccount(token);
+
+    if (nukiAccountResult.IsFailed)
+    {
+      return nukiAccountResult.ToResult();
+    }
+
+    return nukiAccountResult.Value.Email;
   }
 
   public async Task<Result<NukiCredentialModel>> Create(NukiCredentialModel model, Guid userId)
@@ -134,12 +142,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
 
   public async Task<Result> ValidateNotRefreshableApiToken(string apiToken)
   {
-    var result = await _nukiSafeHttpCallHelper.Handle(() =>
-      _configuration["NUKI_DOMAIN"]
-        .AppendPathSegment("account")
-        .WithOAuthBearerToken(apiToken)
-        .GetAsync()
-    );
+    var result = await _nukiRestApiClient.CheckTokenValidity(apiToken);
 
     if (result.IsFailed)
     {
@@ -211,19 +214,7 @@ public class NukiCredentialRepository : INukiCredentialRepository
   public async Task<Result<NukiRefreshableCredentialModel>> GetRefreshableCredential(string oAuthCode,
     string redirectUri)
   {
-    var result = await _nukiSafeHttpCallHelper.Handle(
-      async () => await _configuration["NUKI_DOMAIN"]
-        .AppendPathSegment("oauth")
-        .AppendPathSegment("token")
-        .PostUrlEncodedAsync(new
-        {
-          client_id = _configuration["NUKI_CLIENT_ID"],
-          client_secret = _configuration["NUKI_CLIENT_SECRET"],
-          grant_type = "authorization_code",
-          code = oAuthCode,
-          redirect_uri = redirectUri
-        })
-        .ReceiveJson<NukiOAuthResponseDto>());
+    var result = await _nukiRestApiClient.AuthenticateWithCode(oAuthCode, redirectUri);
 
     if (result.IsFailed)
     {
@@ -239,7 +230,17 @@ public class NukiCredentialRepository : INukiCredentialRepository
     try
     {
       var entity = await _dbContext.NukiCredentials.SingleAsync(it => it.Id == draft.Id);
+
       NukiCredentialMapper.Map(entity, model);
+
+      var emailResult = await GetNukiAccountEmail(model.Token);
+
+      if (emailResult.IsFailed)
+      {
+        return emailResult.ToResult();
+      }
+
+      entity.NukiEmail = emailResult.Value;
       await _dbContext.SaveChangesAsync();
       return NukiCredentialMapper.Map(entity);
     }

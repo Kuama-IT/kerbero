@@ -33,6 +33,8 @@ public class CreateNukiCredentialInteractorTests
       NukiEmail = "test@nuki.com"
     };
 
+    _nukiCredentialRepositoryMock.Setup(repo => repo.GetNukiAccountEmail(It.IsAny<string>()))
+      .ReturnsAsync(Result.Ok("test@nuki.com"));
     _nukiCredentialRepositoryMock.Setup(repo => repo.ValidateNotRefreshableApiToken(It.IsAny<string>()))
       .ReturnsAsync(Result.Ok);
     _nukiCredentialRepositoryMock.Setup(c => c.Create(It.IsAny<NukiCredentialModel>(), It.IsAny<Guid>()))

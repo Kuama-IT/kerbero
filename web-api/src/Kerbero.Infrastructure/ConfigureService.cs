@@ -19,6 +19,6 @@ public static class ConfigureService
     services.AddScoped<INukiSmartLockRepository, NukiSmartLockRepository>();
     services.AddScoped<ISmartLockKeyRepository, SmartLockKeyRepository>();
     services.AddScoped<IKerberoConfigurationRepository, KerberoConfigurationRepository>();
-    services.AddScoped<NukiSafeHttpCallHelper>();
+    services.AddScoped<NukiRestApiClient>();
   }
 }
