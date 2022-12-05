@@ -87,4 +87,32 @@ public class SmartLockKeyRepositoryTests
 		});
 		result.IsSuccess.Should().BeTrue();
 	}
+	
+	[Fact]
+	public async Task DeleteKey_ValidId()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "GetAll_Success")
+			.Options;
+		var applicationDbContext = new ApplicationDbContext(options);
+		var smartLockKeyPersistentRepository = new SmartLockKeyRepository(_logger.Object, applicationDbContext);
+		
+		var tModel = new SmartLockKeyModel
+		{
+			Password = "TOKEN",
+			CreationDate = DateTime.Now,
+			ExpiryDate = DateTime.Now.AddDays(7),
+			UsageCounter = 0,
+			IsDisabled = false,
+			SmartLockId = "VALID_ID",
+			CredentialId = 1,
+			SmartLockProvider = SmartLockProvider.Nuki.Name
+		};
+
+		var smartLockKeyEntity = applicationDbContext.SmartLockKeys.Add(SmartLockKeyMapper.Map(tModel));
+		await applicationDbContext.SaveChangesAsync();
+
+		var result = await smartLockKeyPersistentRepository.Delete(smartLockKeyEntity.Entity.Id);
+		result.IsSuccess.Should().BeTrue();
+	}
 }

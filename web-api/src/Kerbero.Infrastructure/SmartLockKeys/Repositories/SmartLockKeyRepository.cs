@@ -119,4 +119,30 @@ public class SmartLockKeyRepository: ISmartLockKeyRepository
 			return Result.Fail(new KerberoError());
 		}
 	}
+
+	public async Task<Result<SmartLockKeyModel>> Delete(Guid id)
+	{
+		try
+		{
+			var entity = await _applicationDbContext.SmartLockKeys.SingleAsync(key => key.Id == id);
+			_applicationDbContext.SmartLockKeys.Remove(entity);
+			await _applicationDbContext.SaveChangesAsync();
+			return SmartLockKeyMapper.Map(entity);
+		}
+		catch (NotSupportedException exception)
+		{
+			_logger.LogError(exception, "Error while deleting for a SmartLockKey to the database");
+			return Result.Fail(new PersistentResourceNotAvailableError());
+		}
+		catch (InvalidOperationException exception)
+		{
+			_logger.LogError(exception, "Error while deleting for a SmartLockKey to the database");
+			return Result.Fail(new SmartLockKeyNotFoundError());
+		}
+		catch (Exception exception)
+		{
+			_logger.LogError(exception, "Error while deleting for a SmartLockKey to the database");
+			return Result.Fail(new KerberoError());
+		}
+	}
 }
