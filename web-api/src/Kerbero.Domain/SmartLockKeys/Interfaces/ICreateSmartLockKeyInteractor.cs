@@ -6,6 +6,6 @@ namespace Kerbero.Domain.SmartLockKeys.Interfaces;
 
 public interface ICreateSmartLockKeyInteractor
 {
-  Task<Result<SmartLockKeyModel>> Handle(string smartLockId, DateTime expiryDate, int credentialId,
-    SmartLockProvider smartLockProvider);
+  Task<Result<SmartLockKeyModel>> Handle(string smartLockId, DateTime validUntilDate, DateTime validFromDate,
+    int credentialId, SmartLockProvider smartLockProvider);
 }

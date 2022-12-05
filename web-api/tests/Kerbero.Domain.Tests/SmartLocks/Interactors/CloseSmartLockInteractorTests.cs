@@ -26,7 +26,8 @@ public class CloseSmartLockInteractorTests
 		var tCredentials = new NukiCredentialModel()
 		{
 			Id = 1,
-			Token = token
+			Token = token,
+			NukiEmail = "test@nuki.com"
 		};
 
 		getNukiCredentialsByUserInteractor.Setup(c => c.Handle(It.IsAny<Guid>()))

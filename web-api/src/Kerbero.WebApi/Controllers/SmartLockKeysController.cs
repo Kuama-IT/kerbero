@@ -12,103 +12,106 @@ namespace Kerbero.WebApi.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class SmartLockKeysController: ControllerBase
+public class SmartLockKeysController : ControllerBase
 {
-	private readonly ICreateSmartLockKeyInteractor _createSmartLockKeyInteractor;
-	private readonly IGetSmartLockKeysInteractor _getSmartLockKeysInteractor;
-	private readonly IOpenSmartLockWithKeyInteractor _openSmartLockWithKeyInteractor;
-	private readonly IDeleteSmartLockKeyInteractor _deleteSmartLockKeyInteractor;
+  private readonly ICreateSmartLockKeyInteractor _createSmartLockKeyInteractor;
+  private readonly IGetSmartLockKeysInteractor _getSmartLockKeysInteractor;
+  private readonly IOpenSmartLockWithKeyInteractor _openSmartLockWithKeyInteractor;
+  private readonly IDeleteSmartLockKeyInteractor _deleteSmartLockKeyInteractor;
 
-	public SmartLockKeysController(
-		ICreateSmartLockKeyInteractor createSmartLockKeyInteractor, 
-		IGetSmartLockKeysInteractor getSmartLockKeysInteractor,
-		IDeleteSmartLockKeyInteractor deleteSmartLockKeyInteractor,
-		IOpenSmartLockWithKeyInteractor openSmartLockWithKeyInteractor
-		)
-	{
-		_createSmartLockKeyInteractor = createSmartLockKeyInteractor;
-		_getSmartLockKeysInteractor = getSmartLockKeysInteractor;
-		_openSmartLockWithKeyInteractor = openSmartLockWithKeyInteractor;
-		_deleteSmartLockKeyInteractor = deleteSmartLockKeyInteractor;
-	}
+  public SmartLockKeysController(
+    ICreateSmartLockKeyInteractor createSmartLockKeyInteractor,
+    IGetSmartLockKeysInteractor getSmartLockKeysInteractor,
+    IDeleteSmartLockKeyInteractor deleteSmartLockKeyInteractor,
+    IOpenSmartLockWithKeyInteractor openSmartLockWithKeyInteractor
+  )
+  {
+    _createSmartLockKeyInteractor = createSmartLockKeyInteractor;
+    _getSmartLockKeysInteractor = getSmartLockKeysInteractor;
+    _openSmartLockWithKeyInteractor = openSmartLockWithKeyInteractor;
+    _deleteSmartLockKeyInteractor = deleteSmartLockKeyInteractor;
+  }
 
-	[HttpPost]
-	public async Task<ActionResult<SmartLockKeyResponseDto>> CreateSmartLockKeyBySmartLockId(CreateSmartLockKeyRequestDto requestDto)
-	{
-		var provider = SmartLockProvider.TryParse(requestDto.SmartLockProvider);
+  [HttpPost]
+  public async Task<ActionResult<SmartLockKeyResponseDto>> CreateSmartLockKeyBySmartLockId(
+    CreateSmartLockKeyRequestDto requestDto)
+  {
+    var smartLockProvider = SmartLockProvider.TryParse(requestDto.SmartLockProvider);
 
-		if (provider is null)
-		{
-			return BadRequest();
-		}
-		
-		var createInteractorResult = await _createSmartLockKeyInteractor.Handle(
-				requestDto.SmartLockId,
-				requestDto.ExpiryDate,
-				requestDto.CredentialId,
-				provider);
-		
-		if (createInteractorResult.IsFailed)
-		{
-			var error = createInteractorResult.Errors.First();
-			return ModelState.AddErrorAndReturnAction(error);
-		}
+    if (smartLockProvider is null)
+    {
+      return BadRequest();
+    }
 
-		return Ok(createInteractorResult.Value);
-	}
-	
-	[HttpGet]
-	public async Task<ActionResult<List<SmartLockKeyResponseDto>>> GetAllKeys()
-	{
-		var interactorResponse = await _getSmartLockKeysInteractor.Handle(
-			HttpContext.GetAuthenticatedUserId());
-		
-		if (interactorResponse.IsFailed)
-		{
-			var error = interactorResponse.Errors.First();
-			return ModelState.AddErrorAndReturnAction(error);
-		}
+    var createInteractorResult = await _createSmartLockKeyInteractor.Handle(
+      smartLockId: requestDto.SmartLockId,
+      validUntilDate: requestDto.ValidUntilDate,
+      validFromDate: requestDto.ValidFromDate,
+      credentialId: requestDto.CredentialId,
+      smartLockProvider: smartLockProvider
+    );
 
-		return SmartLockKeyMapper.Map(interactorResponse.Value);
-	}
+    if (createInteractorResult.IsFailed)
+    {
+      var error = createInteractorResult.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
 
-	[AllowAnonymous]
-	[HttpPut("open-smartlock")]
-	public async Task<ActionResult> OpenSmartLockWithKeyAndPassword(OpenSmartLockWithKeyRequestDto request)
-	{
-		var interactorResponse = await _openSmartLockWithKeyInteractor.Handle(
-			request.SmartLockKeyId,
-			request.KeyPassword
-		);
-		
-		if (interactorResponse.IsFailed)
-		{
-			var error = interactorResponse.Errors.First();
-			return ModelState.AddErrorAndReturnAction(error);
-		}
+    return SmartLockKeyMapper.Map(createInteractorResult.Value);
+  }
 
-		return NoContent();
-	}
+  [HttpGet]
+  public async Task<ActionResult<List<SmartLockKeyResponseDto>>> GetAllKeys()
+  {
+    var interactorResponse = await _getSmartLockKeysInteractor.Handle(
+      HttpContext.GetAuthenticatedUserId());
 
-	[HttpDelete("{smartLockKeyId}")]
-	public async Task<ActionResult<SmartLockKeyResponseDto>> DeleteById(string smartLockKeyId)
-	{
-		var parsingResult= Guid.TryParse(smartLockKeyId, out var smartLockKeyGuid);
-		if (!parsingResult)
-		{
-			return BadRequest();
-		}
-		var interactorResult = await _deleteSmartLockKeyInteractor.Handle(
-			HttpContext.GetAuthenticatedUserId(),
-			smartLockKeyGuid);
-		
-		if (interactorResult.IsFailed)
-		{
-			var error = interactorResult.Errors.First();
-			return ModelState.AddErrorAndReturnAction(error);
-		}
+    if (interactorResponse.IsFailed)
+    {
+      var error = interactorResponse.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
 
-		return SmartLockKeyMapper.Map(interactorResult.Value);
-	}
+    return SmartLockKeyMapper.Map(interactorResponse.Value);
+  }
 
+  [AllowAnonymous]
+  [HttpPut("open-smartlock")]
+  public async Task<ActionResult> OpenSmartLockWithKeyAndPassword(OpenSmartLockWithKeyRequestDto request)
+  {
+    var interactorResponse = await _openSmartLockWithKeyInteractor.Handle(
+      request.SmartLockKeyId,
+      request.KeyPassword
+    );
+
+    if (interactorResponse.IsFailed)
+    {
+      var error = interactorResponse.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return NoContent();
+  }
+
+  [HttpDelete("{smartLockKeyId}")]
+  public async Task<ActionResult<SmartLockKeyResponseDto>> DeleteById(string smartLockKeyId)
+  {
+    var parsingResult = Guid.TryParse(smartLockKeyId, out var smartLockKeyGuid);
+    if (!parsingResult)
+    {
+      return BadRequest();
+    }
+
+    var interactorResult = await _deleteSmartLockKeyInteractor.Handle(
+      HttpContext.GetAuthenticatedUserId(),
+      smartLockKeyGuid);
+
+    if (interactorResult.IsFailed)
+    {
+      var error = interactorResult.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return SmartLockKeyMapper.Map(interactorResult.Value);
+  }
 }

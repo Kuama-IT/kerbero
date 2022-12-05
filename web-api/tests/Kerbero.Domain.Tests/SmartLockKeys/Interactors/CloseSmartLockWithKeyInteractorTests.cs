@@ -33,8 +33,9 @@ public class CloseSmartLockWithKeyInteractorTests
 		{
 			Id = new Guid(),
 			Password = "PASSWORD",
-			CreationDate = DateTime.Now,
-			ExpiryDate = DateTime.Now.AddDays(7).ToUniversalTime(),
+			CreatedAt = DateTime.Now,
+			ValidFrom = DateTime.Now,
+			ValidUntil = DateTime.Now.AddDays(7).ToUniversalTime(),
 			CredentialId = 1,
 			IsDisabled = false,
 			UsageCounter = 0,
@@ -46,7 +47,8 @@ public class CloseSmartLockWithKeyInteractorTests
 		{
 			Id = 1,
 			Token = "VALID_TOKEN",
-			UserId = new Guid()
+			UserId = new Guid(),
+			NukiEmail = "test@nuki.com"
 		};
 
 		var tSmartLockKeyId = new Guid();
@@ -99,8 +101,9 @@ public class CloseSmartLockWithKeyInteractorTests
 		{
 			Id = new Guid(),
 			Password = "PASSWORD",
-			CreationDate = DateTime.Now,
-			ExpiryDate = DateTime.Now.AddDays(7).ToUniversalTime(),
+			CreatedAt = DateTime.Now,
+			ValidFrom = DateTime.Now,
+			ValidUntil = DateTime.Now.AddDays(7).ToUniversalTime(),
 			CredentialId = 1,
 			IsDisabled = false,
 			UsageCounter = 0,
@@ -139,8 +142,9 @@ public class CloseSmartLockWithKeyInteractorTests
 		{
 			Id = new Guid(),
 			Password = "PASSWORD",
-			CreationDate = DateTime.Now,
-			ExpiryDate = DateTime.Now.AddDays(-1).ToUniversalTime(),
+			CreatedAt = DateTime.Now,
+			ValidFrom = DateTime.Now,
+			ValidUntil = DateTime.Now.AddDays(-1).ToUniversalTime(),
 			CredentialId = 1,
 			IsDisabled = false,
 			UsageCounter = 0,

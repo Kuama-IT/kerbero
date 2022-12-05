@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kerbero.Infrastructure.NukiCredentials.Entities;
 
-
 /// <summary>
 /// Nuki credentials can both be generated with a persistent token and a refreshable token
 /// </summary>
@@ -24,4 +23,7 @@ public class NukiCredentialEntity
   public Guid UserId { get; set; }
 
   [ForeignKey((nameof(UserId)))] public string? User { get; set; }
+
+  // Email used by our user to signup into Nuki web services 
+  public string NukiEmail { get; set; } = null!;
 }

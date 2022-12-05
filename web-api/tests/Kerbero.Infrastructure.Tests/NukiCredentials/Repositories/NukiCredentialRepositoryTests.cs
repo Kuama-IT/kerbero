@@ -51,6 +51,7 @@ public class NukiCredentialRepositoryTests
     var tNukiCredential = new NukiCredentialModel()
     {
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
 
     // Act
@@ -60,6 +61,7 @@ public class NukiCredentialRepositoryTests
     {
       Id = 1,
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
 
     // Assert
@@ -87,6 +89,7 @@ public class NukiCredentialRepositoryTests
     var tNukiCredentialTable = new NukiCredentialEntity()
     {
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     };
 
     dbContext.NukiCredentials.Add(tNukiCredentialTable);
@@ -101,6 +104,7 @@ public class NukiCredentialRepositoryTests
     {
       Id = 1,
       Token = "VALID_TOKEN",
+      NukiEmail = "test@nuki.com"
     });
 
     actual.Should().BeEquivalentTo(expected);

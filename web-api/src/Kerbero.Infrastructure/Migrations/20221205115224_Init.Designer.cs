@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kerbero.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221203125413_Init")]
+    [Migration("20221205115224_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -143,6 +143,10 @@ namespace Kerbero.Infrastructure.Migrations
                     b.Property<bool>("IsRefreshable")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("NukiEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
@@ -190,14 +194,11 @@ namespace Kerbero.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("CredentialId")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -216,6 +217,12 @@ namespace Kerbero.Infrastructure.Migrations
 
                     b.Property<int>("UsageCounter")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

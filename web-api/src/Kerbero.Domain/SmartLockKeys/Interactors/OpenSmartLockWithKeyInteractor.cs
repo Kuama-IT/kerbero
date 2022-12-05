@@ -42,7 +42,7 @@ public class OpenSmartLockWithKeyInteractor : IOpenSmartLockWithKeyInteractor
 			return Result.Fail(new UnsupportedSmartLockProviderError());
 		}
 		
-		var validationResult = _ValidateSmartLockKey(smartLockKey.Password, smartLockKeyPassword, smartLockKey.ExpiryDate);
+		var validationResult = _ValidateSmartLockKey(smartLockKey.Password, smartLockKeyPassword, smartLockKey.ValidUntil);
 		if (validationResult.IsFailed)
 		{
 			return Result.Fail(validationResult.Errors);
