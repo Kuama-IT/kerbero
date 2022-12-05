@@ -43,11 +43,6 @@ public class NukiRestApiClient
 
   public async Task<Result<NukiAccountResponseDto>> GetAccount(string apiToken)
   {
-    if (string.IsNullOrEmpty(apiToken))
-    {
-      return Result.Fail(new NukiCredentialInvalidTokenError());
-    }
-
     var account = await _Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("account")
@@ -60,11 +55,6 @@ public class NukiRestApiClient
 
   public async Task<Result<IFlurlResponse>> CheckTokenValidity(string apiToken)
   {
-    if (string.IsNullOrEmpty(apiToken))
-    {
-      return Result.Fail(new NukiCredentialInvalidTokenError());
-    }
-
     return await _Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("account")
@@ -75,11 +65,6 @@ public class NukiRestApiClient
 
   public async Task<Result<List<NukiSmartLockResponse>>> GetAllSmartLocks(string apiToken)
   {
-    if (string.IsNullOrEmpty(apiToken))
-    {
-      return Result.Fail(new NukiCredentialInvalidTokenError());
-    }
-
     return await _Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("smartlock")
@@ -90,11 +75,6 @@ public class NukiRestApiClient
 
   public async Task<Result<NukiSmartLockResponse>> GetSmartLock(string id, string apiToken)
   {
-    if (string.IsNullOrEmpty(apiToken))
-    {
-      return Result.Fail(new NukiCredentialInvalidTokenError());
-    }
-
     return await _Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("smartlock")
@@ -106,11 +86,6 @@ public class NukiRestApiClient
 
   public async Task<Result<IFlurlResponse>> OpenSmartLock(string id, string apiToken)
   {
-    if (string.IsNullOrEmpty(apiToken))
-    {
-      return Result.Fail(new NukiCredentialInvalidTokenError());
-    }
-
     return await _Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("smartlock")
@@ -124,11 +99,6 @@ public class NukiRestApiClient
 
   public async Task<Result<IFlurlResponse>> CloseSmartLock(string id, string apiToken)
   {
-    if (string.IsNullOrEmpty(apiToken))
-    {
-      return Result.Fail(new NukiCredentialInvalidTokenError());
-    }
-
     return await _Handle(() =>
       _configuration["NUKI_DOMAIN"]
         .AppendPathSegment("smartlock")
