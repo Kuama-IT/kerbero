@@ -40,7 +40,7 @@ public class NukiSmartLockRepositoryTests
     var httpTest = new HttpTest();
     var rawResponse = await File.ReadAllTextAsync("JsonData/get-nuki-smartlock-response.json");
     httpTest.RespondWith(rawResponse);
-    var repository = new NukiSmartLockRepository(_configuration, _nukiRestApiClient);
+    var repository = new NukiSmartLockRepository(_nukiRestApiClient);
 
     var credentials = new NukiCredentialModel()
     {
@@ -68,7 +68,7 @@ public class NukiSmartLockRepositoryTests
   {
     // Arrange
 
-    var repository = new NukiSmartLockRepository(_configuration, _nukiRestApiClient);
+    var repository = new NukiSmartLockRepository(_nukiRestApiClient);
 
     var credentials = new NukiCredentialModel()
     {
