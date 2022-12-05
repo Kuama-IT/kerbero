@@ -18,6 +18,7 @@ public class NukiCredentialsController : ControllerBase
   private readonly IConfirmNukiDraftCredentialsInteractor _confirmNukiDraftCredentials;
   private readonly IBuildNukiRedirectUriInteractor _buildNukiRedirectUri;
   private readonly IGetNukiCredentialsByUserInteractor _getNukiCredentialsInteractor;
+  private readonly IDeleteNukiCredentialInteractor _deleteNukiCredentialInteractor;
   private readonly IConfiguration _configuration;
 
   public NukiCredentialsController(
@@ -26,7 +27,8 @@ public class NukiCredentialsController : ControllerBase
     IConfiguration configuration,
     IConfirmNukiDraftCredentialsInteractor confirmNukiDraftCredentials, 
     IBuildNukiRedirectUriInteractor buildNukiRedirectUri,
-    IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor
+    IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor,
+    IDeleteNukiCredentialInteractor deleteNukiCredentialInteractor
   )
   {
     _createNukiCredential = createNukiCredential;
@@ -35,6 +37,7 @@ public class NukiCredentialsController : ControllerBase
     _confirmNukiDraftCredentials = confirmNukiDraftCredentials;
     _buildNukiRedirectUri = buildNukiRedirectUri;
     _getNukiCredentialsInteractor = getNukiCredentialsByUserInteractor;
+    _deleteNukiCredentialInteractor = deleteNukiCredentialInteractor;
   }
   
   /// <summary>
@@ -114,6 +117,21 @@ public class NukiCredentialsController : ControllerBase
   {
     var interactorResponse = await _getNukiCredentialsInteractor.Handle(HttpContext.GetAuthenticatedUserId());
     
+    if (interactorResponse.IsFailed)
+    {
+      var error = interactorResponse.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return NukiCredentialMapper.Map(interactorResponse.Value);
+  }
+  
+  [HttpDelete("{nukiCredentialId}")]
+  public async Task<ActionResult<NukiCredentialResponseDto>> DeleteNukiCredentialsById(int nukiCredentialId)
+  {
+    var interactorResponse = await _deleteNukiCredentialInteractor.Handle(
+      HttpContext.GetAuthenticatedUserId(), 
+      nukiCredentialId);
     if (interactorResponse.IsFailed)
     {
       var error = interactorResponse.Errors.First();

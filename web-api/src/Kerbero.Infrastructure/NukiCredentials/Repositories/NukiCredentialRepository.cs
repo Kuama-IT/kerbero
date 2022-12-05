@@ -284,4 +284,30 @@ public class NukiCredentialRepository : INukiCredentialRepository
 
     return Result.Ok();
   }
+
+  public async Task<Result<NukiCredentialModel>> DeleteById(int nukiCredentialId)
+  {
+    try{
+      var entity =
+        await _dbContext.NukiCredentials.SingleAsync(credentialEntity => credentialEntity.Id == nukiCredentialId);
+      _dbContext.NukiCredentials.Remove(entity);
+      await _dbContext.SaveChangesAsync();
+      return NukiCredentialMapper.Map(entity);
+    }
+    catch (NotSupportedException exception)
+    {
+      _logger.LogError(exception, "Error while deleting a NukiCredential from the database");
+      return Result.Fail(new PersistentResourceNotAvailableError());
+    }
+    catch (InvalidOperationException exception)
+    {
+      _logger.LogError(exception, "Error while deleting a NukiCredential from the database");
+      return Result.Fail(new NukiCredentialNotFoundError());
+    }
+    catch (Exception exception)
+    {
+      _logger.LogError(exception, "Error while deleting a NukiCredential from the database");
+      return Result.Fail(new KerberoError());
+    }
+  }
 }

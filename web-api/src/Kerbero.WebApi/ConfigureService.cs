@@ -24,5 +24,6 @@ public static class ConfigureService
     services.AddScoped<IBuildNukiRedirectUriInteractor, BuildNukiRedirectUriInteractor>();
     services.AddScoped<ICloseSmartLockInteractor, CloseSmartLockInteractor>();
     services.AddScoped<IDeleteSmartLockKeyInteractor, DeleteSmartLockKeyInteractor>();
+    services.AddScoped<IDeleteNukiCredentialInteractor, DeleteNukiCredentialInteractor>();
   }
 }
