@@ -1,4 +1,4 @@
-namespace Kerbero.WebApi.Dtos;
+namespace Kerbero.WebApi.Dtos.SmartLockKeys;
 
 public record SmartLockKeyResponseDto
 {

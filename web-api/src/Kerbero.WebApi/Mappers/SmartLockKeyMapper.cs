@@ -1,5 +1,5 @@
 using Kerbero.Domain.SmartLockKeys.Models;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.SmartLockKeys;
 
 namespace Kerbero.WebApi.Mappers;
 

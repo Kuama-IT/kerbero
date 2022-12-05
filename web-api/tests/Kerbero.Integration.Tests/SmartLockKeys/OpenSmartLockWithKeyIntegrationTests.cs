@@ -3,8 +3,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.WebApi;
-using Kerbero.WebApi.Dtos;
-using Kerbero.WebApi.Models.Requests;
+using Kerbero.WebApi.Dtos.SmartLockKeys;
 
 namespace Kerbero.Integration.Tests.SmartLockKeys;
 

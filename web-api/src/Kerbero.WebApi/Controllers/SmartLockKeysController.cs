@@ -1,6 +1,6 @@
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.SmartLockKeys.Interfaces;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.SmartLockKeys;
 using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Mappers;
 using Kerbero.WebApi.Utils.Extensions;

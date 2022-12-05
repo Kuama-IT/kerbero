@@ -1,5 +1,5 @@
 using Kerbero.Domain.NukiCredentials.Interfaces;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.NukiCredentials;
 using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Mappers;
 using Kerbero.WebApi.Utils.Extensions;
