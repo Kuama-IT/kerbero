@@ -18,17 +18,19 @@ public class SmartLockKeysController : ControllerBase
   private readonly IGetSmartLockKeysInteractor _getSmartLockKeysInteractor;
   private readonly IOpenSmartLockWithKeyInteractor _openSmartLockWithKeyInteractor;
   private readonly IDeleteSmartLockKeyInteractor _deleteSmartLockKeyInteractor;
+  private readonly IUpdateSmartLockKeyValidityInteractor _updateSmartLockKeyValidityInteractor;
 
   public SmartLockKeysController(
     ICreateSmartLockKeyInteractor createSmartLockKeyInteractor,
     IGetSmartLockKeysInteractor getSmartLockKeysInteractor,
     IDeleteSmartLockKeyInteractor deleteSmartLockKeyInteractor,
-    IOpenSmartLockWithKeyInteractor openSmartLockWithKeyInteractor
-  )
+    IOpenSmartLockWithKeyInteractor openSmartLockWithKeyInteractor,
+    IUpdateSmartLockKeyValidityInteractor updateSmartLockKeyValidityInteractor)
   {
     _createSmartLockKeyInteractor = createSmartLockKeyInteractor;
     _getSmartLockKeysInteractor = getSmartLockKeysInteractor;
     _openSmartLockWithKeyInteractor = openSmartLockWithKeyInteractor;
+    _updateSmartLockKeyValidityInteractor = updateSmartLockKeyValidityInteractor;
     _deleteSmartLockKeyInteractor = deleteSmartLockKeyInteractor;
   }
 
@@ -91,6 +93,32 @@ public class SmartLockKeysController : ControllerBase
     }
 
     return NoContent();
+  }
+
+  [HttpPut("{smartLockKeyId}")]
+  public async Task<ActionResult<SmartLockKeyResponseDto>> UpdateById(string smartLockKeyId,
+    UpdateSmartLockKeyRequestDto requestDto)
+  {
+    var parsingResult = Guid.TryParse(smartLockKeyId, out var smartLockKeyGuid);
+    if (!parsingResult)
+    {
+      return BadRequest();
+    }
+
+    var interactorResult = await _updateSmartLockKeyValidityInteractor.Handle(
+      userId: HttpContext.GetAuthenticatedUserId(),
+      smartLockKeyGuid: smartLockKeyGuid,
+      validUntil: requestDto.ValidUntilDate,
+      validFrom: requestDto.ValidFromDate
+    );
+
+    if (interactorResult.IsFailed)
+    {
+      var error = interactorResult.Errors.First();
+      return ModelState.AddErrorAndReturnAction(error);
+    }
+
+    return SmartLockKeyMapper.Map(interactorResult.Value);
   }
 
   [HttpDelete("{smartLockKeyId}")]

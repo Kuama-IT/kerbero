@@ -25,5 +25,6 @@ public static class ConfigureService
     services.AddScoped<ICloseSmartLockInteractor, CloseSmartLockInteractor>();
     services.AddScoped<IDeleteSmartLockKeyInteractor, DeleteSmartLockKeyInteractor>();
     services.AddScoped<IDeleteNukiCredentialInteractor, DeleteNukiCredentialInteractor>();
+    services.AddScoped<IUpdateSmartLockKeyValidityInteractor, UpdateSmartLockKeyValidityInteractor>();
   }
 }

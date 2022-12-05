@@ -40,6 +40,8 @@ public static class ModelStateDictionaryExtension
       case SmartLockNotFoundError:
       case NukiCredentialInvalidTokenError:
       case SmartLockKeyExpiredError:
+      case SmartLockKeyPastValidFromError:
+      case SmartLockKeyValidUntilPrecedeValidFromError:
         return HttpStatusCode.BadRequest;
       default:
         throw new DevException("Forgot to map the error with status code");
