@@ -1,4 +1,4 @@
-namespace Kerbero.WebApi.Dtos;
+namespace Kerbero.WebApi.Dtos.NukiCredentials;
 
 public record NukiCredentialResponseDto
 {

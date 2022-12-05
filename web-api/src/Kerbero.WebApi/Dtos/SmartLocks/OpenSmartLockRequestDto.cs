@@ -1,3 +1,3 @@
-namespace Kerbero.WebApi.Dtos;
+namespace Kerbero.WebApi.Dtos.SmartLocks;
 
 public record OpenSmartLockRequestDto(int CredentialsId, string SmartLockProvider);

@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.WebApi;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.NukiCredentials;
 
 namespace Kerbero.Integration.Tests.NukiCredentials;
 

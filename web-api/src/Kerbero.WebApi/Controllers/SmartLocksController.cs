@@ -1,7 +1,7 @@
 using Kerbero.Domain.Common.Models;
 using Kerbero.Domain.NukiCredentials.Interfaces;
 using Kerbero.Domain.SmartLocks.Interfaces;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.SmartLocks;
 using Kerbero.WebApi.Extensions;
 using Kerbero.WebApi.Mappers;
 using Kerbero.WebApi.Utils.Extensions;

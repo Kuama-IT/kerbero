@@ -4,7 +4,7 @@ using FluentAssertions;
 using Flurl.Http.Testing;
 using Kerbero.Domain.NukiCredentials.Models;
 using Kerbero.WebApi;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.SmartLocks;
 
 namespace Kerbero.Integration.Tests.SmartLocks;
 

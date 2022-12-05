@@ -1,6 +1,5 @@
-using FluentResults;
 using Kerbero.Domain.NukiCredentials.Models;
-using Kerbero.WebApi.Dtos;
+using Kerbero.WebApi.Dtos.NukiCredentials;
 
 namespace Kerbero.WebApi.Mappers;
 
