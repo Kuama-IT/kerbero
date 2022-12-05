@@ -2,9 +2,9 @@ using System.Security.Claims;
 using DotNetEnv;
 using Kerbero.Identity.Common;
 using Kerbero.Identity.Extensions.DependencyInjection;
-using Kerbero.Infrastructure;
-using Kerbero.Infrastructure.Common.Context;
-using Kerbero.Infrastructure.Common.Interfaces;
+using Kerbero.Data;
+using Kerbero.Data.Common.Context;
+using Kerbero.Data.Common.Interfaces;
 using Kerbero.WebApi;
 using Kerbero.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -21,7 +21,7 @@ if (connectionString is null)
 }
 
 builder.Services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(
-  options => options.UseNpgsql(connectionString, b => b.MigrationsAssembly("Kerbero.Infrastructure")));
+  options => options.UseNpgsql(connectionString, b => b.MigrationsAssembly("Kerbero.Data")));
 
 // Add services to the container.
 builder.Services.AddInfrastructureServices();

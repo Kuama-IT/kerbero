@@ -7,7 +7,7 @@ using Kerbero.Domain.SmartLockKeys.Repositories;
 using Kerbero.Identity.Library.Modules.Authentication.Dtos;
 using Kerbero.Identity.Modules.Users.Entities;
 using Kerbero.Identity.Modules.Users.Services;
-using Kerbero.Infrastructure.Common.Context;
+using Kerbero.Data.Common.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;

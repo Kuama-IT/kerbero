@@ -10,6 +10,8 @@
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.8.0" />
+        <PackageReference Include="Flurl.Http" Version="4.0.0-pre2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
         <PackageReference Include="Moq" Version="4.18.2" />
         <PackageReference Include="xunit" Version="2.4.2" />
@@ -25,7 +27,18 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Kerbero.Data\Kerbero.Data.csproj" />
-      <ProjectReference Include="..\..\src\Kerbero.WebApi\Kerbero.WebApi.csproj" />
+      <ProjectReference Include="..\Kerbero.Common.Data.Tests\Kerbero.Common.Data.Tests.csproj" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+      <Folder Include="NukiCredentials" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\Kerbero.Common.Data.Tests\JsonData\get-nuki-smartlock-response.json">
+        <Link>JsonData\get-nuki-smartlock-response.json</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

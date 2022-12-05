@@ -13,9 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Domain", "src\Kerbe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Domain.Tests", "tests\Kerbero.Domain.Tests\Kerbero.Domain.Tests.csproj", "{A6332F07-F2AD-413E-8CDD-4F7208DA1EE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Infrastructure", "src\Kerbero.Infrastructure\Kerbero.Infrastructure.csproj", "{C1F7198E-50C6-4E9E-B84D-605CD287B673}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Data", "src\Kerbero.Data\Kerbero.Data.csproj", "{C1F7198E-50C6-4E9E-B84D-605CD287B673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Infrastructure.Tests", "tests\Kerbero.Infrastructure.Tests\Kerbero.Infrastructure.Tests.csproj", "{94EB98AC-5086-48F3-97B8-80CB0A4BE3C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.Data.Tests", "tests\Kerbero.Data.Tests\Kerbero.Data.Tests.csproj", "{94EB98AC-5086-48F3-97B8-80CB0A4BE3C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kerbero.WebApi.Tests", "tests\Kerbero.WebApi.Tests\Kerbero.WebApi.Tests.csproj", "{A55468A3-3663-4550-92AC-BF25FD1C4879}"
 EndProject
