@@ -44,4 +44,20 @@ public static class IntegrationTestsUtils
       SmartLockProvider = SmartLockProvider.Nuki.Name
     };
   }
+
+  public static SmartLockKeyModel GetFutureSmartLockKey()
+  {
+    return new SmartLockKeyModel()
+    {
+      Password = "TOKEN",
+      CreatedAt = DateTime.Now,
+      ValidFrom = DateTime.Now.AddDays(2),
+      ValidUntil = DateTime.Now.AddDays(7),
+      UsageCounter = 0,
+      IsDisabled = false,
+      SmartLockId = "VALID_ID",
+      CredentialId = 1,
+      SmartLockProvider = SmartLockProvider.Nuki.Name
+    };
+  }
 }

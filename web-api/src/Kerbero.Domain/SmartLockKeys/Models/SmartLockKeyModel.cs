@@ -1,5 +1,8 @@
 using CrypticWizard.RandomWordGenerator;
+using FluentResults;
+using Kerbero.Domain.Common.Errors;
 using Kerbero.Domain.Common.Models;
+using Kerbero.Domain.SmartLockKeys.Errors;
 
 namespace Kerbero.Domain.SmartLockKeys.Models;
 
@@ -50,5 +53,20 @@ public class SmartLockKeyModel
       CredentialId = credentialId,
       SmartLockProvider = smartLockProvider.Name
     };
+  }
+
+  public Result CanOperateWith(string password)
+  {
+    if (Password != password)
+    {
+      return Result.Fail(new UnauthorizedAccessError());
+    }
+
+    if (ValidUntil < DateTime.Now || ValidFrom > DateTime.Now)
+    {
+      return Result.Fail(new SmartLockKeyExpiredError());
+    }
+
+    return Result.Ok();
   }
 }
