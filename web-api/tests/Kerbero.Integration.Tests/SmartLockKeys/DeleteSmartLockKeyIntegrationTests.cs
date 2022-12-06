@@ -15,7 +15,6 @@ public class DeleteSmartLockKeyIntegrationTests : IDisposable
   public DeleteSmartLockKeyIntegrationTests()
   {
     _application = new KerberoWebApplicationFactory<Program>();
-    _application.Server.PreserveExecutionContext = true; // fixture for Flurl
     _httpTest = new HttpTest();
   }
 
