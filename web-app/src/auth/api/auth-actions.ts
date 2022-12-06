@@ -26,3 +26,9 @@ export const signInAction = async (request: SignInRequest) => {
 
   return UserResponseScheme.parse(json);
 };
+
+export const logoutAction = async () => {
+  await httpClient.post({
+    endpoint: "authentication/logout",
+  });
+};
