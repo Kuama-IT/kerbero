@@ -33,3 +33,27 @@ export const CreateSmartLockKeyRequestDtoSchema = z.object({
 export type CreateSmartLockKeyRequestDto = z.infer<
   typeof CreateSmartLockKeyRequestDtoSchema
 >;
+
+export const OpenSmartLockWithKeyRequestDtoSchema = z.object({
+  smartLockKeyId: z.string(),
+  keyPassword: z.string(),
+});
+export type OpenSmartLockWithKeyRequestDto = z.infer<
+  typeof OpenSmartLockWithKeyRequestDtoSchema
+>;
+
+export const CloseSmartLockWithKeyRequestDtoSchema = z.object({
+  smartLockKeyId: z.string(),
+  keyPassword: z.string(),
+});
+export type CloseSmartLockWithKeyRequestDto = z.infer<
+  typeof CloseSmartLockWithKeyRequestDtoSchema
+>;
+
+export const UpdateSmartLockKeyRequestDtoSchema = z.object({
+  validFromDate: z.string(),
+  validUntilDate: z.string(),
+});
+export type UpdateSmartLockKeyRequestDto = z.infer<
+  typeof UpdateSmartLockKeyRequestDtoSchema
+>;
