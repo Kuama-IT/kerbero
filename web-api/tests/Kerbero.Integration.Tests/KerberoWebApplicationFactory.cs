@@ -31,6 +31,7 @@ public class KerberoWebApplicationFactory<TStartup>
     _connection = new SqliteConnection(_config["SQLITE_CONNECTION_STRING"]);
     _connection.Open();
     ClientOptions.AllowAutoRedirect = false;
+    Server.PreserveExecutionContext = true; // Flurl fixture: https://github.com/tmenier/Flurl/issues/645
   }
 
   protected override void ConfigureWebHost(IWebHostBuilder builder)

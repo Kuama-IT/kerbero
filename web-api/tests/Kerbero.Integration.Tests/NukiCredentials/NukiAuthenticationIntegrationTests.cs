@@ -14,7 +14,6 @@ public class NukiCredentialsIntegrationTests
   public NukiCredentialsIntegrationTests()
   {
     _application = new KerberoWebApplicationFactory<Program>();
-    _application.Server.PreserveExecutionContext = true; // fixture for Flurl
   }
 
   [Fact]

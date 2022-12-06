@@ -17,7 +17,6 @@ public class SmartLockIntegrationTests
   {
     _httpTest = new HttpTest();
     _application = new KerberoWebApplicationFactory<Program>();
-    _application.Server.PreserveExecutionContext = true; // fixture for Flurl
   }
 
   [Fact]

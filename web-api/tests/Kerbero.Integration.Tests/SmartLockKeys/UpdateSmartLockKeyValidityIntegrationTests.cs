@@ -13,7 +13,6 @@ public class UpdateSmartLockKeyValidityIntegrationTests
   public UpdateSmartLockKeyValidityIntegrationTests()
   {
     _application = new KerberoWebApplicationFactory<Program>();
-    _application.Server.PreserveExecutionContext = true; // fixture for Flurl
   }
 
   [Fact]

@@ -15,7 +15,6 @@ public class CloseSmartLockWithKeyIntegrationTests : IDisposable
   public CloseSmartLockWithKeyIntegrationTests()
   {
     _application = new KerberoWebApplicationFactory<Program>();
-    _application.Server.PreserveExecutionContext = true; // fixture for Flurl
     _httpTest = new HttpTest();
   }
 
