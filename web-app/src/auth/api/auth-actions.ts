@@ -1,28 +1,28 @@
 import {
   SignInRequest,
-  signInRequestParseOrThrow,
+  SignInRequestScheme,
   SignUpRequest,
-  signUpRequestParseOrThrow,
-  userResponseParseOrThrow,
+  SignUpRequestScheme,
+  UserResponseScheme,
 } from "./auth.schemas";
 import { httpClient } from "../../shared/http-client/http-client";
 
 export const signUpAction = async (request: SignUpRequest) => {
   // ensure data is valid
-  signUpRequestParseOrThrow(request);
+  SignUpRequestScheme.parse(request);
 
   const json = await httpClient.post({ endpoint: "users", request });
 
-  return userResponseParseOrThrow(json);
+  return UserResponseScheme.parse(json);
 };
 export const signInAction = async (request: SignInRequest) => {
   // ensure data is valid
-  signInRequestParseOrThrow(request);
+  SignInRequestScheme.parse(request);
 
   const json = await httpClient.post({
     endpoint: "authentication/login",
     request,
   });
 
-  return userResponseParseOrThrow(json);
+  return UserResponseScheme.parse(json);
 };
