@@ -13,14 +13,14 @@ import {
   UpdateSmartLockKeyRequestDtoSchema,
 } from "./smart-lock-key.schemas";
 
-export const listSmartLockKeys =
+export const listSmartLockKeysAction =
   async (): Promise<SmartLockKeyListResponseDto> => {
     const json = await httpClient.get({ endpoint: "smart-lock-keys" });
 
     return SmartLockKeyListResponseDtoSchema.parse(json);
   };
 
-export const createSmartLockKey = async (
+export const createSmartLockKeyAction = async (
   request: CreateSmartLockKeyRequestDto
 ): Promise<SmartLockKeyResponseDto> => {
   CreateSmartLockKeyRequestDtoSchema.parse(request);

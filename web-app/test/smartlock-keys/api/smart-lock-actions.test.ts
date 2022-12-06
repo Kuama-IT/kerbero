@@ -1,5 +1,5 @@
 import { fetchMock } from "../../setup/fetch-mock";
-import { listSmartLock } from "../../../src/smart-locks/api/smart-lock-actions";
+import { listSmartLockAction } from "../../../src/smart-locks/api/smart-lock-actions";
 import { expect } from "vitest";
 import { ZodError } from "zod";
 describe("Get SmartLock list", () => {
@@ -25,7 +25,7 @@ describe("Get SmartLock list", () => {
         outdatedCredentials: [],
       })
     );
-    const response = await listSmartLock();
+    const response = await listSmartLockAction();
 
     expect(response.smartLocks.length).toBeGreaterThan(0);
     expect(response.smartLocks).toEqual(
@@ -63,7 +63,7 @@ describe("Get SmartLock list", () => {
       })
     );
     try {
-      await listSmartLock();
+      await listSmartLockAction();
     } catch (error) {
       expect(error).toBeInstanceOf(ZodError);
       const zodError = error as ZodError;

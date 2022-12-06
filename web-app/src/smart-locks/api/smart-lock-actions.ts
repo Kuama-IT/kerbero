@@ -6,13 +6,14 @@ import {
   SmartLockListResponseDtoSchema,
 } from "./smart-lock.schemas";
 
-export const listSmartLock = async (): Promise<SmartLockListResponseDto> => {
-  const json = await httpClient.get({ endpoint: "smart-locks" });
+export const listSmartLockAction =
+  async (): Promise<SmartLockListResponseDto> => {
+    const json = await httpClient.get({ endpoint: "smart-locks" });
 
-  return SmartLockListResponseDtoSchema.parse(json);
-};
+    return SmartLockListResponseDtoSchema.parse(json);
+  };
 
-export const openSmartLock = async (
+export const openSmartLockAction = async (
   smartLockId: string,
   request: OpenSmartLockRequestDto
 ): Promise<void> => {
@@ -23,7 +24,7 @@ export const openSmartLock = async (
   });
 };
 
-export const closeSmartLock = async (
+export const closeSmartLockAction = async (
   smartLockId: string,
   request: OpenSmartLockRequestDto
 ): Promise<void> => {
