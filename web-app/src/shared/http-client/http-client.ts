@@ -9,7 +9,7 @@ const call = async (endpoint: string, request?: RequestInit) => {
 
 export type HttpClientGetRequest = {
   endpoint: string; // TODO this can be typed
-  params: undefined | string | string[][] | Record<string, string>;
+  params?: undefined | string | string[][] | Record<string, string>;
 };
 
 export type HttpClientPostRequest = {
