@@ -8,7 +8,7 @@ import {
 } from "./nuki-credential.schemas";
 import { httpClient } from "../../shared/http-client/http-client";
 
-export const startNukiAuthenticationFlow =
+export const startNukiAuthenticationFlowAction =
   async (): Promise<NukiCredentialDraftResponseDto> => {
     const json = await httpClient.post({
       endpoint: "/nuki-credentials/draft",
@@ -17,14 +17,14 @@ export const startNukiAuthenticationFlow =
     return NukiCredentialDraftResponseDtoSchema.parse(json);
   };
 
-export const listNukiCredentials =
+export const listNukiCredentialsAction =
   async (): Promise<NukiCredentialListResponseDto> => {
     const json = await httpClient.get({ endpoint: "/nuki-credentials" });
 
     return NukiCredentialListResponseDtoSchema.parse(json);
   };
 
-export const deleteNukiCredentials = async (
+export const deleteNukiCredentialsAction = async (
   nukiCredentialId: number
 ): Promise<NukiCredentialResponseDto> => {
   const json = await httpClient.delete({
