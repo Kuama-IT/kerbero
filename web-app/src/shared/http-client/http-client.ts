@@ -14,7 +14,7 @@ export type HttpClientGetRequest = {
 
 export type HttpClientPostRequest = {
   endpoint: string; // TODO this can be typed
-  request: unknown;
+  request?: unknown;
 };
 
 export type HttpClientPutRequest = HttpClientPostRequest;
