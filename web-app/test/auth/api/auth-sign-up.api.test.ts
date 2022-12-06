@@ -1,4 +1,4 @@
-import { signUp } from "../../../src/auth/api/auth-actions";
+import { signUpAction } from "../../../src/auth/api/auth-actions";
 import { ZodError } from "zod";
 import { fetchMock } from "../../setup/fetch-mock";
 
@@ -10,7 +10,7 @@ describe("Auth Sign-up API", () => {
   it("Validates payload before trying to call the sign-up api", async () => {
     // email validation
     try {
-      await signUp({
+      await signUpAction({
         email: "an email",
         password: "Password123$",
         userName: "username",
@@ -23,7 +23,7 @@ describe("Auth Sign-up API", () => {
 
     // password
     try {
-      await signUp({
+      await signUpAction({
         email: "email@email.email",
         password: "a password",
         userName: "username",
@@ -35,7 +35,7 @@ describe("Auth Sign-up API", () => {
     }
     // username
     try {
-      await signUp({
+      await signUpAction({
         email: "email@email.email",
         password: "Password123$",
         userName: "sh",
@@ -57,7 +57,7 @@ describe("Auth Sign-up API", () => {
       })
     );
     // Just testing happy paths for now
-    const response = await signUp({
+    const response = await signUpAction({
       email: "email@email.email",
       password: "Password123$",
       userName: "username",
