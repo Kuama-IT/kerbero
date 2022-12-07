@@ -9,25 +9,31 @@ import {
 } from "../api/auth.schemas";
 import { ZodError } from "zod";
 import { ErrorMessage, Field, Form } from "vee-validate";
+import { navigateToDashboard } from "../../routing/routing-helpers";
+import { useRouter } from "vue-router";
+import { useAuth } from "../stores/auth.store";
+
+const router = useRouter();
 
 const signInSchema = toFormValidator(SignInRequestScheme);
 
-const { isLoading, mutate, isSuccess } = useMutation<
+const { isLoading, mutate } = useMutation<
   UserResponse,
   ZodError,
   SignInRequest
 >({
   mutationFn: signInAction,
+  onSuccess: (data) => {
+    console.log("Login succeded! Check your cookies!");
+    const auth = useAuth();
+    auth.setUser(data);
+    navigateToDashboard({ with: router });
+  },
 });
 
 const onSubmit = (request: SignInRequest) => {
   mutate(request);
 };
-
-if (isSuccess) {
-  console.log("check your cookies!");
-  // todo use router to redirect to dashboard
-}
 </script>
 <template>
   <Form
