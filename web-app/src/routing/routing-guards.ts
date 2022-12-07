@@ -1,5 +1,5 @@
 import { Router } from "vue-router";
-import { AuthStore } from "../auth/auth.store";
+import { AuthStore } from "../auth/stores/auth.store";
 import {
   getRouteLocation,
   isLoginRoute,
