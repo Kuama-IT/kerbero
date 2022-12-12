@@ -1,3 +1,11 @@
+//https://youtrack.jetbrains.com/issue/WEB-56089/CSS-Avoid-file-reference-errors-in-http-data-URLs-in-webpack-projects
+@import url('https://fonts.googleapis.com/css2?family=Allerta&display=swap');
+
+body {
+  font-family: "Allerta", monospace;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,6 +1,6 @@
 <template>
   <p>TODO we plan on showing sign up &amp; sign in the same page</p>
-  <div class="flex gap-4">
+  <div class="flex flex-row gap-x-12">
     <SignInComponent />
     <SignUpComponent />
   </div>
