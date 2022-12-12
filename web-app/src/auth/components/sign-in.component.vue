@@ -37,7 +37,7 @@ const onSubmit = (request: SignInRequest) => {
 </script>
 <template>
   <Form
-    class="flex flex-col max-w-sm mx-auto gap-4 p-4"
+    class="flex grow flex-col gap-4 p-4"
     id="sign-in"
     :validation-schema="signInSchema"
     @submit="onSubmit"

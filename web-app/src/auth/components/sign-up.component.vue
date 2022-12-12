@@ -12,7 +12,7 @@ import { toFormValidator } from "@vee-validate/zod";
 
 const signUpSchema = toFormValidator(SignUpRequestScheme);
 
-const { mutate, error, isLoading, isSuccess, isError } = useMutation<
+const { mutate, isLoading, isSuccess } = useMutation<
   UserResponse,
   ZodError,
   SignUpRequest
@@ -27,7 +27,7 @@ const onSubmit = (values: SignUpRequest) => {
 </script>
 <template>
   <Form
-    class="flex flex-col max-w-sm mx-auto gap-4 p-4"
+    class="flex flex-col grow gap-4 p-4"
     v-if="!isSuccess"
     id="sign-up"
     :validation-schema="signUpSchema"
