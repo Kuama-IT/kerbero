@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { OutdatedNukiCredentialResponseDtoSchema } from "../../nuki-credentials/api/nuki-credential.schemas";
+import { OutdatedNukiCredentialResponseDtoSchema } from "../../user-credentials/api/nuki-credential.schemas";
 import { SmartLockProviderEnumSchema } from "../../shared/smart-lock-provider.schemas";
 
 export const SmartLockKeyResponseDtoSchema = z.object({
