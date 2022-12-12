@@ -19,6 +19,7 @@
   "dependencies": {
     "@braid/vue-formulate": "^2.5.3",
     "@headlessui/vue": "^1.7.4",
+    "@heroicons/vue": "^2.0.13",
     "@tanstack/vue-query": "^4.17.0",
     "@vee-validate/zod": "^4.7.3",
     "pinia": "^2.0.23",
