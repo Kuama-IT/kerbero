@@ -38,6 +38,7 @@
     "@vitest/coverage-c8": "^0.25.2",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
+    "@vuepic/vue-datepicker": "^3.6.3",
     "autoprefixer": "^10.4.13",
     "cypress": "^11.0.1",
     "cypress-vite": "^1.2.1",
