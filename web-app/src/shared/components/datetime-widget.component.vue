@@ -6,21 +6,6 @@
 </template>
 
 <script setup lang="ts">
+import formatDate from "@/shared/utils/date-time-formatter";
 const now = new Date();
-
-const formatDate = (dateTime: Date): string => {
-  const [weekday, date, time] = new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    year: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-  })
-    .format(dateTime)
-    .toLowerCase()
-    .split(",");
-  return `${weekday} ${date} | ${time}`;
-};
 </script>
