@@ -14,6 +14,7 @@ const SmartLockResponseDtoSchema = z.object({
   credentialId: z.number(),
   state: SmartLockStateDtoSchema,
 });
+export type SmartLockResponseDto = z.infer<typeof SmartLockResponseDtoSchema>;
 
 export const SmartLockListResponseDtoSchema = z.object({
   smartLocks: z.array(SmartLockResponseDtoSchema),
