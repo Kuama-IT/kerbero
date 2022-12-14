@@ -7,6 +7,7 @@
     range
     :partial-range="false"
     :enable-time-picker="false"
+    hide-offset-dates
   >
     <template #action-row>
       <div class="action-row flex flex-row-reverse text-sm">
@@ -71,13 +72,13 @@ const closeMenu = () => {
 <style lang="scss">
 $dp__font_family: "Allerta", monospace;
 $dp__font_size: 0.75rem;
-$dp__cell_padding: 15px;
-$dp__cell_size: 10px !default;
+$dp__cell_padding: 14px;
+$dp__cell_size: 15px !default;
 $dp__month_year_row_height: 50px;
 $dp__border_radius: 15px !default;
-$dp__month_year_row_button_size: 25px;
+$dp__month_year_row_button_size: 15px;
 $dp__cell_border_radius: 10px;
-$dp__menu_min_width: 275px;
+$dp__menu_min_width: 16rem;
 $dp__row_margin: 10px 0 !default;
 
 @import "@vuepic/vue-datepicker/src/VueDatePicker/style/main.scss";
@@ -107,14 +108,19 @@ $dp__row_margin: 10px 0 !default;
 
 .dp__menu {
   padding: 1em;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .dp__calendar_header_item {
-  justify-items: center;
+  display: flex;
+  position: relative;
   align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .dp__calendar_header {
-  font-weight: normal;
+  font-weight: lighter;
+  color: var(--dp-secondary-color);
 }
 </style>
