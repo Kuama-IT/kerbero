@@ -12,7 +12,10 @@
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "noEmit": true,
-    "@/*": ["src/*"], // https://youtrack.jetbrains.com/issue/WEB-55332/Vite-aliases-in-vite.config-support
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    } // https://youtrack.jetbrains.com/issue/WEB-55332/Vite-aliases-in-vite.config-support
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
