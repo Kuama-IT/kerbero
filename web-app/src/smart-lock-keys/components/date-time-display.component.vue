@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-row h-14 gap-4">
+  <div class="flex flex-row h-14 gap-2">
     <CalendarIcon
       class="stroke-1 stroke-purple-700 cursor-pointer"
       @click="updateDate"
     ></CalendarIcon>
-    <div class="flex flex-col justify-center">
+    <div class="flex flex-col justify-center text-xs">
       <p>{{ formatDate(startDate) }}</p>
       <p>{{ formatDate(endDate) }}</p>
     </div>
