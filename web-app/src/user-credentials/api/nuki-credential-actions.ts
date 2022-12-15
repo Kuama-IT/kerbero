@@ -6,12 +6,12 @@ import {
   NukiCredentialResponseDto,
   NukiCredentialResponseDtoSchema,
 } from "./nuki-credential.schemas";
-import { httpClient } from "../../shared/http-client/http-client";
+import { httpClient } from "@/shared/http-client/http-client";
 
 export const startNukiAuthenticationFlowAction =
   async (): Promise<NukiCredentialDraftResponseDto> => {
     const json = await httpClient.post({
-      endpoint: "/user-credentials/draft",
+      endpoint: "nuki-credentials/draft",
     });
 
     return NukiCredentialDraftResponseDtoSchema.parse(json);
@@ -19,7 +19,7 @@ export const startNukiAuthenticationFlowAction =
 
 export const listNukiCredentialsAction =
   async (): Promise<NukiCredentialListResponseDto> => {
-    const json = await httpClient.get({ endpoint: "/user-credentials" });
+    const json = await httpClient.get({ endpoint: "/nuki-credentials" });
 
     return NukiCredentialListResponseDtoSchema.parse(json);
   };
