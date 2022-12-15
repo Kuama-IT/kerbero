@@ -21,7 +21,10 @@ public class KerberoConfigurationRepository : IKerberoConfigurationRepository
       ClientId: _configuration["NUKI_CLIENT_ID"]!,
       Scopes: _configuration["NUKI_SCOPES"]!,
       ApplicationRedirectEndpoint: _configuration["NUKI_REDIRECT_FOR_TOKEN"]!,
-      ApplicationDomain: _configuration["ALIAS_DOMAIN"]!
+      ApplicationDomain: _configuration["ALIAS_DOMAIN"]!,
+      WebAppDomain: _configuration["WEB_APP_DOMAIN"]!,
+      WebAppSuccessRedirectEndpoint: _configuration["NUKI_REDIRECT_FOR_SUCCESS"]!,
+      WebAppFailureRedirectEndpoint: _configuration["NUKI_REDIRECT_FOR_FAILURE"]!
     ));
   }
 }

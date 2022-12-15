@@ -13,5 +13,8 @@ public record NukiApiConfigurationModel(
   string ClientId,
   string Scopes,
   string ApplicationRedirectEndpoint,
-  string ApplicationDomain
+  string ApplicationDomain,
+  string WebAppDomain,
+  string WebAppSuccessRedirectEndpoint,
+  string WebAppFailureRedirectEndpoint
 );

@@ -26,7 +26,10 @@ public class BuildNukiRedirectUriInteractorTests
       ClientId: "0",
       Scopes: "account notification",
       ApplicationDomain: "https://test.domain",
-      ApplicationRedirectEndpoint: "api/nuki-credentials/confirm-draft"
+      ApplicationRedirectEndpoint: "api/nuki-credentials/confirm-draft",
+      WebAppSuccessRedirectEndpoint: "user",
+      WebAppFailureRedirectEndpoint: "user/nuki-fail",
+      WebAppDomain: "https://test.webapp"
     );
 
     _kerberoConfigurationRepositoryMock

@@ -43,7 +43,6 @@ namespace Kerbero.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("NukiEmail")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")

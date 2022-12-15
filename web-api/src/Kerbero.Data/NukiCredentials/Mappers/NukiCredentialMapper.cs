@@ -13,7 +13,7 @@ public static class NukiCredentialMapper
       Id = entity.Id,
       Token = entity.Token,
       UserId = entity.UserId,
-      NukiEmail = entity.NukiEmail,
+      NukiEmail = entity.NukiEmail!,
       IsRefreshable = entity.IsRefreshable
     };
   }

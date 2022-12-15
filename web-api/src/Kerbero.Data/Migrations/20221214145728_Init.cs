@@ -192,7 +192,7 @@ namespace Kerbero.Data.Migrations
                     ExpiresIn = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    NukiEmail = table.Column<string>(type: "text", nullable: false)
+                    NukiEmail = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

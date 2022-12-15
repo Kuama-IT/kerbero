@@ -19,6 +19,7 @@ public class NukiCredentialsController : ControllerBase
   private readonly IBuildNukiRedirectUriInteractor _buildNukiRedirectUri;
   private readonly IGetNukiCredentialsByUserInteractor _getNukiCredentialsInteractor;
   private readonly IDeleteNukiCredentialInteractor _deleteNukiCredentialInteractor;
+  private readonly IBuildWebAppRedirectUriInteractor _buildWebAppRedirectUriInteractor;
   private readonly IConfiguration _configuration;
 
   public NukiCredentialsController(
@@ -28,7 +29,8 @@ public class NukiCredentialsController : ControllerBase
     IConfirmNukiDraftCredentialsInteractor confirmNukiDraftCredentials,
     IBuildNukiRedirectUriInteractor buildNukiRedirectUri,
     IGetNukiCredentialsByUserInteractor getNukiCredentialsByUserInteractor,
-    IDeleteNukiCredentialInteractor deleteNukiCredentialInteractor
+    IDeleteNukiCredentialInteractor deleteNukiCredentialInteractor,
+    IBuildWebAppRedirectUriInteractor buildWebAppRedirectUriInteractor
   )
   {
     _createNukiCredential = createNukiCredential;
@@ -38,6 +40,7 @@ public class NukiCredentialsController : ControllerBase
     _buildNukiRedirectUri = buildNukiRedirectUri;
     _getNukiCredentialsInteractor = getNukiCredentialsByUserInteractor;
     _deleteNukiCredentialInteractor = deleteNukiCredentialInteractor;
+    _buildWebAppRedirectUriInteractor = buildWebAppRedirectUriInteractor;
   }
 
   /// <summary>
@@ -73,10 +76,24 @@ public class NukiCredentialsController : ControllerBase
   /// This endpoint is called from Nuki Apis with a valid OAuth2 code after the user grants US access to his Nuki Account
   /// </summary>
   /// <param name="code">Returned by nuki to let us ask for a token</param>
+  /// <param name="nukiCredentialRegistered">Return by nuki second tim</param>
   /// <returns></returns>
   [HttpGet("confirm-draft-hook")]
-  public async Task<ActionResult<NukiCredentialResponseDto>> ConfirmDraft(string code)
+  public async Task<ActionResult<NukiCredentialResponseDto>> ConfirmDraft([FromQuery]string? code, [FromQuery(Name = "nuki-credential-registered")] bool nukiCredentialRegistered)
   {
+    if (code == null)
+    {
+      // Redirect to web app
+      var redirectUriResult = await _buildWebAppRedirectUriInteractor.Handle(nukiCredentialRegistered);
+      if (redirectUriResult.IsFailed)
+      {
+        var error = redirectUriResult.Errors.First();
+        return ModelState.AddErrorAndReturnAction(error);
+      }
+      var redirectToWebApp = redirectUriResult.Value;
+      return Redirect(redirectToWebApp.ToString());
+    }
+    
     var userId = HttpContext.GetAuthenticatedUserId();
 
     var interactorResponse = await _confirmNukiDraftCredentials.Handle(

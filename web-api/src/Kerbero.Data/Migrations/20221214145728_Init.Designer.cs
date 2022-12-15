@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kerbero.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221205144615_Init")]
+    [Migration("20221214145728_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -46,7 +46,6 @@ namespace Kerbero.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("NukiEmail")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
