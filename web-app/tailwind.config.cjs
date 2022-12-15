@@ -5,6 +5,7 @@ module.exports = {
     borderRadius: {
       'none': '0',
       DEFAULT: '0.75em',
+      'full': '9999px',
       'large': '1.25em'
     },
     extend: {},
