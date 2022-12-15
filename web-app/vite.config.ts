@@ -12,6 +12,7 @@ export default defineConfig({
   plugins: [vue(), mkcert()],
   server: {
     https: true,
+    host: "test.com",
   },
   resolve: {
     alias: {
