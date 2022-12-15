@@ -7,12 +7,15 @@ const AuthenticatePage = () =>
 const CreateNewProviderPage = () =>
   import("@/user-credentials/pages/create-new-provider.page.vue");
 const SmartLocksPage = () => import("@/smart-locks/pages/smart-locks.page.vue");
+const UserCredentialsPage = () =>
+  import("@/user-credentials/pages/user-credentials.page.vue");
 
 const routes: Readonly<RouteRecordRaw[]> = [
   // TODO improve typings
   { path: "/authenticate", component: AuthenticatePage, name: "Authenticate" },
   { path: "/dashboard", component: DashboardPage, name: "Dashboard" },
   { path: "/smart-locks", component: SmartLocksPage, name: "SmartLocks" },
+  { path: "/user", component: UserCredentialsPage, name: "UserCredentials" },
   {
     path: "/user/create-credential",
     component: CreateNewProviderPage,

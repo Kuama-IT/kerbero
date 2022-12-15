@@ -1,6 +1,7 @@
 <template>
-  <div id="dashboard" class="bg-slate-200 h-screen">
-    <router-link to="/user/create-credential">create new provider</router-link>
+  <div id="dashboard">
+    <code>TODO DASHBOARD</code>
+    <router-link to="/user">To user credential</router-link>
   </div>
 </template>
 
