@@ -26,5 +26,5 @@ public class NukiCredentialEntity
   [ForeignKey((nameof(UserId)))] public User? User { get; set; }
 
   // Email used by our user to signup into Nuki web services 
-  public string NukiEmail { get; set; } = null!;
+  public string? NukiEmail { get; set; }
 }

@@ -2,6 +2,7 @@ using System.Web;
 using FluentResults;
 using Kerbero.Domain.Common.Repositories;
 using Kerbero.Domain.NukiCredentials.Interfaces;
+using Kerbero.Domain.NukiCredentials.Utils;
 
 namespace Kerbero.Domain.NukiCredentials.Interactors;
 
@@ -29,8 +30,7 @@ public class BuildNukiRedirectUriInteractor : IBuildNukiRedirectUriInteractor
     var nukiApiDefinition = nukiApiDefinitionResult.Value;
 
     var baseUri = $"{nukiApiDefinition.ApiEndpoint}/oauth/authorize";
-    var applicationRedirectUri =
-      $"{nukiApiDefinition.ApplicationDomain}/{nukiApiDefinition.ApplicationRedirectEndpoint}";
+    var applicationRedirectUri = BuildRedirectToKerberoUriHelper.Handle(nukiApiDefinition);
 
     var queryParams = new List<string>()
     {
