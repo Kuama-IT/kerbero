@@ -1,11 +1,12 @@
 import { z } from "zod";
 import { OutdatedNukiCredentialResponseDtoSchema } from "@/user-credentials/api/nuki-credential.schemas";
-import { SmartLockProviderEnumSchema } from "@/shared/smart-lock-provider.schemas";
+import { SmartLockProviderEnumSchema } from "@/shared/api/smart-lock-provider.schemas";
+import { dateSchema } from "@/shared/api/date-utility.schemas";
 
 export const SmartLockKeyResponseDtoSchema = z.object({
   id: z.string(),
-  validFromDate: z.date(),
-  validUntilDate: z.date(),
+  validFromDate: dateSchema,
+  validUntilDate: dateSchema,
   password: z.string().nullable(),
 });
 
@@ -51,8 +52,8 @@ export type CloseSmartLockWithKeyRequestDto = z.infer<
 >;
 
 export const UpdateSmartLockKeyRequestDtoSchema = z.object({
-  validFromDate: z.string(),
-  validUntilDate: z.string(),
+  validFromDate: dateSchema,
+  validUntilDate: dateSchema,
 });
 export type UpdateSmartLockKeyRequestDto = z.infer<
   typeof UpdateSmartLockKeyRequestDtoSchema

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SmartLockProviderEnumSchema } from "../../shared/smart-lock-provider.schemas";
+import { SmartLockProviderEnumSchema } from "../../shared/api/smart-lock-provider.schemas";
 import { OutdatedNukiCredentialResponseDtoSchema } from "../../user-credentials/api/nuki-credential.schemas";
 
 const SmartLockStateDtoSchema = z.object({

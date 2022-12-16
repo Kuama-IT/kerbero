@@ -47,9 +47,4 @@ const manageDate = (dates: { from: Date; to: Date }) => {
   updateMode.value = false;
   emit("datesUpdated", dates);
 };
-
-const updatingMode = () => {
-  updateMode.value = true;
-  emit("updating");
-};
 </script>
