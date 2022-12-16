@@ -25,8 +25,8 @@ export type SmartLockKeyListResponseDto = z.infer<
 
 export const CreateSmartLockKeyRequestDtoSchema = z.object({
   smartLockId: z.string(),
-  validFromDate: z.date(),
-  validUntilDate: z.date(),
+  validFromDate: dateSchema,
+  validUntilDate: dateSchema,
   credentialId: z.number(),
   smartLockProvider: SmartLockProviderEnumSchema,
 });

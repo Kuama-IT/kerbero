@@ -1,9 +1,9 @@
 <template>
-  <div class="flex justify-center items-center">
-    <Popover class="w-full">
-      <PopoverButton class="w-full">
+  <div class="flex justify-center items-center w-full">
+    <Popover class="w-full items-center">
+      <PopoverButton class="flex w-full items-center">
         <DateTimeDisplay
-          class="grow"
+          class="w-full"
           :start-date="startDate"
           :end-date="endDate"
         ></DateTimeDisplay>
