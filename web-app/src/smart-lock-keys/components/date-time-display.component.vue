@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row h-14 gap-2">
+  <div class="flex flex-row h-14 gap-2 w-full">
     <CalendarIcon
       class="stroke-1 stroke-purple-700 cursor-pointer"
       @click="updateDate"
