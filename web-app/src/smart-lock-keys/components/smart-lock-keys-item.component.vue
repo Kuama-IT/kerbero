@@ -1,5 +1,8 @@
 <template>
-  <div class="flex flex-col w-72 rounded p-3 bg-white">
+  <div
+    class="flex flex-col w-72 rounded p-3 bg-white my-2 max"
+    :class="{ 'max-h-72': !updatingMode }"
+  >
     <p class="text-sm my-2">{{ item.id }}</p>
     <div class="flex flex-row items-center justify-between">
       <p class="text-sm">password: {{ item.password }}</p>
@@ -15,6 +18,7 @@
       :end-date="item.validFromDate"
       :start-date="item.validUntilDate"
       @dates-updated="keyUpdated"
+      @updating="updatingMode = true"
     ></DateTimeManager>
   </div>
 </template>
@@ -23,6 +27,7 @@
 import { SmartLockKeyResponseDto } from "@/smart-lock-keys/api/smart-lock-key.schemas";
 import { KeyIcon } from "@heroicons/vue/24/outline";
 import DateTimeManager from "@/smart-lock-keys/components/date-time-manager.component.vue";
+import { ref } from "vue";
 
 const props = defineProps<{
   item: SmartLockKeyResponseDto;
@@ -31,6 +36,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "keyUpdated", key: SmartLockKeyResponseDto): void;
 }>();
+
+const updatingMode = ref(false);
 
 const keyUpdated = (dates: { from: Date; to: Date }) => {
   let key = props.item;

@@ -33,6 +33,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "datesUpdated", date: { from: Date; to: Date }): void;
+  (e: "updating"): void;
 }>();
 
 const startDate = ref(props.startDate);
@@ -45,5 +46,10 @@ const manageDate = (dates: { from: Date; to: Date }) => {
   endDate.value = dates.to;
   updateMode.value = false;
   emit("datesUpdated", dates);
+};
+
+const updatingMode = () => {
+  updateMode.value = true;
+  emit("updating");
 };
 </script>
