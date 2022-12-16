@@ -1,4 +1,4 @@
-import { httpClient } from "../../shared/http-client/http-client";
+import { httpClient } from "@/shared/http-client/http-client";
 import {
   CloseSmartLockWithKeyRequestDto,
   CreateSmartLockKeyRequestDto,
@@ -30,7 +30,7 @@ export const createSmartLockKeyAction = async (
   return SmartLockKeyResponseDtoSchema.parse(json);
 };
 
-export const openSmartLockWithKey = async (
+export const openSmartLockWithKeyAction = async (
   request: OpenSmartLockWithKeyRequestDto
 ): Promise<void> => {
   OpenSmartLockWithKeyRequestDtoSchema.parse(request);
@@ -41,7 +41,7 @@ export const openSmartLockWithKey = async (
   });
 };
 
-export const closeSmartLockWithKey = async (
+export const closeSmartLockWithKeyAction = async (
   request: CloseSmartLockWithKeyRequestDto
 ): Promise<void> => {
   CreateSmartLockKeyRequestDtoSchema.parse(request);
@@ -52,22 +52,24 @@ export const closeSmartLockWithKey = async (
   });
 };
 
-export const updateSmartLockKey = async (
-  smartLockKeyId: string,
-  request: UpdateSmartLockKeyRequestDto
-): Promise<SmartLockKeyResponseDto> => {
-  UpdateSmartLockKeyRequestDtoSchema.parse(request);
-  const json = httpClient.put({
-    endpoint: `smart-lock-keys/${smartLockKeyId}`,
-    request: request,
+export const updateSmartLockKeyAction = async (request: {
+  smartLockKeyId: string;
+  updateSmartLockKeyRequestDto: UpdateSmartLockKeyRequestDto;
+}): Promise<SmartLockKeyResponseDto> => {
+  UpdateSmartLockKeyRequestDtoSchema.parse(
+    request.updateSmartLockKeyRequestDto
+  );
+  const json = await httpClient.put({
+    endpoint: `smart-lock-keys/${request.smartLockKeyId}`,
+    request: request.updateSmartLockKeyRequestDto,
   });
   return SmartLockKeyResponseDtoSchema.parse(json);
 };
 
-export const deleteSmartLockKey = async (
+export const deleteSmartLockKeyAction = async (
   smartLockKeyId: string
 ): Promise<SmartLockKeyResponseDto> => {
-  const json = httpClient.delete({
+  const json = await httpClient.delete({
     endpoint: `smart-lock-keys/${smartLockKeyId}`,
   });
   return SmartLockKeyResponseDtoSchema.parse(json);

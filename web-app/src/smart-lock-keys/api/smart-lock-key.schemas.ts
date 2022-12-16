@@ -52,8 +52,8 @@ export type CloseSmartLockWithKeyRequestDto = z.infer<
 >;
 
 export const UpdateSmartLockKeyRequestDtoSchema = z.object({
-  validFromDate: z.string(),
-  validUntilDate: z.string(),
+  validFromDate: dateSchema,
+  validUntilDate: dateSchema,
 });
 export type UpdateSmartLockKeyRequestDto = z.infer<
   typeof UpdateSmartLockKeyRequestDtoSchema
