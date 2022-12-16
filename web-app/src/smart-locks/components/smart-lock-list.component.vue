@@ -1,12 +1,17 @@
 <template>
   <div class="h-full w-full">
     <p class="p-3">Doors</p>
-    <div v-if="items.smartLocks.length !== 0" class="grid grid-cols-3">
+    <div
+      v-if="items != null && items.smartLocks.length !== 0"
+      class="grid grid-cols-3"
+    >
       <SmartLockListItem
         v-for="item in items.smartLocks"
         :item="item"
         :key="item.id"
-        @manage="manageSmartLock(item)"
+        @open-smart-lock="emit('openSmartLock', item)"
+        @close-smart-lock="emit('closeSmartLock', item)"
+        @create-key="emit('createKey', item)"
       >
       </SmartLockListItem>
     </div>
@@ -28,12 +33,8 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "manage", smartLockResponseDto: SmartLockResponseDto): void;
+  (e: "openSmartLock", smartLockResponseDto: SmartLockResponseDto): void;
+  (e: "closeSmartLock", smartLockResponseDto: SmartLockResponseDto): void;
+  (e: "createKey", smartLockResponseDto: SmartLockResponseDto): void;
 }>();
-
-const manageSmartLock = (smartLock: SmartLockResponseDto) => {
-  emit("manage", smartLock);
-};
 </script>
-
-<style scoped></style>

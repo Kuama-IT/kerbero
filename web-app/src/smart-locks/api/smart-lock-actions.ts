@@ -1,4 +1,4 @@
-import { httpClient } from "../../shared/http-client/http-client";
+import { httpClient } from "@/shared/http-client/http-client";
 import {
   OpenSmartLockRequestDto,
   OpenSmartLockRequestDtoSchema,
@@ -13,24 +13,24 @@ export const listSmartLockAction =
     return SmartLockListResponseDtoSchema.parse(json);
   };
 
-export const openSmartLockAction = async (
-  smartLockId: string,
-  request: OpenSmartLockRequestDto
-): Promise<void> => {
-  OpenSmartLockRequestDtoSchema.parse(request);
+export const openSmartLockAction = async (request: {
+  smartLockId: string;
+  openSmartLockRequestDto: OpenSmartLockRequestDto;
+}): Promise<void> => {
+  OpenSmartLockRequestDtoSchema.parse(request.openSmartLockRequestDto);
   await httpClient.put({
-    endpoint: `smart-locks/${smartLockId}/open`,
-    request,
+    endpoint: `smart-locks/${request.smartLockId}/open`,
+    request: request.openSmartLockRequestDto,
   });
 };
 
-export const closeSmartLockAction = async (
-  smartLockId: string,
-  request: OpenSmartLockRequestDto
-): Promise<void> => {
+export const closeSmartLockAction = async (request: {
+  smartLockId: string;
+  closeSmartLockRequestDto: OpenSmartLockRequestDto;
+}): Promise<void> => {
   OpenSmartLockRequestDtoSchema.parse(request);
   await httpClient.put({
-    endpoint: `smart-locks/${smartLockId}/open`,
-    request,
+    endpoint: `smart-locks/${request.smartLockId}/open`,
+    request: request.closeSmartLockRequestDto,
   });
 };
