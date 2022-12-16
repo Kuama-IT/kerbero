@@ -19,7 +19,7 @@ export const startNukiAuthenticationFlowAction =
 
 export const listNukiCredentialsAction =
   async (): Promise<NukiCredentialListResponseDto> => {
-    const json = await httpClient.get({ endpoint: "/nuki-credentials" });
+    const json = await httpClient.get({ endpoint: "nuki-credentials" });
 
     return NukiCredentialListResponseDtoSchema.parse(json);
   };
@@ -28,7 +28,7 @@ export const deleteNukiCredentialsAction = async (
   nukiCredentialId: number
 ): Promise<NukiCredentialResponseDto> => {
   const json = await httpClient.delete({
-    endpoint: `/api/nuki-credentials/${nukiCredentialId}`,
+    endpoint: `nuki-credentials/${nukiCredentialId}`,
   });
   return NukiCredentialResponseDtoSchema.parse(json);
 };
