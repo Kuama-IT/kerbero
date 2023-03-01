@@ -69,6 +69,7 @@ const closeSmartLock = (request: SmartLockResponseDto) => {
     credentialsId: request.credentialId,
   };
   if (request.id != null) {
+    console.log(closeSmartLockRequestDto);
     executeCloseAction({
       smartLockId: request.id,
       closeSmartLockRequestDto: closeSmartLockRequestDto,

@@ -1,5 +1,7 @@
 import { httpClient } from "@/shared/http-client/http-client";
 import {
+  CloseSmartLockRequestDto,
+  CloseSmartLockRequestDtoSchema,
   OpenSmartLockRequestDto,
   OpenSmartLockRequestDtoSchema,
   SmartLockListResponseDto,
@@ -26,11 +28,13 @@ export const openSmartLockAction = async (request: {
 
 export const closeSmartLockAction = async (request: {
   smartLockId: string;
-  closeSmartLockRequestDto: OpenSmartLockRequestDto;
+  closeSmartLockRequestDto: CloseSmartLockRequestDto;
 }): Promise<void> => {
-  OpenSmartLockRequestDtoSchema.parse(request);
+  console.log(request);
+  CloseSmartLockRequestDtoSchema.parse(request.closeSmartLockRequestDto);
+  console.log("parsed");
   await httpClient.put({
-    endpoint: `smart-locks/${request.smartLockId}/open`,
+    endpoint: `smart-locks/${request.smartLockId}/close`,
     request: request.closeSmartLockRequestDto,
   });
 };
